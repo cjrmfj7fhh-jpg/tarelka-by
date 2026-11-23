@@ -5330,6 +5330,21 @@
     }
     function toggleAgreement() { state.finalForm.agreement = !state.finalForm.agreement; document.getElementById('agreeCheckbox').classList.toggle('active', state.finalForm.agreement); validateFinalForm(); }
 
+    const MEAL_CALORIE_SHARES = { breakfast: 0.25, lunch: 0.35, dinner: 0.40 };
+
+    function getPersonDailyCalorieTarget(person) {
+      const value = person.mode === 'know'
+        ? parseFloat(person.calories)
+        : calculateCalories(person);
+      return Number.isFinite(value) && value > 0 ? Math.round(value) : null;
+    }
+
+    function getVerifiedDishCaloriesPerServing(dish) {
+      const isVerified = dish.nutritionStatus === 'verified' || dish.calorieStatus === 'verified';
+      const value = Number(dish.caloriesPerServing);
+      return isVerified && Number.isFinite(value) && value > 0 ? Math.round(value) : null;
+    }
+
     function generatePlan() {
       const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
       const mealLabels = { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин' };
@@ -5343,6 +5358,29 @@
       const menuContainer = document.getElementById('resultMenu');
       const shoppingContainer = document.getElementById('resultShopping');
       const selectedDishes = [];
+      const dailyTargets = state.persons.map(person => ({
+        id: person.id,
+        target: getPersonDailyCalorieTarget(person)
+      }));
+      const selectedTypes = [...new Set(selectedMeals.map(meal => meal.type))];
+      const selectedWeightTotal = selectedTypes.reduce((sum, type) => sum + MEAL_CALORIE_SHARES[type], 0);
+      const slotCounts = selectedMeals.reduce((counts, meal) => {
+        counts[meal.type] = (counts[meal.type] || 0) + 1;
+        return counts;
+      }, {});
+      const getSlotShare = type => selectedWeightTotal > 0
+        ? (MEAL_CALORIE_SHARES[type] / selectedWeightTotal) / (slotCounts[type] || 1)
+        : 0;
+      const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
+      const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
+
+      const calorieIntro = '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;">' +
+        '<strong>Калорийный ориентир</strong><br>' +
+        'Распределение суточной нормы: завтрак — 25%, обед — 35%, ужин — 40%. Если приём пищи не выбран, оставшиеся доли пропорционально распределяются между выбранными. ' +
+        (allDailyTargetsValid
+          ? dailyTargets.map(person => 'Человек ' + person.id + ': ' + person.target + ' ккал/день').join(' · ')
+          : 'Для части участников суточная норма не задана или не рассчитана корректно.') +
+        '</div>';
 
       if (selectedMeals.length === 0) {
         menuContainer.innerHTML = '<p class="subtitle">Не выбраны приёмы пищи. Вернись на предыдущий шаг и выбери хотя бы один.</p>';
@@ -5350,14 +5388,35 @@
         let menuHtml = '';
         days.forEach(day => {
           let dayHtml = '';
+          let dayCaloriesComplete = true;
+          let dayCaloriesTotal = 0;
           selectedMeals.forEach(meal => {
+            const slotShare = getSlotShare(meal.type);
+            const targetsForSlot = dailyTargets.map(person => ({
+              id: person.id,
+              target: person.target === null ? null : Math.round(person.target * slotShare)
+            }));
+            const familyMealTarget = allDailyTargetsValid
+              ? Math.round(targetsForSlot.reduce((sum, person) => sum + person.target, 0) / targetsForSlot.length)
+              : null;
             const candidates = compatible
               .filter(dish => dish.type === meal.type)
-              .sort((a, b) =>
-                getDishPreferenceMatches(b, lovedIngredients).length -
-                getDishPreferenceMatches(a, lovedIngredients).length
-              );
+              .sort((a, b) => {
+                const aCalories = getVerifiedDishCaloriesPerServing(a);
+                const bCalories = getVerifiedDishCaloriesPerServing(b);
+                if (familyMealTarget !== null && aCalories !== null && bCalories !== null) {
+                  const calorieDistance = Math.abs(aCalories - familyMealTarget) - Math.abs(bCalories - familyMealTarget);
+                  if (calorieDistance !== 0) return calorieDistance;
+                } else if (familyMealTarget !== null && aCalories !== null) {
+                  return -1;
+                } else if (familyMealTarget !== null && bCalories !== null) {
+                  return 1;
+                }
+                return getDishPreferenceMatches(b, lovedIngredients).length -
+                  getDishPreferenceMatches(a, lovedIngredients).length;
+              });
             if (candidates.length === 0) {
+              dayCaloriesComplete = false;
               dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
                 meal.group + ' ' + mealLabels[meal.type] +
                 ': рецептов пока нет</span><span class="menu-item-cal">Нужно добавить подходящий рецепт</span></div>';
@@ -5366,16 +5425,30 @@
             const dish = candidates[rotation[meal.type] % candidates.length];
             rotation[meal.type]++;
             selectedDishes.push(dish);
+            const dishCalories = getVerifiedDishCaloriesPerServing(dish);
+            if (dishCalories === null) dayCaloriesComplete = false;
+            else dayCaloriesTotal += dishCalories;
+            const targetText = targetsForSlot.every(person => person.target !== null)
+              ? 'Цель на порцию: ' + targetsForSlot.map(person => 'чел. ' + person.id + ' — ' + person.target + ' ккал').join(' · ')
+              : 'Цель на порцию не рассчитана для всех участников';
             dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
               meal.group + ' ' + mealLabels[meal.type] + ': ' + dish.name +
-              '</span><span class="menu-item-cal">' + (Number.isFinite(dish.calories) ? dish.calories + ' ккал' : 'КБЖУ уточняются') + '</span></div>';
+              '</span><span class="menu-item-cal">' +
+              (dishCalories !== null ? dishCalories + ' ккал/порция · проверено' : 'Калорийность рецепта не подтверждена') +
+              '</span><span class="menu-item-cal">' + targetText + '</span></div>';
           });
-          menuHtml += '<div class="menu-day"><div class="menu-day-title">' + day + '</div>' + dayHtml + '</div>';
+          const daySummary = dayCaloriesComplete
+            ? '<div class="hint" style="margin-top:8px;">Сумма выбранных порций: ' + dayCaloriesTotal + ' ккал на человека (если блюда общие — для каждого участника одинаково). Сравните с индивидуальной нормой выше.</div>'
+            : '<div class="hint" style="margin-top:8px;">Фактическая калорийность дня пока не рассчитана: в меню есть блюда без подтверждённого КБЖУ или без рецепта.</div>';
+          menuHtml += '<div class="menu-day"><div class="menu-day-title">' + day + '</div>' + dayHtml + daySummary + '</div>';
         });
         const preferenceNote = (getAllFamilyLikedIngredients().length || getAllFamilyDislikedIngredients().length)
           ? '<p class="hint" style="margin:0 0 14px;">Подбор учитывает выбранные любимые и нелюбимые продукты по предварительным составам. Аллергии и непереносимости остаются отдельными обязательными ограничениями.</p>'
           : '';
-        menuContainer.innerHTML = preferenceNote + menuHtml;
+        const calorieStatusNote = hasAnyDailyTarget
+          ? '<p class="hint" style="margin:0 0 14px;">Когда в каталоге появятся рецепты с подтверждённой калорийностью на порцию, генератор сможет выбирать варианты ближе к целевому ориентиру. Сейчас непроверенные значения не используются для расчёта и подбора.</p>'
+          : '<p class="hint" style="margin:0 0 14px;">Укажите суточную норму калорий или заполните данные для её расчёта, чтобы увидеть ориентиры по приёмам пищи.</p>';
+        menuContainer.innerHTML = calorieIntro + preferenceNote + calorieStatusNote + menuHtml;
       }
 
       // Составляем список только из ингредиентов тех блюд, которые действительно попали в меню.
