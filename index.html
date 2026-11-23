@@ -593,10 +593,23 @@
       return !restrictions.some(item => (dish.allergens || []).includes(item) || (dish.intolerances || []).includes(item));
     }
 
+    function isDishCompatibleWithKitchen(dish) {
+      // Для непроверенных демо-рецептов не делаем вид, что знаем их технику.
+      // После проверки карточки доступная техника и выбранные методы станут фильтрами.
+      if (dish.recipeStatus !== 'verified') return true;
+      const requiredEquipment = dish.equipment || [];
+      const methods = dish.cookingMethods || [];
+      const hasRequiredEquipment = requiredEquipment.every(item => state.equipment.includes(item));
+      const matchesMethod = state.cookingMethods.length === 0 ||
+        state.cookingMethods.some(method => methods.includes(method));
+      return hasRequiredEquipment && matchesMethod;
+    }
+
     function getCompatibleDishes() {
       // Повторно проверяем ограничения при генерации: аллергии выбираются
       // после экрана свайпов и должны обязательно учитываться в итоговом меню.
       return allDishes.filter(dish =>
+        isDishCompatibleWithKitchen(dish) &&
         state.persons.every(person => isDishCompatibleWithPerson(dish, person))
       );
     }
