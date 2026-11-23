@@ -265,10 +265,17 @@
   <div class="step" id="step8">
     <h1>Детали готовки</h1>
     <p class="subtitle">Учтём ограничения и кухонную технику. Важно: пока рецепты демонстрационные, поэтому проверка аллергенов не заменяет чтение состава продуктов.</p>
-    <div class="section-title">🍳 Что есть на кухне?</div>
+    <div class="section-title">🍳 Какая техника есть на кухне?</div>
+    <p class="hint" style="margin:0 0 10px;">Отметь доступную технику. Для демонстрационных блюд совместимость пока не подтверждена.</p>
     <div id="equipmentContainer"></div>
-    <div class="section-title">🚫 Аллергии и стоп-лист</div>
+    <div class="section-title">🥘 Какие способы приготовления предпочитаешь?</div>
+    <div id="cookingMethodsContainer"></div>
+    <div class="section-title">🚫 Аллергены</div>
+    <p class="hint" style="margin:0 0 10px;">Выбирай подтверждённые аллергии. Если ограничения указаны, блюда без проверенного состава не попадут в подборку.</p>
     <div id="allergyContainer"></div>
+    <div class="section-title">ℹ️ Непереносимости</div>
+    <div id="intoleranceContainer"></div>
+    <p class="hint" style="margin:10px 0 0;">Справочник — ориентир по распространённым аллергенам. Это не подтверждение состава блюда и не гарантия отсутствия перекрёстного контакта.</p>
   </div>
 
   <div class="step" id="step9">
@@ -319,9 +326,22 @@
       { id: 15, name: "Смузи-боул", image: "https://www.mojegotowanie.pl/media/cache/default_big_format/uploads/media/recipe/0002/45/smoothie-bowl.jpg", calories: 320, type: "breakfast", tags: ["vegan", "vegetarian"], price: 3.00 }
     ];
 
+    // У демонстрационных карточек нет подтверждённых составов и технологий.
+    // Поля оставлены пустыми до проверки каждого рецепта, ничего не додумываем.
+    allDishes.forEach(dish => Object.assign(dish, {
+      ingredients: null,
+      servings: null,
+      allergenStatus: 'needs_review',
+      allergens: null,
+      intolerances: null,
+      equipment: null,
+      cookingMethods: null,
+      recipeStatus: 'needs_review'
+    }));
+
     let state = {
       step: 1, totalSteps: 10, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
-      persons: [], equipment: ['stove'],
+      persons: [], equipment: ['stove'], cookingMethods: [],
       currentDishes: [], currentDishIndex: 0, likedDishes: [], dislikedDishes: [],
       finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
     };
@@ -335,7 +355,7 @@
           id: i, gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'),
           mode: existing ? existing.mode : 'calc', calories: existing ? existing.calories : 2000, activity: existing ? existing.activity : 1.2,
           age: existing ? existing.age : '', height: existing ? existing.height : '', weight: existing ? existing.weight : '',
-          goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : []
+          goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : [], intolerances: existing ? (existing.intolerances || []) : []
         });
       }
     }
@@ -566,7 +586,11 @@
       if (person.dietType === 'vegan' && !tags.includes('vegan')) return false;
       if (person.dietType === 'vegetarian' && !tags.includes('vegetarian') && !tags.includes('vegan')) return false;
       if (person.dietType === 'fish' && !['fish', 'vegetarian', 'vegan'].some(tag => tags.includes(tag))) return false;
-      return !(person.allergies || []).some(allergen => tags.includes(allergen));
+      // Аллергенные теги старого демо-каталога не подтверждают состав.
+      // При выбранной аллергии показываем только рецепты с проверенной allergen-меткой.
+      const restrictions = [...(person.allergies || []), ...(person.intolerances || [])];
+      if (restrictions.length && dish.allergenStatus !== 'verified') return false;
+      return !restrictions.some(item => (dish.allergens || []).includes(item) || (dish.intolerances || []).includes(item));
     }
 
     function getCompatibleDishes() {
@@ -616,14 +640,65 @@
 
     function renderAllergiesAndEquipment() {
       const allergyContainer = document.getElementById('allergyContainer');
+      const intoleranceContainer = document.getElementById('intoleranceContainer');
       const equipmentContainer = document.getElementById('equipmentContainer');
-      allergyContainer.innerHTML = ''; equipmentContainer.innerHTML = '';
-      const allergens = [ { id: 'gluten', label: '🌾 Глютен' }, { id: 'lactose', label: '🥛 Лактоза' }, { id: 'nuts', label: '🥜 Орехи' }, { id: 'eggs', label: '🥚 Яйца' }, { id: 'fish', label: '🐟 Рыба' }, { id: 'seafood', label: '🦐 Морепродукты' }, { id: 'soy', label: '🫘 Соя' }, { id: 'mushrooms', label: '🍄 Грибы' } ];
-      const equipmentList = [ { id: 'stove', label: '🔥 Плита' }, { id: 'oven', label: '♨️ Духовка' }, { id: 'multicooker', label: '🍲 Мультиварка' } ];
-      
+      const methodsContainer = document.getElementById('cookingMethodsContainer');
+      allergyContainer.innerHTML = ''; intoleranceContainer.innerHTML = '';
+      equipmentContainer.innerHTML = ''; methodsContainer.innerHTML = '';
+
+      // Категории основаны на распространённой европейской классификации
+      // аллергенов; это справочник приложения, а не юридическое заключение для РБ.
+      const allergens = [
+        { id: 'gluten_cereals', label: '🌾 Злаки с глютеном (пшеница, рожь, ячмень)' },
+        { id: 'crustaceans', label: '🦐 Ракообразные' },
+        { id: 'eggs', label: '🥚 Яйца' },
+        { id: 'fish', label: '🐟 Рыба' },
+        { id: 'peanuts', label: '🥜 Арахис' },
+        { id: 'soy', label: '🫘 Соя' },
+        { id: 'milk', label: '🥛 Молоко и молочные белки' },
+        { id: 'tree_nuts', label: '🌰 Орехи (миндаль, фундук, кешью и др.)' },
+        { id: 'celery', label: '🥬 Сельдерей' },
+        { id: 'mustard', label: '🟡 Горчица' },
+        { id: 'sesame', label: '⚪ Кунжут' },
+        { id: 'sulphites', label: '🍇 Диоксид серы и сульфиты' },
+        { id: 'lupin', label: '🌱 Люпин' },
+        { id: 'molluscs', label: '🦪 Моллюски' },
+        { id: 'buckwheat', label: '🌾 Гречка' },
+        { id: 'corn', label: '🌽 Кукуруза' },
+        { id: 'mushrooms', label: '🍄 Грибы' }
+      ];
+      const intolerances = [
+        { id: 'lactose', label: '🥛 Непереносимость лактозы' },
+        { id: 'gluten_intolerance', label: '🌾 Целиакия / необходимость исключить глютен' }
+      ];
+      const equipmentList = [
+        { id: 'stove', label: '🔥 Плита' },
+        { id: 'air_fryer', label: '🍟 Аэрогриль' },
+        { id: 'oven', label: '♨️ Духовка' },
+        { id: 'multicooker', label: '🍲 Мультиварка' },
+        { id: 'steamer', label: '♨️ Пароварка' },
+        { id: 'microwave', label: '📡 Микроволновка' },
+        { id: 'electric_grill', label: '🥩 Электрогриль' },
+        { id: 'charcoal_grill', label: '🔥 Мангал' },
+        { id: 'blender', label: '🥤 Блендер' }
+      ];
+      const cookingMethods = [
+        { id: 'boiling', label: '💧 Варка' },
+        { id: 'stewing', label: '🍲 Тушение' },
+        { id: 'frying', label: '🍳 Жарка' },
+        { id: 'baking', label: '♨️ Запекание' },
+        { id: 'steaming', label: '♨️ На пару' },
+        { id: 'grilling', label: '🔥 Гриль' },
+        { id: 'no_cook', label: '🥗 Без термообработки' }
+      ];
+
       let eqHtml = '<div class="tag-grid">';
       equipmentList.forEach(e => { eqHtml += `<div class="tag-item ${state.equipment.includes(e.id) ? 'selected' : ''}" onclick="toggleEquipment('${e.id}')">${e.label}</div>`; });
       eqHtml += '</div>'; equipmentContainer.innerHTML = eqHtml;
+
+      let methodHtml = '<div class="tag-grid">';
+      cookingMethods.forEach(m => { methodHtml += `<div class="tag-item ${state.cookingMethods.includes(m.id) ? 'selected' : ''}" onclick="toggleCookingMethod('${m.id}')">${m.label}</div>`; });
+      methodHtml += '</div>'; methodsContainer.innerHTML = methodHtml;
 
       state.persons.forEach((person, index) => {
         const card = document.createElement('div'); card.className = 'person-card';
@@ -631,11 +706,34 @@
         allergens.forEach(a => { html += `<div class="tag-item ${person.allergies.includes(a.id) ? 'selected' : ''}" onclick="toggleAllergy(${index}, '${a.id}')">${a.label}</div>`; });
         html += '</div>'; card.innerHTML = `<div class="person-title">Человек ${person.id}</div>${html}`;
         allergyContainer.appendChild(card);
+
+        const intoleranceCard = document.createElement('div'); intoleranceCard.className = 'person-card';
+        let intoleranceHtml = '<div class="tag-grid">';
+        intolerances.forEach(item => { intoleranceHtml += `<div class="tag-item ${person.intolerances.includes(item.id) ? 'selected' : ''}" onclick="toggleIntolerance(${index}, '${item.id}')">${item.label}</div>`; });
+        intoleranceHtml += '</div>';
+        intoleranceCard.innerHTML = `<div class="person-title">Человек ${person.id}</div>${intoleranceHtml}`;
+        intoleranceContainer.appendChild(intoleranceCard);
       });
     }
 
-    function toggleAllergy(index, id) { const p = state.persons[index]; p.allergies.includes(id) ? p.allergies = p.allergies.filter(a => a !== id) : p.allergies.push(id); renderAllergiesAndEquipment(); }
-    function toggleEquipment(id) { state.equipment.includes(id) ? state.equipment = state.equipment.filter(e => e !== id) : state.equipment.push(id); renderAllergiesAndEquipment(); }
+    function toggleAllergy(index, id) {
+      const p = state.persons[index];
+      p.allergies.includes(id) ? p.allergies = p.allergies.filter(a => a !== id) : p.allergies.push(id);
+      renderAllergiesAndEquipment();
+    }
+    function toggleIntolerance(index, id) {
+      const p = state.persons[index];
+      p.intolerances.includes(id) ? p.intolerances = p.intolerances.filter(a => a !== id) : p.intolerances.push(id);
+      renderAllergiesAndEquipment();
+    }
+    function toggleEquipment(id) {
+      state.equipment.includes(id) ? state.equipment = state.equipment.filter(e => e !== id) : state.equipment.push(id);
+      renderAllergiesAndEquipment();
+    }
+    function toggleCookingMethod(id) {
+      state.cookingMethods.includes(id) ? state.cookingMethods = state.cookingMethods.filter(m => m !== id) : state.cookingMethods.push(id);
+      renderAllergiesAndEquipment();
+    }
 
     function validateFinalForm() {
       const name = document.getElementById('userName').value;
