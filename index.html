@@ -1247,11 +1247,10 @@
         }
       ];
 
-    // У демонстрационных карточек нет подтверждённых составов и технологий.
-    // Поля оставлены пустыми до проверки каждого рецепта, ничего не додумываем.
+    // Кандидатные ингредиенты сохраняем только для вкусового подбора.
+    // Они НЕ являются подтверждённым составом и не используются для медицинской фильтрации.
     allDishes.forEach(dish => Object.assign(dish, {
-      ingredients: null,
-      servings: null,
+      ingredientDataStatus: 'candidate_needs_review',
       allergenStatus: 'needs_review',
       allergens: null,
       intolerances: null,
@@ -1526,6 +1525,59 @@
       return hasRequiredEquipment && matchesMethod;
     }
 
+    // Сопоставление пользовательских предпочтений с кандидатными названиями ингредиентов.
+    // Расширяем словарь по мере редакторского утверждения каталога.
+    const ingredientPreferenceAliases = {
+      'Курица': ['куриц'], 'Индейка': ['индейк'], 'Говядина': ['говядин'], 'Свинина': ['свинин'],
+      'Лосось': ['лосос', 'сёмг'], 'Форель': ['форел'], 'Треска': ['треск'], 'Креветки': ['кревет'],
+      'Молоко': ['молок'], 'Сливки': ['сливк'], 'Сметана': ['сметан'], 'Творог': ['творог'],
+      'Сыр': ['сыр', 'фет', 'моцарел'], 'Фета': ['фет'], 'Моцарелла': ['моцарел'],
+      'Яйца': ['яйц'], 'Яйца': ['яйц'], 'Помидоры': ['помидор', 'томат'],
+      'Огурцы': ['огур'], 'Болгарский перец': ['перец'], 'Морковь': ['морков'],
+      'Лук': ['лук'], 'Чеснок': ['чеснок'], 'Брокколи': ['броккол'], 'Тыква': ['тыкв'],
+      'Грибы': ['гриб', 'лисичк'], 'Гречка': ['греч'], 'Рис': ['рис'],
+      'Овсянка': ['овсян'], 'Кукуруза': ['кукуруз'], 'Нут': ['нут'],
+      'Кешью': ['кешью'], 'Кунжут': ['кунжут', 'тахин'], 'Бананы': ['банан'],
+      'Киви': ['киви'], 'Нектарины': ['нектарин'], 'Лимон': ['лимон'],
+      'Оливковое масло': ['оливковое масло'], 'Тофу': ['тофу'], 'Соевый соус': ['соевый соус'],
+      'Пшеничный хлеб': ['пшеничн'], 'Ржаной хлеб': ['ржан'], 'Мёд': ['мёд', 'мед'],
+      'Мясо': ['куриц', 'индейк', 'говядин', 'свинин', 'баранин', 'кролик', 'утк'],
+      'Рыба': ['лосос', 'сёмг', 'форел', 'треск', 'судак', 'скумбри', 'сельд', 'тунец']
+    };
+
+    function normalizeIngredientText(value) {
+      return String(value || '').toLocaleLowerCase('ru').replace(/ё/g, 'е').replace(/[^а-яa-z0-9]+/g, ' ').trim();
+    }
+
+    function ingredientMatchesPreference(recipeIngredient, preference) {
+      const ingredient = normalizeIngredientText(recipeIngredient);
+      const selected = normalizeIngredientText(preference);
+      if (!ingredient || !selected) return false;
+      if (ingredient.includes(selected) || selected.includes(ingredient)) return true;
+      const aliases = ingredientPreferenceAliases[preference] || [preference.toLocaleLowerCase('ru')];
+      return aliases.some(alias => ingredient.includes(normalizeIngredientText(alias)));
+    }
+
+    function getDishPreferenceMatches(dish, preferences) {
+      const ingredientNames = Array.isArray(dish.ingredients)
+        ? dish.ingredients.map(item => Array.isArray(item) ? item[0] : item).filter(Boolean)
+        : [];
+      return preferences.filter(preference =>
+        ingredientNames.some(name => ingredientMatchesPreference(name, preference))
+      );
+    }
+
+    function getPreferenceFilteredDishes(dishes) {
+      const disliked = state.dislikedIngredients || [];
+      // Если состав неизвестен, при активных исключениях не включаем блюдо:
+      // иначе нелюбимый продукт может попасть в меню незаметно.
+      return dishes.filter(dish => {
+        if (!disliked.length) return true;
+        if (!Array.isArray(dish.ingredients) || !dish.ingredients.length) return false;
+        return getDishPreferenceMatches(dish, disliked).length === 0;
+      });
+    }
+
     function getCompatibleDishes() {
       // Повторно проверяем ограничения при генерации: аллергии выбираются
       // после экрана свайпов и должны обязательно учитываться в итоговом меню.
@@ -1736,11 +1788,9 @@
         return { group: parts[0] === 'family' ? 'Общий' : 'Личный', type: parts[1] };
       }).filter(meal => mealLabels[meal.type]);
 
-      const liked = new Set(state.likedDishes);
-      const disliked = new Set(state.dislikedDishes);
-      // Не используем state.currentDishes: он был подготовлен до выбора
-      // аллергий на следующем шаге. Пересчитываем совместимость заново.
-      const compatible = getCompatibleDishes().filter(dish => !disliked.has(dish.id));
+      // Повторно проверяем пищевые ограничения и вкусовые предпочтения на этапе генерации.
+      const compatible = getPreferenceFilteredDishes(getCompatibleDishes());
+      const lovedIngredients = state.likedIngredients || [];
       const rotation = { breakfast: 0, lunch: 0, dinner: 0 };
       const menuContainer = document.getElementById('resultMenu');
       let menuHtml = '';
@@ -1753,7 +1803,10 @@
           selectedMeals.forEach(meal => {
             const candidates = compatible
               .filter(dish => dish.type === meal.type)
-              .sort((a, b) => Number(liked.has(b.id)) - Number(liked.has(a.id)));
+              .sort((a, b) =>
+                getDishPreferenceMatches(b, lovedIngredients).length -
+                getDishPreferenceMatches(a, lovedIngredients).length
+              );
             if (candidates.length === 0) {
               dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
                 meal.group + ' ' + mealLabels[meal.type] +
@@ -1770,7 +1823,10 @@
           menuHtml += '<div class="menu-day"><div class="menu-day-title">' + day + '</div>' +
             dayHtml + '</div>';
         });
-        menuContainer.innerHTML = menuHtml;
+        const preferenceNote = (state.likedIngredients.length || state.dislikedIngredients.length)
+          ? '<p class="hint" style="margin:0 0 14px;">Подбор учитывает выбранные любимые и нелюбимые продукты по предварительным составам рецептов. Составы ещё проверяются; это не фильтр аллергенов.</p>'
+          : '';
+        menuContainer.innerHTML = preferenceNote + menuHtml;
       }
 
       // Не показываем фиктивные товары и случайную сумму: у рецептов пока нет
