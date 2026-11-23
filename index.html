@@ -100,6 +100,9 @@
     .swipe-container { position: relative; height: 380px; margin-top: 20px; display: flex; justify-content: center; align-items: center; }
     .swipe-card { position: absolute; width: 100%; height: 100%; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease, opacity 0.3s ease; }
     .swipe-card img { width: 100%; height: 230px; object-fit: cover; background: #f0f0f0; }
+    .swipe-image-placeholder { height: 230px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #F3F4F6, #E8F5EE); color: #6B7280; text-align: center; }
+    .swipe-image-placeholder .placeholder-icon { font-size: 48px; line-height: 1; }
+    .swipe-image-placeholder span:last-child { font-size: 12px; font-weight: 600; }
     .swipe-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
     .swipe-title { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
     .swipe-calories { color: var(--muted); font-size: 14px; font-weight: 600; }
@@ -299,21 +302,21 @@
 
   <script>
     const allDishes = [
-      { id: 1, name: "Овсянка с ягодами", image: "https://images.unsplash.com/photo-1517673400267-0251440c45dc?auto=format&fit=crop&w=500&q=80", calories: 350, type: "breakfast", tags: ["vegan", "vegetarian", "gluten"], price: 2.50 },
-      { id: 2, name: "Омлет с сыром", image: "https://images.unsplash.com/photo-1494859802809-d069c3b71a8a?auto=format&fit=crop&w=500&q=80", calories: 420, type: "breakfast", tags: ["vegetarian", "lactose", "eggs"], price: 3.50 },
-      { id: 3, name: "Куриная грудка с гречкой", image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=500&q=80", calories: 550, type: "lunch", tags: ["meat"], price: 5.00 },
-      { id: 4, name: "Лосось с овощами", image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=500&q=80", calories: 480, type: "dinner", tags: ["fish"], price: 12.00 },
-      { id: 5, name: "Тофу с рисом и брокколи", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80", calories: 450, type: "lunch", tags: ["vegan", "vegetarian", "soy"], price: 4.50 },
-      { id: 6, name: "Индейка в сливочном соусе", image: "https://images.unsplash.com/photo-1603105037880-880cd4edfb0d?auto=format&fit=crop&w=500&q=80", calories: 520, type: "dinner", tags: ["meat", "lactose"], price: 6.00 },
-      { id: 7, name: "Греческий салат", image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=500&q=80", calories: 280, type: "lunch", tags: ["vegetarian", "lactose"], price: 3.50 },
-      { id: 8, name: "Суп-пюре из тыквы", image: "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?auto=format&fit=crop&w=500&q=80", calories: 250, type: "lunch", tags: ["vegan", "vegetarian"], price: 2.50 },
-      { id: 9, name: "Стейк из говядины", image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=500&q=80", calories: 650, type: "dinner", tags: ["meat"], price: 15.00 },
-      { id: 10, name: "Сырники со сметаной", image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=500&q=80", calories: 450, type: "breakfast", tags: ["vegetarian", "lactose", "eggs", "gluten"], price: 4.00 },
-      { id: 11, name: "Креветки с рисом", image: "https://images.unsplash.com/photo-1625938144755-652e08e359b7?auto=format&fit=crop&w=500&q=80", calories: 400, type: "dinner", tags: ["fish", "seafood"], price: 10.00 },
-      { id: 12, name: "Фалафель с хумусом", image: "https://images.unsplash.com/photo-1593001874117-c99c800e3eb7?auto=format&fit=crop&w=500&q=80", calories: 380, type: "lunch", tags: ["vegan", "vegetarian", "gluten"], price: 3.00 },
-      { id: 13, name: "Запеченная курица с овощами", image: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=500&q=80", calories: 500, type: "dinner", tags: ["meat"], price: 5.50 },
-      { id: 14, name: "Творог с фруктами", image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=500&q=80", calories: 300, type: "breakfast", tags: ["vegetarian", "lactose"], price: 2.50 },
-      { id: 15, name: "Смузи-боул", image: "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=500&q=80", calories: 320, type: "breakfast", tags: ["vegan", "vegetarian"], price: 3.00 }
+      { id: 1, name: "Овсянка с ягодами", image: "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/porridge_with_berries.jpg", calories: 350, type: "breakfast", tags: ["vegan", "vegetarian", "gluten"], price: 2.50 },
+      { id: 2, name: "Омлет с сыром", image: "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/cheese_omelet.jpg", calories: 420, type: "breakfast", tags: ["vegetarian", "lactose", "eggs"], price: 3.50 },
+      { id: 3, name: "Куриная грудка с гречкой", image: "https://www.arise-app.com/images/dishes/ru/kurinaa-grudka-s-greckoj-i-ovosnym-salatom-4zgh1n.webp", calories: 550, type: "lunch", tags: ["meat"], price: 5.00 },
+      { id: 4, name: "Лосось с овощами", image: "https://www.arise-app.com/images/dishes/de/lachs-mit-gemuse-1cg1qy.webp", calories: 480, type: "dinner", tags: ["fish"], price: 12.00 },
+      { id: 5, name: "Тофу с рисом и брокколи", image: "https://i5.walmartimages.com/asr/75b28093-3179-44f8-8e24-d265f149d74f.ffd279b272cba62c5d4473af8ecbc156.jpeg?odnBg=FFFFFF&odnHeight=768&odnWidth=768", calories: 450, type: "lunch", tags: ["vegan", "vegetarian", "soy"], price: 4.50 },
+      { id: 6, name: "Индейка в сливочном соусе", image: "https://caseguru.ru/upload/img/image3eowifodfjsdovfvdvhfjg.jpg", calories: 520, type: "dinner", tags: ["meat", "lactose"], price: 6.00 },
+      { id: 7, name: "Греческий салат", image: "https://kaskanaus.lt/uploads/recipes/klasikines-graikiskos-salotos-000294.webp", calories: 280, type: "lunch", tags: ["vegetarian", "lactose"], price: 3.50 },
+      { id: 8, name: "Суп-пюре из тыквы", image: null, calories: 250, type: "lunch", tags: ["vegan", "vegetarian"], price: 2.50 },
+      { id: 9, name: "Стейк из говядины", image: "https://i.1.creatium.io/08/5b/a3/84161c9d13f1ae5d41bebdf103f67480ad/be635a4fbc4bef8a1063f3d72db4185e.jpg", calories: 650, type: "dinner", tags: ["meat"], price: 15.00 },
+      { id: 10, name: "Сырники со сметаной", image: "https://shuba.life/static/content/thumbs/1088x1088/8/5d/jxxphi---c1x1x50px50p-up--82002c8ddc276b02c2e8a80d4f3e15d8.jpg", calories: 450, type: "breakfast", tags: ["vegetarian", "lactose", "eggs", "gluten"], price: 4.00 },
+      { id: 11, name: "Креветки с рисом", image: "https://www.arise-app.com/images/dishes/de/garnelen-mit-reis-1ldro0.webp", calories: 400, type: "dinner", tags: ["fish", "seafood"], price: 10.00 },
+      { id: 12, name: "Фалафель с хумусом", image: "https://bosra-lebensmittel.de/images/inhalt/arabischelebensmittel.jpg", calories: 380, type: "lunch", tags: ["vegan", "vegetarian", "gluten"], price: 3.00 },
+      { id: 13, name: "Запеченная курица с овощами", image: "https://3.bp.blogspot.com/-RYlnMFfpO8E/XAWLn_tGaYI/AAAAAAAAPgY/b_ntJA59eF08QbFBGHxSc8lEV1MsaeiagCLcBGAs/s1600/istinye%2Btavukcusu%2Bsariyer%2Bistanbul.jpg", calories: 500, type: "dinner", tags: ["meat"], price: 5.50 },
+      { id: 14, name: "Творог с фруктами", image: "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/fruit_salad_with_cottage_cheese.jpg", calories: 300, type: "breakfast", tags: ["vegetarian", "lactose"], price: 2.50 },
+      { id: 15, name: "Смузи-боул", image: "https://www.mojegotowanie.pl/media/cache/default_big_format/uploads/media/recipe/0002/45/smoothie-bowl.jpg", calories: 320, type: "breakfast", tags: ["vegan", "vegetarian"], price: 3.00 }
     ];
 
     let state = {
@@ -595,7 +598,10 @@
         const dish = state.currentDishes[i]; const card = document.createElement('div');
         card.className = 'swipe-card'; card.id = `card-${i}`;
         if (i > state.currentDishIndex) { card.style.transform = 'scale(0.95) translateY(10px)'; card.style.opacity = '0.5'; card.style.zIndex = '1'; } else card.style.zIndex = '2';
-        card.innerHTML = `<img src="${dish.image}" alt="${dish.name}"><div class="swipe-info"><div class="swipe-title">${dish.name}</div><div class="swipe-calories">${dish.calories} ккал</div></div>`;
+        const imageMarkup = dish.image
+          ? `<img src="${dish.image}" alt="${dish.name}" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false"><div class="swipe-image-placeholder" hidden><span class="placeholder-icon">🍽️</span><span>Фото скоро появится</span></div>`
+          : `<div class="swipe-image-placeholder"><span class="placeholder-icon">🍽️</span><span>Фото скоро появится</span></div>`;
+        card.innerHTML = imageMarkup + `<div class="swipe-info"><div class="swipe-title">${dish.name}</div><div class="swipe-calories">${dish.calories} ккал</div></div>`;
         container.appendChild(card);
       }
     }
