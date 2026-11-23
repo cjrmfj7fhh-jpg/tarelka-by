@@ -6,10 +6,10 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     :root {
-      --bg: #FEF9F3; /* Теплый фон */
-      --text: #1F2937; /* Темно-серый текст */
-      --primary: #059669; /* Изумрудный зеленый */
-      --primary-light: #ECFDF5; /* Нежно-мятный */
+      --bg: #FEF9F3;
+      --text: #1F2937;
+      --primary: #059669;
+      --primary-light: #ECFDF5;
       --border: #E5E7EB;
       --success: #059669;
       --success-light: #ECFDF5;
@@ -97,12 +97,33 @@
     .result-box { background: var(--success-light); color: var(--success); padding: 12px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 18px; margin-top: 15px; }
     
     /* Шаг 6: Тип питания */
-    .diet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .diet-card { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; text-align: center; }
+    .diet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+    .diet-card { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 15px 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; transition: 0.2s; text-align: center; }
     .diet-card.selected { border-color: var(--primary); background: var(--primary-light); }
-    .diet-emoji { font-size: 32px; }
-    .diet-name { font-size: 14px; font-weight: 700; }
-    .diet-desc { font-size: 11px; color: var(--muted); }
+    .diet-emoji { font-size: 24px; }
+    .diet-name { font-size: 13px; font-weight: 700; }
+    
+    /* Шаг 7: Свайпы */
+    .swipe-container { position: relative; height: 380px; margin-top: 20px; display: flex; justify-content: center; align-items: center; }
+    .swipe-card { position: absolute; width: 100%; height: 100%; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease, opacity 0.3s ease; }
+    .swipe-card img { width: 100%; height: 230px; object-fit: cover; background: #f0f0f0; }
+    .swipe-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+    .swipe-title { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
+    .swipe-calories { color: var(--muted); font-size: 14px; font-weight: 600; }
+    .swipe-actions { display: flex; justify-content: center; gap: 30px; margin-top: 20px; }
+    .swipe-btn { width: 60px; height: 60px; border-radius: 50%; border: none; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.1s; }
+    .swipe-btn:active { transform: scale(0.9); }
+    .swipe-btn svg { width: 28px; height: 28px; }
+    .btn-dislike svg { stroke: var(--danger); }
+    .btn-like svg { stroke: var(--primary); fill: var(--primary); }
+    .swipe-counter { text-align: center; margin-top: 15px; font-size: 14px; color: var(--muted); font-weight: 600; }
+    .card-anim-left { transform: translateX(-150%) rotate(-20deg) !important; opacity: 0; }
+    .card-anim-right { transform: translateX(150%) rotate(20deg) !important; opacity: 0; }
+
+    /* Шаг 8: Аллергии */
+    .allergy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 30px;}
+    .allergy-tag { background: white; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
+    .allergy-tag.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
 
     /* Кнопка Далее */
     .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: var(--bg); border-top: 1px solid var(--border); z-index: 10; }
@@ -189,14 +210,30 @@
 
   <!-- Шаг 6 -->
   <div class="step" id="step6">
-    <h1>Какой у тебя тип питания?</h1>
-    <p class="subtitle">Это поможет подобрать подходящие блюда.</p>
-    <div class="diet-grid">
-      <div class="diet-card" onclick="selectDiet('meat', this)"><div class="diet-emoji">🥩</div><div class="diet-name">Всеядный</div><div class="diet-desc">Ем всё</div></div>
-      <div class="diet-card" onclick="selectDiet('fish', this)"><div class="diet-emoji">🐟</div><div class="diet-name">Пескетарианец</div><div class="diet-desc">Рыба и морепродукты</div></div>
-      <div class="diet-card" onclick="selectDiet('vegetarian', this)"><div class="diet-emoji">🥗</div><div class="diet-name">Вегетарианец</div><div class="diet-desc">Без мяса и рыбы</div></div>
-      <div class="diet-card" onclick="selectDiet('vegan', this)"><div class="diet-emoji">🌱</div><div class="diet-name">Веган</div><div class="diet-desc">Только растительное</div></div>
+    <h1>Тип питания</h1>
+    <p class="subtitle">Укажи предпочтения для каждого человека.</p>
+    <div id="dietContainer"></div>
+  </div>
+
+  <!-- Шаг 7 -->
+  <div class="step" id="step7">
+    <h1>Что тебе нравится?</h1>
+    <p class="subtitle">Свайпни вправо — нравится, влево — нет.</p>
+    
+    <div class="swipe-container" id="swipeContainer"></div>
+    
+    <div class="swipe-actions" id="swipeActions">
+      <button class="swipe-btn btn-dislike" onclick="swipeCard('left')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <button class="swipe-btn btn-like" onclick="swipeCard('right')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
     </div>
+    <div class="swipe-counter" id="swipeCounter">0 из 0</div>
+  </div>
+
+  <!-- Шаг 8 -->
+  <div class="step" id="step8">
+    <h1>Аллергии и ограничения</h1>
+    <p class="subtitle">Отметь всё, что не должно попасть в меню.</p>
+    <div id="allergyContainer"></div>
   </div>
 
   <div class="footer">
@@ -204,29 +241,38 @@
   </div>
 
   <script>
-    // --- ДАННЫЕ (Стейт) ---
+    // --- БАЗА БЛЮД ---
+    const allDishes = [
+      { id: 1, name: "Овсянка с ягодами", image: "https://images.unsplash.com/photo-1517673400267-0251440c45dc?auto=format&fit=crop&w=500&q=80", calories: 350, type: "breakfast", tags: ["vegan", "vegetarian", "gluten"] },
+      { id: 2, name: "Омлет с сыром", image: "https://images.unsplash.com/photo-1510693206972-df098062cb71?auto=format&fit=crop&w=500&q=80", calories: 420, type: "breakfast", tags: ["vegetarian", "lactose", "eggs"] },
+      { id: 3, name: "Куриная грудка с гречкой", image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=500&q=80", calories: 550, type: "lunch", tags: ["meat"] },
+      { id: 4, name: "Лосось с овощами", image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=500&q=80", calories: 480, type: "dinner", tags: ["fish"] },
+      { id: 5, name: "Тофу с рисом и брокколи", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80", calories: 450, type: "lunch", tags: ["vegan", "vegetarian", "soy"] },
+      { id: 6, name: "Индейка с грибами", image: "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?auto=format&fit=crop&w=500&q=80", calories: 520, type: "dinner", tags: ["meat", "lactose", "mushrooms"] }
+    ];
+
     let state = {
-      step: 1,
-      totalSteps: 9,
-      store: '',
-      adultsCount: 2,
-      hasKids: false,
-      meals: [],
-      budget: 200,
-      persons: [],
-      dietType: ''
+      step: 1, totalSteps: 9, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
+      persons: [], // теперь тут хранится и dietType, и allergies
+      currentDishes: [], currentDishIndex: 0, likedDishes: [], dislikedDishes: []
     };
 
     function initPersons() {
+      const oldPersons = state.persons;
       state.persons = [];
       for (let i = 1; i <= state.adultsCount; i++) {
+        const existing = oldPersons[i-1];
         state.persons.push({
           id: i,
-          gender: i === 1 ? 'male' : 'female',
-          mode: 'calc',
-          calories: 2000,
-          age: '', height: '', weight: '',
-          goal: 'maintain'
+          gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'),
+          mode: existing ? existing.mode : 'calc',
+          calories: existing ? existing.calories : 2000,
+          age: existing ? existing.age : '',
+          height: existing ? existing.height : '',
+          weight: existing ? existing.weight : '',
+          goal: existing ? existing.goal : 'maintain',
+          dietType: existing ? existing.dietType : '', // Индивидуально
+          allergies: existing ? existing.allergies : [] // Индивидуально
         });
       }
     }
@@ -237,7 +283,6 @@
     renderProgress();
     renderMealsStep();
 
-    // --- ЛОГИКА ПЕРЕХОДОВ ---
     function nextStep() {
       if (state.step < state.totalSteps) {
         state.step++;
@@ -266,6 +311,9 @@
 
       if (state.step === 4) updateBudget(state.budget);
       if (state.step === 5) renderPersons();
+      if (state.step === 6) renderDietTypes();
+      if (state.step === 7) initSwipes();
+      if (state.step === 8) renderAllergies();
 
       validateNextBtn();
       window.scrollTo(0, 0);
@@ -290,7 +338,9 @@
       if (state.step === 3) isValid = state.meals.length > 0;
       if (state.step === 4) isValid = true;
       if (state.step === 5) isValid = true; 
-      if (state.step === 6) isValid = state.dietType !== '';
+      if (state.step === 6) isValid = state.persons.every(p => p.dietType !== '');
+      if (state.step === 7) isValid = true; 
+      if (state.step === 8) isValid = true; 
       
       if (isValid) btn.classList.add('active');
       else btn.classList.remove('active');
@@ -334,41 +384,24 @@
       selfGroup.className = 'meal-group';
       selfGroup.innerHTML = `<div class="meal-group-title">${state.adultsCount === 1 ? 'Твои приёмы пищи' : 'Личные приёмы пищи'}</div>`;
       
-      const selfOptions = [
-        { id: 'self-breakfast', label: 'Завтрак ☕' },
-        { id: 'self-lunch', label: 'Обед 🍲' },
-        { id: 'self-dinner', label: 'Ужин 🍽️' }
-      ];
+      const selfOptions = [ { id: 'self-breakfast', label: 'Завтрак ☕' }, { id: 'self-lunch', label: 'Обед 🍲' }, { id: 'self-dinner', label: 'Ужин 🍽️' } ];
       
       selfOptions.forEach(opt => {
         const isSelected = state.meals.includes(opt.id);
-        selfGroup.innerHTML += `
-          <div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)">
-            <div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div>
-          </div>`;
+        selfGroup.innerHTML += `<div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)"><div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div></div>`;
       });
       container.appendChild(selfGroup);
 
       if (state.adultsCount > 1) {
         const familyGroup = document.createElement('div');
         familyGroup.className = 'meal-group';
-        familyGroup.innerHTML = `
-          <div class="meal-group-title" style="margin-top: 20px;">Общие приёмы пищи</div>
-          <div class="hint" style="margin-bottom: 10px; margin-left: 0;">Готовим сразу на всех, остальное — одной порцией для тебя.</div>
-        `;
+        familyGroup.innerHTML = `<div class="meal-group-title" style="margin-top: 20px;">Общие приёмы пищи</div><div class="hint" style="margin-bottom: 10px; margin-left: 0;">Готовим сразу на всех.</div>`;
         
-        const familyOptions = [
-          { id: 'family-breakfast', label: 'Общие завтраки ☕' },
-          { id: 'family-lunch', label: 'Общие обеды 🍲' },
-          { id: 'family-dinner', label: 'Общие ужины 🍽️' }
-        ];
+        const familyOptions = [ { id: 'family-breakfast', label: 'Общие завтраки ☕' }, { id: 'family-lunch', label: 'Общие обеды 🍲' }, { id: 'family-dinner', label: 'Общие ужины 🍽️' } ];
         
         familyOptions.forEach(opt => {
           const isSelected = state.meals.includes(opt.id);
-          familyGroup.innerHTML += `
-            <div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)">
-              <div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div>
-            </div>`;
+          familyGroup.innerHTML += `<div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)"><div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div></div>`;
         });
         container.appendChild(familyGroup);
       }
@@ -421,32 +454,22 @@
         
         card.innerHTML = `
           <div class="person-title">Человек ${person.id}</div>
-          
           <div class="gender-btns">
             <div class="gender-btn ${person.gender === 'male' ? 'active' : ''}" onclick="updatePerson(${index}, 'gender', 'male')">👨 Мужской</div>
             <div class="gender-btn ${person.gender === 'female' ? 'active' : ''}" onclick="updatePerson(${index}, 'gender', 'female')">👩 Женский</div>
           </div>
-
           <div class="tabs">
             <div class="tab ${person.mode === 'know' ? 'active' : ''}" onclick="updatePerson(${index}, 'mode', 'know')">Знаю норму</div>
             <div class="tab ${person.mode === 'calc' ? 'active' : ''}" onclick="updatePerson(${index}, 'mode', 'calc')">Рассчитать</div>
           </div>
-
-          <div>
-            ${person.mode === 'know' ? renderKnowMode(person, index) : renderCalcMode(person, index)}
-          </div>
+          <div>${person.mode === 'know' ? renderKnowMode(person, index) : renderCalcMode(person, index)}</div>
         `;
         container.appendChild(card);
       });
     }
 
     function renderKnowMode(person, index) {
-      return `
-        <div class="input-group">
-          <label>Ваша норма (ккал/день)</label>
-          <input type="number" value="${person.calories}" onchange="updatePerson(${index}, 'calories', this.value)">
-        </div>
-      `;
+      return `<div class="input-group"><label>Ваша норма (ккал/день)</label><input type="number" value="${person.calories}" onchange="updatePerson(${index}, 'calories', this.value)"></div>`;
     }
 
     function renderCalcMode(person, index) {
@@ -470,22 +493,16 @@
 
     function updatePerson(index, field, value) {
       state.persons[index][field] = value;
-      
-      if (field === 'age' || field === 'height' || field === 'weight' || field === 'goal' || field === 'gender' || field === 'mode') {
-        // Пересчитываем калории, если в режиме "Рассчитать"
-        if (state.persons[index].mode === 'calc') {
-          const p = state.persons[index];
-          if (p.age && p.height && p.weight) {
-            p.calories = calculateCalories(p, index);
-          }
+      if (field !== 'calories') {
+        const p = state.persons[index];
+        if (p.mode === 'calc' && p.age && p.height && p.weight) {
+          p.calories = calculateCalories(p, index);
         }
       }
       
-      // Перерисовываем только если изменили пол, цель или вкладку
       if (field === 'gender' || field === 'mode' || field === 'goal') {
         renderPersons();
       } else if (field === 'age' || field === 'height' || field === 'weight') {
-        // Обновляем только текст результата, чтобы не терять фокус с инпута
         const resBox = document.getElementById(`calc-result-${index}`);
         if (resBox && state.persons[index].age && state.persons[index].height && state.persons[index].weight) {
           resBox.textContent = `Рекомендуемая норма: ${calculateCalories(state.persons[index], index)} ккал/день`;
@@ -497,31 +514,179 @@
       const age = parseFloat(person.age) || 0;
       const height = parseFloat(person.height) || 0;
       const weight = parseFloat(person.weight) || 0;
-      
       if (age === 0 || height === 0 || weight === 0) return 0;
 
       let bmr = 0;
-      if (person.gender === 'male') {
-        bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
-      } else {
-        bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
-      }
+      if (person.gender === 'male') bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+      else bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
       
-      let total = bmr * 1.2; // Сидячий образ жизни
-      
+      let total = bmr * 1.2; 
       if (person.goal === 'lose') total = total * 0.8;
       if (person.goal === 'gain') total = total * 1.15;
-      
       return Math.round(total);
     }
 
-    // --- ШАГ 6 ---
-    function selectDiet(diet, el) {
-      state.dietType = diet;
-      document.querySelectorAll('.diet-card').forEach(c => c.classList.remove('selected'));
-      el.classList.add('selected');
+    // --- ШАГ 6: ТИП ПИТАНИЯ ---
+    function renderDietTypes() {
+      const container = document.getElementById('dietContainer');
+      container.innerHTML = '';
+
+      state.persons.forEach((person, index) => {
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        
+        const diets = [
+          { id: 'meat', name: 'Всеядный', emoji: '🥩' },
+          { id: 'fish', name: 'Пескетарианец', emoji: '🐟' },
+          { id: 'vegetarian', name: 'Вегетарианец', emoji: '🥗' },
+          { id: 'vegan', name: 'Веган', emoji: '🌱' }
+        ];
+
+        let gridHtml = '<div class="diet-grid">';
+        diets.forEach(d => {
+          gridHtml += `<div class="diet-card ${person.dietType === d.id ? 'selected' : ''}" onclick="setDiet(${index}, '${d.id}')"><div class="diet-emoji">${d.emoji}</div><div class="diet-name">${d.name}</div></div>`;
+        });
+        gridHtml += '</div>';
+
+        card.innerHTML = `<div class="person-title">Человек ${person.id}</div>${gridHtml}`;
+        container.appendChild(card);
+      });
+    }
+
+    function setDiet(index, diet) {
+      state.persons[index].dietType = diet;
+      renderDietTypes();
       validateNextBtn();
     }
+
+    // --- ШАГ 7: СВАЙПЫ ---
+    function initSwipes() {
+      // Собираем уникальные диеты семьи
+      const diets = state.persons.map(p => p.dietType);
+      
+      // Фильтруем блюда, которые подходят хотя бы одному (упрощенная логика для MVP)
+      // Для строгости можно проверять, чтобы блюдо подходило всем, но пока сделаем мягче
+      state.currentDishes = allDishes.filter(dish => {
+        // Если кто-то веган, блюдо должно быть веганским и т.д.
+        if (diets.includes('vegan') && !dish.tags.includes('vegan')) return false;
+        if (diets.includes('vegetarian') && !dish.tags.includes('vegetarian') && !dish.tags.includes('vegan')) return false;
+        // Мясо и рыбу показываем только если кто-то всеядный
+        if (!diets.includes('meat') && !diets.includes('fish') && dish.tags.includes('meat')) return false;
+        
+        return true;
+      });
+      
+      // Если блюд слишком мало, добавляем все
+      if (state.currentDishes.length === 0) state.currentDishes = allDishes;
+
+      state.currentDishIndex = 0;
+      renderSwipeCards();
+    }
+
+    function renderSwipeCards() {
+      const container = document.getElementById('swipeContainer');
+      container.innerHTML = '';
+      
+      const counter = document.getElementById('swipeCounter');
+      counter.textContent = `${state.currentDishIndex + 1} из ${state.currentDishes.length}`;
+      
+      // Если закончились
+      if (state.currentDishIndex >= state.currentDishes.length) {
+        container.innerHTML = '<div style="text-align:center; padding: 50px; color: var(--muted);"><h2>Все блюда просмотрены!</h2><p>Жми Далее</p></div>';
+        document.getElementById('swipeActions').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('swipeActions').style.display = 'flex';
+      
+      // Показываем текущее и следующее (для красоты)
+      for (let i = state.currentDishIndex; i < Math.min(state.currentDishIndex + 2, state.currentDishes.length); i++) {
+        const dish = state.currentDishes[i];
+        const card = document.createElement('div');
+        card.className = 'swipe-card';
+        card.id = `card-${i}`;
+        
+        if (i > state.currentDishIndex) {
+          card.style.transform = 'scale(0.95) translateY(10px)';
+          card.style.opacity = '0.5';
+          card.style.zIndex = '1';
+        } else {
+          card.style.zIndex = '2';
+        }
+
+        card.innerHTML = `
+          <img src="${dish.image}" alt="${dish.name}">
+          <div class="swipe-info">
+            <div class="swipe-title">${dish.name}</div>
+            <div class="swipe-calories">${dish.calories} ккал • порция</div>
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    function swipeCard(direction) {
+      const currentCard = document.getElementById(`card-${state.currentDishIndex}`);
+      if (!currentCard) return;
+
+      const dish = state.currentDishes[state.currentDishIndex];
+      
+      if (direction === 'right') {
+        currentCard.classList.add('card-anim-right');
+        state.likedDishes.push(dish.id);
+      } else {
+        currentCard.classList.add('card-anim-left');
+        state.dislikedDishes.push(dish.id);
+      }
+
+      setTimeout(() => {
+        state.currentDishIndex++;
+        renderSwipeCards();
+      }, 300);
+    }
+
+    // --- ШАГ 8: АЛЛЕРГИИ ---
+    function renderAllergies() {
+      const container = document.getElementById('allergyContainer');
+      container.innerHTML = '';
+
+      const allergens = [
+        { id: 'gluten', label: '🌾 Глютен' },
+        { id: 'lactose', label: '🥛 Лактоза' },
+        { id: 'nuts', label: '🥜 Орехи' },
+        { id: 'eggs', label: '🥚 Яйца' },
+        { id: 'fish', label: '🐟 Рыба' },
+        { id: 'seafood', label: '🦐 Морепродукты' },
+        { id: 'soy', label: '🫘 Соя' },
+        { id: 'mushrooms', label: '🍄 Грибы' }
+      ];
+
+      state.persons.forEach((person, index) => {
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        
+        let gridHtml = '<div class="allergy-grid">';
+        allergens.forEach(a => {
+          const isSelected = person.allergies.includes(a.id);
+          gridHtml += `<div class="allergy-tag ${isSelected ? 'selected' : ''}" onclick="toggleAllergy(${index}, '${a.id}')">${a.label}</div>`;
+        });
+        gridHtml += '</div>';
+
+        card.innerHTML = `<div class="person-title">Человек ${person.id}</div>${gridHtml}`;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleAllergy(index, allergenId) {
+      const person = state.persons[index];
+      if (person.allergies.includes(allergenId)) {
+        person.allergies = person.allergies.filter(a => a !== allergenId);
+      } else {
+        person.allergies.push(allergenId);
+      }
+      renderAllergies();
+    }
+
   </script>
 </body>
 </html>
