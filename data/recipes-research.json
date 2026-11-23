@@ -985,7 +985,7 @@
       "id": 15,
       "name": "Смузи-боул",
       "status": "candidate_needs_review",
-      "servings": 1,
+      "servings": null,
       "timeMinutes": null,
       "ingredients": [
         [
