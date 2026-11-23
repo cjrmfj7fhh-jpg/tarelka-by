@@ -578,11 +578,17 @@
       return !(person.allergies || []).some(allergen => tags.includes(allergen));
     }
 
-    function initSwipes() {
-      // Для общего семейного меню блюдо должно подходить каждому члену семьи.
-      state.currentDishes = allDishes.filter(dish =>
+    function getCompatibleDishes() {
+      // Повторно проверяем ограничения при генерации: аллергии выбираются
+      // после экрана свайпов и должны обязательно учитываться в итоговом меню.
+      return allDishes.filter(dish =>
         state.persons.every(person => isDishCompatibleWithPerson(dish, person))
       );
+    }
+
+    function initSwipes() {
+      // Для общего семейного меню блюдо должно подходить каждому члену семьи.
+      state.currentDishes = getCompatibleDishes();
       state.currentDishIndex = 0;
       renderSwipeCards();
     }
@@ -667,7 +673,9 @@
 
       const liked = new Set(state.likedDishes);
       const disliked = new Set(state.dislikedDishes);
-      const compatible = state.currentDishes.filter(dish => !disliked.has(dish.id));
+      // Не используем state.currentDishes: он был подготовлен до выбора
+      // аллергий на следующем шаге. Пересчитываем совместимость заново.
+      const compatible = getCompatibleDishes().filter(dish => !disliked.has(dish.id));
       const rotation = { breakfast: 0, lunch: 0, dinner: 0 };
       const menuContainer = document.getElementById('resultMenu');
       let menuHtml = '';
