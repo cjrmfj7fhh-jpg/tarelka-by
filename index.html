@@ -355,8 +355,12 @@
     }
     initPersons();
 
-    window.Telegram.WebApp.ready();
-    window.Telegram.WebApp.setHeaderColor('#FEF9F3');
+    // Приложение может открываться в браузерном предпросмотре вне Telegram.
+    // Не прерываем запуск, если Telegram WebApp SDK недоступен.
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.setHeaderColor('#FEF9F3');
+    }
     renderProgress();
 
     function nextStep() {
@@ -570,16 +574,27 @@
 
     function setDiet(index, diet) { state.persons[index].dietType = diet; renderDietTypes(); validateNextBtn(); }
 
+    function isDishCompatibleWithPerson(dish, person) {
+      const tags = dish.tags || [];
+      if (person.dietType === 'vegan' && !tags.includes('vegan')) return false;
+      if (person.dietType === 'vegetarian' && !tags.includes('vegetarian') && !tags.includes('vegan')) return false;
+      if (person.dietType === 'fish' && !['fish', 'vegetarian', 'vegan'].some(tag => tags.includes(tag))) return false;
+      return !(person.allergies || []).some(allergen => tags.includes(allergen));
+    }
+
+    function getCompatibleDishes() {
+      // Повторно проверяем ограничения при генерации: аллергии выбираются
+      // после экрана свайпов и должны обязательно учитываться в итоговом меню.
+      return allDishes.filter(dish =>
+        state.persons.every(person => isDishCompatibleWithPerson(dish, person))
+      );
+    }
+
     function initSwipes() {
-      const diets = state.persons.map(p => p.dietType);
-      state.currentDishes = allDishes.filter(dish => {
-        if (diets.includes('vegan') && !dish.tags.includes('vegan')) return false;
-        if (diets.includes('vegetarian') && !dish.tags.includes('vegetarian') && !dish.tags.includes('vegan')) return false;
-        if (!diets.includes('meat') && !diets.includes('fish') && dish.tags.includes('meat')) return false;
-        return true;
-      });
-      if (state.currentDishes.length === 0) state.currentDishes = allDishes;
-      state.currentDishIndex = 0; renderSwipeCards();
+      // Для общего семейного меню блюдо должно подходить каждому члену семьи.
+      state.currentDishes = getCompatibleDishes();
+      state.currentDishIndex = 0;
+      renderSwipeCards();
     }
 
     function renderSwipeCards() {
@@ -649,39 +664,66 @@
     function toggleAgreement() { state.finalForm.agreement = !state.finalForm.agreement; document.getElementById('agreeCheckbox').classList.toggle('active', state.finalForm.agreement); validateFinalForm(); }
 
     function generatePlan() {
-      const perPersonBudget = state.budget / state.adultsCount;
-      let availableDishes = state.currentDishes.filter(d => perPersonBudget < 75 ? d.price <= 6 : true);
-      if (availableDishes.length < 3) availableDishes = state.currentDishes;
-      
       const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
-      const menuContainer = document.getElementById('resultMenu'); let menuHtml = '';
+      const mealLabels = {
+        breakfast: 'Завтрак',
+        lunch: 'Обед',
+        dinner: 'Ужин'
+      };
+      const selectedMeals = state.meals.map(id => {
+        const parts = id.split('-');
+        return { group: parts[0] === 'family' ? 'Общий' : 'Личный', type: parts[1] };
+      }).filter(meal => mealLabels[meal.type]);
 
-      days.forEach(day => {
-        const b = availableDishes.filter(d => d.type === 'breakfast')[0] || allDishes[0];
-        const l = availableDishes.filter(d => d.type === 'lunch')[0] || allDishes[2];
-        const d = availableDishes.filter(d => d.type === 'dinner')[0] || allDishes[3];
-        menuHtml += `<div class="menu-day"><div class="menu-day-title">${day}</div>
-          <div class="menu-item"><span class="menu-item-name">Завтрак: ${b.name}</span><span class="menu-item-cal">${b.calories} ккал</span></div>
-          <div class="menu-item"><span class="menu-item-name">Обед: ${l.name}</span><span class="menu-item-cal">${l.calories} ккал</span></div>
-          <div class="menu-item"><span class="menu-item-name">Ужин: ${d.name}</span><span class="menu-item-cal">${d.calories} ккал</span></div>
-        </div>`;
-      });
-      menuContainer.innerHTML = menuHtml;
+      const liked = new Set(state.likedDishes);
+      const disliked = new Set(state.dislikedDishes);
+      // Не используем state.currentDishes: он был подготовлен до выбора
+      // аллергий на следующем шаге. Пересчитываем совместимость заново.
+      const compatible = getCompatibleDishes().filter(dish => !disliked.has(dish.id));
+      const rotation = { breakfast: 0, lunch: 0, dinner: 0 };
+      const menuContainer = document.getElementById('resultMenu');
+      let menuHtml = '';
 
-      const totalCost = Math.round(state.budget * (0.9 + Math.random() * 0.2));
+      if (selectedMeals.length === 0) {
+        menuContainer.innerHTML = '<p class="subtitle">Не выбраны приёмы пищи. Вернись на предыдущий шаг и выбери хотя бы один.</p>';
+      } else {
+        days.forEach(day => {
+          let dayHtml = '';
+          selectedMeals.forEach(meal => {
+            const candidates = compatible
+              .filter(dish => dish.type === meal.type)
+              .sort((a, b) => Number(liked.has(b.id)) - Number(liked.has(a.id)));
+            if (candidates.length === 0) {
+              dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
+                meal.group + ' ' + mealLabels[meal.type] +
+                ': нет подходящего блюда в текущей базе рецептов</span></div>';
+              return;
+            }
+            const index = rotation[meal.type] % candidates.length;
+            const dish = candidates[index];
+            rotation[meal.type]++;
+            dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
+              meal.group + ' ' + mealLabels[meal.type] + ': ' + dish.name +
+              '</span><span class="menu-item-cal">' + dish.calories + ' ккал</span></div>';
+          });
+          menuHtml += '<div class="menu-day"><div class="menu-day-title">' + day + '</div>' +
+            dayHtml + '</div>';
+        });
+        menuContainer.innerHTML = menuHtml;
+      }
+
+      // Не показываем фиктивные товары и случайную сумму: у рецептов пока нет
+      // проверенного состава ингредиентов и подключённых актуальных цен.
       document.getElementById('resultShopping').innerHTML = `
         <div class="receipt-container">
-          <div class="receipt-header"><div class="receipt-title">ТАРЕЛКА.БАЙ</div><div class="receipt-subtitle">Магазин: ${state.store}</div></div>
+          <div class="receipt-header">
+            <div class="receipt-title">ТАРЕЛКА.BY</div>
+            <div class="receipt-subtitle">Список покупок</div>
+          </div>
           <div class="receipt-divider"></div>
-          <div class="receipt-item"><span>Куриное филе</span><span>≈ 12.50 BYN</span></div>
-          <div class="receipt-item"><span>Гречка (1 кг)</span><span>≈ 3.20 BYN</span></div>
-          <div class="receipt-item"><span>Овсянка (500 г)</span><span>≈ 2.50 BYN</span></div>
-          <div class="receipt-item"><span>Яйца (10 шт)</span><span>≈ 4.10 BYN</span></div>
-          <div class="receipt-item"><span>Овощи</span><span>≈ 15.00 BYN</span></div>
-          <div class="receipt-item"><span>Фрукты</span><span>≈ 10.00 BYN</span></div>
-          <div class="receipt-divider"></div>
-          <div class="receipt-total"><span>ИТОГО:</span><span>≈ ${totalCost} BYN</span></div>
-          <div class="receipt-footer">Цены приблизительные.<br>Спасибо!</div>
+          <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.5;">
+            Список покупок и стоимость корзины появятся после того, как мы добавим к рецептам точные ингредиенты, количества и упаковки продуктов, а также подключим актуальные цены магазинов.
+          </p>
         </div>`;
     }
 
