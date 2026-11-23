@@ -5332,47 +5332,22 @@
 
     function generatePlan() {
       const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
-      const mealLabels = {
-        breakfast: 'Завтрак',
-        lunch: 'Обед',
-        dinner: 'Ужин'
-      };
+      const mealLabels = { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин' };
       const selectedMeals = state.meals.map(id => {
         const parts = id.split('-');
         return { group: parts[0] === 'family' ? 'Общий' : 'Личный', type: parts[1] };
       }).filter(meal => mealLabels[meal.type]);
-
-      // Повторно проверяем пищевые ограничения и вкусовые предпочтения на этапе генерации.
-      const baseCompatible = getCompatibleDishes();
-      const compatible = getPreferenceFilteredDishes(baseCompatible);
+      const compatible = getPreferenceFilteredDishes(getCompatibleDishes());
       const lovedIngredients = getAllFamilyLikedIngredients();
-      const dislikedIngredients = getAllFamilyDislikedIngredients();
-      const hasFamilyRestrictions = state.persons.some(person =>
-        (person.allergies || []).length || (person.intolerances || []).length
-      );
       const rotation = { breakfast: 0, lunch: 0, dinner: 0 };
       const menuContainer = document.getElementById('resultMenu');
-      let menuHtml = '';
+      const shoppingContainer = document.getElementById('resultShopping');
+      const selectedDishes = [];
 
       if (selectedMeals.length === 0) {
         menuContainer.innerHTML = '<p class="subtitle">Не выбраны приёмы пищи. Вернись на предыдущий шаг и выбери хотя бы один.</p>';
-      } else if (compatible.length === 0) {
-        let emptyReason = '';
-        if (baseCompatible.length > 0 && dislikedIngredients.length > 0) {
-          emptyReason = 'Все найденные блюда исключены из-за выбранных продуктов в разделе «Не люблю». Убери часть ограничений или проверь выбранные продукты.';
-        } else if (hasFamilyRestrictions) {
-          emptyReason = 'Пока нет рецептов с проверенным составом и аллергенным профилем, которые можно безопасно предложить с указанными аллергиями или непереносимостями. Мы не будем показывать непроверенные блюда как безопасные.';
-        } else {
-          emptyReason = 'Сочетание выбранных пищевых предпочтений и ограничений не оставило подходящих блюд. Проверь тип питания каждого члена семьи.';
-        }
-        menuContainer.innerHTML = '<div class="menu-day"><div class="menu-day-title">Пока нет подходящих блюд</div><p style="font-size:14px;line-height:1.5;">' + emptyReason + '</p><p class="hint" style="margin:12px 0 0;">Найдено до фильтра предпочтений: ' + baseCompatible.length + '; после фильтров: ' + compatible.length + '.</p></div>';
       } else {
-        const emptyMealTypes = selectedMeals.filter(meal =>
-          !compatible.some(dish => dish.type === meal.type)
-        );
-        if (emptyMealTypes.length === selectedMeals.length) {
-          menuContainer.innerHTML = '<div class="menu-day"><div class="menu-day-title">Нет блюд для выбранных приёмов пищи</div><p style="font-size:14px;line-height:1.5;">В базе пока нет подходящих рецептов именно для выбранных типов приёмов пищи. Попробуй изменить выбор завтрака, обеда или ужина.</p></div>';
-        } else {
+        let menuHtml = '';
         days.forEach(day => {
           let dayHtml = '';
           selectedMeals.forEach(meal => {
@@ -5385,38 +5360,58 @@
             if (candidates.length === 0) {
               dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
                 meal.group + ' ' + mealLabels[meal.type] +
-                ': нет подходящего блюда в текущей базе рецептов</span></div>';
+                ': рецептов пока нет</span><span class="menu-item-cal">Нужно добавить подходящий рецепт</span></div>';
               return;
             }
-            const index = rotation[meal.type] % candidates.length;
-            const dish = candidates[index];
+            const dish = candidates[rotation[meal.type] % candidates.length];
             rotation[meal.type]++;
+            selectedDishes.push(dish);
             dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
               meal.group + ' ' + mealLabels[meal.type] + ': ' + dish.name +
               '</span><span class="menu-item-cal">' + (Number.isFinite(dish.calories) ? dish.calories + ' ккал' : 'КБЖУ уточняются') + '</span></div>';
           });
-          menuHtml += '<div class="menu-day"><div class="menu-day-title">' + day + '</div>' +
-            dayHtml + '</div>';
+          menuHtml += '<div class="menu-day"><div class="menu-day-title">' + day + '</div>' + dayHtml + '</div>';
         });
         const preferenceNote = (getAllFamilyLikedIngredients().length || getAllFamilyDislikedIngredients().length)
-          ? '<p class="hint" style="margin:0 0 14px;">Подбор учитывает выбранные любимые и нелюбимые продукты по предварительным составам рецептов. Составы ещё проверяются; это не фильтр аллергенов.</p>'
+          ? '<p class="hint" style="margin:0 0 14px;">Подбор учитывает выбранные любимые и нелюбимые продукты по предварительным составам. Аллергии и непереносимости остаются отдельными обязательными ограничениями.</p>'
           : '';
         menuContainer.innerHTML = preferenceNote + menuHtml;
-        }
       }
 
-      // Не показываем фиктивные товары и случайную сумму: у рецептов пока нет
-      // проверенного состава ингредиентов и подключённых актуальных цен.
-      document.getElementById('resultShopping').innerHTML = `
+      // Составляем список только из ингредиентов тех блюд, которые действительно попали в меню.
+      // Непроверенные рецепты не используются, если активны аллергии/непереносимости.
+      const shoppingItems = new Map();
+      selectedDishes.forEach(dish => {
+        if (!Array.isArray(dish.ingredients)) return;
+        dish.ingredients.forEach(item => {
+          const name = Array.isArray(item) ? item[0] : item;
+          if (!name || typeof name !== 'string') return;
+          const key = name.trim().toLocaleLowerCase('ru');
+          if (!key) return;
+          if (!shoppingItems.has(key)) shoppingItems.set(key, name.trim());
+        });
+      });
+
+      const shoppingListHtml = shoppingItems.size
+        ? '<ul style="padding-left:20px;margin:12px 0;">' +
+          Array.from(shoppingItems.values()).sort((a, b) => a.localeCompare(b, 'ru'))
+            .map(name => '<li style="margin:6px 0;">' + name + ' — количество уточняется</li>').join('') +
+          '</ul>'
+        : '<p style="font-size:14px;line-height:1.5;">Пока нет продуктов для списка: для выбранных приёмов пищи не нашлось подходящих рецептов с известным составом. Когда рецепты будут добавлены, список сформируется автоматически.</p>';
+
+      shoppingContainer.innerHTML = `
         <div class="receipt-container">
           <div class="receipt-header">
             <div class="receipt-title">ТАРЕЛКА.BY</div>
             <div class="receipt-subtitle">Список покупок</div>
           </div>
           <div class="receipt-divider"></div>
-          <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.5;">
-            Список покупок и стоимость корзины появятся после того, как мы добавим к рецептам точные ингредиенты, количества и упаковки продуктов, а также подключим актуальные цены магазинов.
+          <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;line-height:1.5;">
+            Продукты собраны из блюд, которые вошли в меню. Количества пока не рассчитаны: рецепты и порции требуют проверки. Для приёмов пищи без подходящего рецепта продукты не придумываются.
           </p>
+          ${shoppingListHtml}
+          <div class="receipt-divider"></div>
+          <p style="font-size:12px;line-height:1.5;">Стоимость корзины появится после проверки количеств и подключения актуальных цен магазинов.</p>
         </div>`;
     }
 
