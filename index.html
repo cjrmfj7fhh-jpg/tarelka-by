@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #FEF9F3; --text: #1F2937; --primary: #059669; --primary-light: #ECFDF5;
+      --border: #E5E7EB; --success: #059669; --success-light: #ECFDF5; --muted: #6B7280; --danger: #EF4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); padding: 20px 20px 100px; }
+    
+    .header { text-align: center; margin-bottom: 20px; }
+    .logo { font-size: 24px; font-weight: 800; color: var(--primary); }
+    .progress-bar { display: flex; gap: 6px; margin-top: 15px; }
+    .segment { flex: 1; height: 4px; border-radius: 4px; background: var(--border); }
+    .segment.active { background: var(--primary); }
+    .step-info { font-size: 12px; color: var(--muted); margin-top: 10px; font-weight: 600; text-align: center; }
+    
+    .step { display: none; animation: fadeIn 0.3s ease; }
+    .step.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    h1 { font-size: 24px; font-weight: 800; margin-bottom: 10px; line-height: 1.3; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 25px; }
+    
+    /* Шаг 1 */
+    .store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .store-card { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s; }
+    .store-card.selected { border-color: var(--primary); background: var(--primary-light); }
+    .store-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: white; }
+    .store-name { font-size: 13px; font-weight: 600; }
+    
+    /* Шаг 2 */
+    .counter-card { background: white; border-radius: 16px; padding: 25px; border: 1px solid var(--border); }
+    .counter-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .counter-controls { display: flex; align-items: center; gap: 15px; }
+    .counter-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg); font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .counter-value { font-size: 32px; font-weight: 800; }
+    .kids-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 20px; }
+    .toggle { width: 50px; height: 28px; background: #ddd; border-radius: 20px; position: relative; cursor: pointer; transition: 0.2s; }
+    .toggle.active { background: var(--success); }
+    .toggle::after { content: ''; position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.2s; }
+    .toggle.active::after { left: 24px; }
+    .summary-box { background: var(--primary-light); padding: 15px; border-radius: 12px; text-align: center; margin-top: 25px; font-size: 14px; font-weight: 600; }
+    
+    /* Шаг 3 */
+    .meal-group { margin-bottom: 20px; }
+    .meal-group-title { font-weight: 700; font-size: 15px; margin-bottom: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .meal-option { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+    .meal-option.selected { border-color: var(--primary); background: var(--primary-light); }
+    .meal-checkbox { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .meal-option.selected .meal-checkbox { background: var(--primary); border-color: var(--primary); }
+    .meal-checkbox::after { content: '✓'; color: white; font-size: 14px; display: none; }
+    .meal-option.selected .meal-checkbox::after { display: block; }
+    .meal-text { font-size: 15px; font-weight: 600; }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 5px; margin-left: 34px; }
+    
+    /* Шаг 4 */
+    .budget-display { text-align: center; margin: 30px 0; }
+    .budget-amount { font-size: 48px; font-weight: 800; color: var(--primary); }
+    .budget-per-person { font-size: 14px; color: var(--muted); margin-top: 5px; }
+    .slider-container { padding: 0 10px; }
+    input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+    input[type=range]:focus { outline: none; }
+    input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: var(--border); border-radius: 3px; }
+    input[type=range]::-webkit-slider-thumb { height: 24px; width: 24px; border-radius: 50%; background: var(--primary); cursor: pointer; -webkit-appearance: none; margin-top: -9px; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    .budget-limits { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 10px; font-weight: 600; }
+    .budget-notice { background: var(--success-light); border: 1px solid var(--success); color: #065F46; padding: 15px; border-radius: 12px; margin-top: 25px; display: flex; gap: 10px; align-items: center; font-size: 14px; }
+    .budget-notice.warning { background: #FEF3C7; border-color: #F59E0B; color: #92400E; }
+    
+    /* Шаг 5 */
+    .person-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; }
+    .person-title { font-weight: 800; font-size: 18px; margin-bottom: 15px; }
+    .gender-btns { display: flex; gap: 10px; margin-bottom: 15px; }
+    .gender-btn { flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; text-align: center; font-weight: 600; cursor: pointer; }
+    .gender-btn.active { border-color: var(--primary); background: var(--primary-light); }
+    .tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 15px; }
+    .tab { flex: 1; text-align: center; padding: 8px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; color: var(--muted); }
+    .tab.active { background: white; color: var(--text); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .input-group { margin-bottom: 12px; }
+    .input-group label { font-size: 13px; color: var(--muted); margin-bottom: 4px; display: block; }
+    .input-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 16px; outline: none; }
+    .input-group input:focus { border-color: var(--primary); }
+    .goal-btns { display: flex; gap: 8px; margin-top: 10px; }
+    .goal-btn { flex: 1; padding: 8px 4px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; text-align: center; cursor: pointer; font-weight: 600; }
+    .goal-btn.active { border-color: var(--primary); background: var(--primary-light); }
+    .result-box { background: var(--success-light); color: var(--success); padding: 12px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 18px; margin-top: 15px; }
+    
+    /* Шаг 6 */
+    .diet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+    .diet-card { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 15px 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; transition: 0.2s; text-align: center; }
+    .diet-card.selected { border-color: var(--primary); background: var(--primary-light); }
+    .diet-emoji { font-size: 24px; }
+    .diet-name { font-size: 13px; font-weight: 700; }
+    
+    /* Шаг 7 */
+    .swipe-container { position: relative; height: 380px; margin-top: 20px; display: flex; justify-content: center; align-items: center; }
+    .swipe-card { position: absolute; width: 100%; height: 100%; background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease, opacity 0.3s ease; }
+    .swipe-card img { width: 100%; height: 230px; object-fit: cover; background: #f0f0f0; }
+    .swipe-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+    .swipe-title { font-size: 18px; font-weight: 800; margin-bottom: 5px; }
+    .swipe-calories { color: var(--muted); font-size: 14px; font-weight: 600; }
+    .swipe-actions { display: flex; justify-content: center; gap: 30px; margin-top: 20px; }
+    .swipe-btn { width: 60px; height: 60px; border-radius: 50%; border: none; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.1s; }
+    .swipe-btn:active { transform: scale(0.9); }
+    .swipe-btn svg { width: 28px; height: 28px; }
+    .btn-dislike svg { stroke: var(--danger); }
+    .btn-like svg { stroke: var(--primary); fill: var(--primary); }
+    .swipe-counter { text-align: center; margin-top: 15px; font-size: 14px; color: var(--muted); font-weight: 600; }
+    .card-anim-left { transform: translateX(-150%) rotate(-20deg) !important; opacity: 0; }
+    .card-anim-right { transform: translateX(150%) rotate(20deg) !important; opacity: 0; }
+    .swipe-done { text-align: center; padding: 40px 20px; }
+    .swipe-done-icon { width: 80px; height: 80px; background: var(--success-light); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 20px; color: var(--primary); }
+    .swipe-done-icon svg { width: 40px; height: 40px; }
+    .swipe-done h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+    .swipe-done p { color: var(--muted); font-size: 14px; }
+
+    /* Шаг 8 */
+    .section-title { font-weight: 800; font-size: 16px; margin-top: 25px; margin-bottom: 10px; color: var(--text); }
+    .tag-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+    .tag-item { background: white; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
+    .tag-item.selected { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+
+    /* Шаг 9 */
+    .final-form { display: flex; flex-direction: column; gap: 15px; }
+    .messenger-select { display: flex; gap: 10px; }
+    .messenger-btn { flex: 1; padding: 15px; border: 1.5px solid var(--border); border-radius: 12px; text-align: center; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; background: white; }
+    .messenger-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+    .checkbox-row { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; color: var(--muted); margin-top: 10px; cursor: pointer; }
+    .checkbox-custom { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+    .checkbox-custom.active { background: var(--primary); border-color: var(--primary); }
+    .checkbox-custom.active::after { content: '✓'; color: white; font-size: 12px; }
+
+    /* Загрузка */
+    .loader-container { text-align: center; padding: 60px 20px; }
+    .loader { border: 4px solid var(--border); border-top: 4px solid var(--primary); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loader-text { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+    .loader-sub { font-size: 13px; color: var(--muted); }
+
+    /* Шаг 11 */
+    .result-tabs { display: flex; background: white; border-radius: 12px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--border); }
+    .result-tab { flex: 1; text-align: center; padding: 12px; font-weight: 700; font-size: 14px; border-radius: 8px; cursor: pointer; color: var(--muted); }
+    .result-tab.active { background: var(--primary); color: white; }
+    .menu-day { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); }
+    .menu-day-title { font-weight: 800; font-size: 18px; margin-bottom: 15px; color: var(--primary); }
+    .menu-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 14px; }
+    .menu-item:last-child { border-bottom: none; }
+    .menu-item-name { font-weight: 600; }
+    .menu-item-cal { color: var(--muted); font-size: 12px; }
+    
+    /* Чек */
+    .receipt-container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); font-family: 'Courier New', Courier, monospace; max-width: 350px; margin: 0 auto; }
+    .receipt-header { text-align: center; margin-bottom: 15px; }
+    .receipt-title { font-size: 18px; font-weight: bold; margin-bottom: 5px; }
+    .receipt-subtitle { font-size: 12px; color: #555; }
+    .receipt-divider { border-top: 1px dashed #333; margin: 15px 0; }
+    .receipt-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+    .receipt-item span:first-child { flex: 1; padding-right: 10px; }
+    .receipt-item span:last-child { white-space: nowrap; font-weight: bold; }
+    .receipt-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: bold; margin-top: 15px; }
+    .receipt-footer { text-align: center; font-size: 11px; color: #777; margin-top: 20px; }
+
+    /* Кнопки */
+    .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: var(--bg); border-top: 1px solid var(--border); z-index: 10; }
+    .btn-next { width: 100%; background: var(--primary); color: #FFFFFF; font-size: 18px; font-weight: 800; border: none; padding: 18px; border-radius: 14px; cursor: pointer; transition: 0.2s; opacity: 0.5; pointer-events: none; }
+    .btn-next.active { opacity: 1; pointer-events: auto; }
+    .btn-back { background: white; border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 20px; cursor: pointer; position: absolute; left: 20px; top: 20px; display: none; z-index: 20; }
+    .btn-back.show { display: flex; }
+  </style>
+</head>
+<body>
+
+  <button class="btn-back" id="btnBack" onclick="prevStep()">←</button>
+
+  <div class="header">
+    <div class="logo">Тарелка.бай</div>
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="step-info" id="stepInfo">Шаг 1 из 10</div>
+  </div>
+
+  <div class="step active" id="step1">
+    <h1>Где покупаешь продукты?</h1>
+    <p class="subtitle">Соберём меню из того, что есть на полках.</p>
+    <div class="store-grid">
+      <div class="store-card" onclick="selectStore('Евроопт', this)"><div class="store-circle" style="background:#E31E24">Евроопт</div><div class="store-name">Евроопт</div></div>
+      <div class="store-card" onclick="selectStore('Санта', this)"><div class="store-circle" style="background:#D91A21">Санта</div><div class="store-name">Санта</div></div>
+      <div class="store-card" onclick="selectStore('Green', this)"><div class="store-circle" style="background:#8CC63F">GREEN</div><div class="store-name">Green</div></div>
+      <div class="store-card" onclick="selectStore('Гиппо', this)"><div class="store-circle" style="background:#FDB913; color: #333">Гиппо</div><div class="store-name">Гиппо</div></div>
+      <div class="store-card" onclick="selectStore('ProStore', this)"><div class="store-circle" style="background:#0055A5">ProStore</div><div class="store-name">ProStore</div></div>
+      <div class="store-card" onclick="selectStore('Соседи', this)"><div class="store-circle" style="background:#009640">Соседи</div><div class="store-name">Соседи</div></div>
+    </div>
+  </div>
+
+  <div class="step" id="step2">
+    <h1>Кто будет кушать?</h1>
+    <div class="counter-card">
+      <div class="counter-row">
+        <div style="font-weight: 600; font-size: 16px;">👨‍👩‍👧 Взрослые</div>
+        <div class="counter-controls">
+          <button class="counter-btn" onclick="changeAdults(-1)">−</button>
+          <div class="counter-value" id="adultsCount">2</div>
+          <button class="counter-btn" onclick="changeAdults(1)">+</button>
+        </div>
+      </div>
+      <div class="kids-row">
+        <div style="font-weight: 600; font-size: 16px;">👶 Есть дети?</div>
+        <div class="toggle" id="kidsToggle" onclick="toggleKids()"></div>
+      </div>
+      <div class="summary-box" id="summaryText">Готовим на 2 человек</div>
+    </div>
+  </div>
+
+  <div class="step" id="step3">
+    <h1>Сколько приёмов пищи в день?</h1>
+    <div id="mealGroupsContainer"></div>
+  </div>
+
+  <div class="step" id="step4">
+    <h1>Бюджет на неделю</h1>
+    <p class="subtitle">Не будем предлагать то, что в него не влезет.</p>
+    <div class="budget-display">
+      <div class="budget-amount" id="budgetDisplay">200 BYN</div>
+      <div class="budget-per-person" id="budgetPerPersonDisplay">≈ 100 BYN на человека в неделю</div>
+    </div>
+    <div class="slider-container">
+      <input type="range" id="budgetSlider" min="100" max="500" step="50" value="200" oninput="updateBudget(this.value)">
+      <div class="budget-limits"><span>100 BYN</span><span>500 BYN</span></div>
+    </div>
+    <div class="budget-notice" id="budgetNotice">
+      <div>✅</div>
+      <div><strong id="budgetNoticeTitle">Хороший бюджет</strong><br><span id="budgetNoticeText">Хватит на рыбу, фрукты и заготовки впрок.</span></div>
+    </div>
+  </div>
+
+  <div class="step" id="step5">
+    <h1>Настройка питания</h1>
+    <p class="subtitle">Рассчитаем норму калорий для каждого.</p>
+    <div id="personsContainer"></div>
+  </div>
+
+  <div class="step" id="step6">
+    <h1>Тип питания</h1>
+    <p class="subtitle">Укажи предпочтения для каждого человека.</p>
+    <div id="dietContainer"></div>
+  </div>
+
+  <div class="step" id="step7">
+    <h1>Что тебе нравится?</h1>
+    <p class="subtitle">Свайпни вправо — нравится, влево — нет.</p>
+    <div class="swipe-container" id="swipeContainer"></div>
+    <div class="swipe-actions" id="swipeActions">
+      <button class="swipe-btn btn-dislike" onclick="swipeCard('left')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+      <button class="swipe-btn btn-like" onclick="swipeCard('right')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
+    </div>
+    <div class="swipe-counter" id="swipeCounter">0 из 0</div>
+  </div>
+
+  <div class="step" id="step8">
+    <h1>Детали готовки</h1>
+    <p class="subtitle">Учтем аллергии и то, что есть на кухне.</p>
+    <div class="section-title">🍳 Что есть на кухне?</div>
+    <div id="equipmentContainer"></div>
+    <div class="section-title">🚫 Аллергии и стоп-лист</div>
+    <div id="allergyContainer"></div>
+  </div>
+
+  <div class="step" id="step9">
+    <h1>Твой план готов! 🎉</h1>
+    <p class="subtitle">Куда прислать меню и список покупок?</p>
+    <div class="final-form">
+      <div class="input-group">
+        <label>Как тебя зовут?</label>
+        <input type="text" id="userName" placeholder="Имя" oninput="validateFinalForm()">
+      </div>
+      <label>Куда прислать план?</label>
+      <div class="messenger-select">
+        <div class="messenger-btn active" id="btnTg" onclick="selectMessenger('Telegram')">✈️ Telegram</div>
+        <div class="messenger-btn" id="btnViber" onclick="selectMessenger('Viber')">📞 Viber</div>
+      </div>
+      <div class="input-group">
+        <label id="contactLabel">Твой ник в Telegram</label>
+        <input type="text" id="userContact" placeholder="@username" oninput="validateFinalForm()">
+      </div>
+      <div class="checkbox-row" onclick="toggleAgreement()">
+        <div class="checkbox-custom" id="agreeCheckbox"></div>
+        <div>Я согласен на обработку персональных данных</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="step10">
+    <div class="loader-container">
+      <div class="loader"></div>
+      <div class="loader-text" id="loaderText">Анализируем твой бюджет...</div>
+      <div class="loader-sub">Подбираем самые вкусные рецепты</div>
+    </div>
+  </div>
+
+  <div class="step" id="step11">
+    <h1>Твое меню на неделю 🍽️</h1>
+    <div class="result-tabs">
+      <div class="result-tab active" id="tabMenu" onclick="switchResultTab('menu')">Меню</div>
+      <div class="result-tab" id="tabShopping" onclick="switchResultTab('shopping')">Список покупок</div>
+    </div>
+    <div id="resultMenu"></div>
+    <div id="resultShopping" style="display: none;"></div>
+  </div>
+
+  <div class="footer" id="mainFooter">
+    <button class="btn-next" id="btnNext" onclick="nextStep()">Далее →</button>
+  </div>
+
+  <script>
+    const allDishes = [
+      { id: 1, name: "Овсянка с ягодами", image: "https://images.unsplash.com/photo-1517673400267-0251440c45dc?auto=format&fit=crop&w=500&q=80", calories: 350, type: "breakfast", tags: ["vegan", "vegetarian", "gluten"], price: 2.50 },
+      { id: 2, name: "Омлет с сыром", image: "https://images.unsplash.com/photo-1494859802809-d069c3b71a8a?auto=format&fit=crop&w=500&q=80", calories: 420, type: "breakfast", tags: ["vegetarian", "lactose", "eggs"], price: 3.50 },
+      { id: 3, name: "Куриная грудка с гречкой", image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=500&q=80", calories: 550, type: "lunch", tags: ["meat"], price: 5.00 },
+      { id: 4, name: "Лосось с овощами", image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=500&q=80", calories: 480, type: "dinner", tags: ["fish"], price: 12.00 },
+      { id: 5, name: "Тофу с рисом и брокколи", image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80", calories: 450, type: "lunch", tags: ["vegan", "vegetarian", "soy"], price: 4.50 },
+      { id: 6, name: "Индейка в сливочном соусе", image: "https://images.unsplash.com/photo-1603105037880-880cd4edfb0d?auto=format&fit=crop&w=500&q=80", calories: 520, type: "dinner", tags: ["meat", "lactose"], price: 6.00 },
+      { id: 7, name: "Греческий салат", image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=500&q=80", calories: 280, type: "lunch", tags: ["vegetarian", "lactose"], price: 3.50 },
+      { id: 8, name: "Суп-пюре из тыквы", image: "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?auto=format&fit=crop&w=500&q=80", calories: 250, type: "lunch", tags: ["vegan", "vegetarian"], price: 2.50 },
+      { id: 9, name: "Стейк из говядины", image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=500&q=80", calories: 650, type: "dinner", tags: ["meat"], price: 15.00 },
+      { id: 10, name: "Сырники со сметаной", image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=500&q=80", calories: 450, type: "breakfast", tags: ["vegetarian", "lactose", "eggs", "gluten"], price: 4.00 },
+      { id: 11, name: "Креветки с рисом", image: "https://images.unsplash.com/photo-1625938144755-652e08e359b7?auto=format&fit=crop&w=500&q=80", calories: 400, type: "dinner", tags: ["fish", "seafood"], price: 10.00 },
+      { id: 12, name: "Фалафель с хумусом", image: "https://images.unsplash.com/photo-1593001874117-c99c800e3eb7?auto=format&fit=crop&w=500&q=80", calories: 380, type: "lunch", tags: ["vegan", "vegetarian", "gluten"], price: 3.00 },
+      { id: 13, name: "Запеченная курица с овощами", image: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?auto=format&fit=crop&w=500&q=80", calories: 500, type: "dinner", tags: ["meat"], price: 5.50 },
+      { id: 14, name: "Творог с фруктами", image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=500&q=80", calories: 300, type: "breakfast", tags: ["vegetarian", "lactose"], price: 2.50 },
+      { id: 15, name: "Смузи-боул", image: "https://images.unsplash.com/photo-1494597564530-871f2b93ac55?auto=format&fit=crop&w=500&q=80", calories: 320, type: "breakfast", tags: ["vegan", "vegetarian"], price: 3.00 }
+    ];
+
+    let state = {
+      step: 1, totalSteps: 10, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
+      persons: [], equipment: ['stove'],
+      currentDishes: [], currentDishIndex: 0, likedDishes: [], dislikedDishes: [],
+      finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
+    };
+
+    function initPersons() {
+      const oldPersons = state.persons;
+      state.persons = [];
+      for (let i = 1; i <= state.adultsCount; i++) {
+        const existing = oldPersons[i-1];
+        state.persons.push({
+          id: i, gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'),
+          mode: existing ? existing.mode : 'calc', calories: existing ? existing.calories : 2000,
+          age: existing ? existing.age : '', height: existing ? existing.height : '', weight: existing ? existing.weight : '',
+          goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : []
+        });
+      }
+    }
+    initPersons();
+
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.setHeaderColor('#FEF9F3');
+    renderProgress();
+
+    function nextStep() {
+      if (state.step === 9) {
+        state.step = 10; updateUI();
+        setTimeout(() => { state.step = 11; generatePlan(); updateUI(); }, 2500);
+      } else if (state.step < 9) {
+        state.step++; updateUI();
+      }
+    }
+
+    function prevStep() {
+      if (state.step > 1 && state.step < 10) { state.step--; updateUI(); }
+    }
+
+    function updateUI() {
+      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+      const currentStepEl = document.getElementById('step' + state.step);
+      if (currentStepEl) currentStepEl.classList.add('active');
+      
+      if (state.step <= 10) {
+        document.getElementById('stepInfo').textContent = `Шаг ${state.step} из 10`;
+        document.getElementById('mainFooter').style.display = 'block';
+        document.getElementById('progressBar').style.display = 'flex';
+      } else {
+        document.getElementById('stepInfo').textContent = '';
+        document.getElementById('mainFooter').style.display = 'none';
+        document.getElementById('progressBar').style.display = 'none';
+      }
+      
+      renderProgress();
+      
+      const btnBack = document.getElementById('btnBack');
+      if (state.step > 1 && state.step <= 9) btnBack.classList.add('show');
+      else btnBack.classList.remove('show');
+
+      // ВОТ ЗДЕСЬ МЫ ВЫЗЫВАЕМ ОТРИСОВКУ ВСЕХ ШАГОВ
+      if (state.step === 3) renderMealsStep();
+      if (state.step === 4) updateBudget(state.budget);
+      if (state.step === 5) renderPersons();
+      if (state.step === 6) renderDietTypes();
+      if (state.step === 7) initSwipes();
+      if (state.step === 8) renderAllergiesAndEquipment();
+      
+      if (state.step === 9) { document.getElementById('btnNext').textContent = 'Получить план →'; validateFinalForm(); }
+      else if (state.step < 9) { document.getElementById('btnNext').textContent = 'Далее →'; validateNextBtn(); }
+
+      window.scrollTo(0, 0);
+    }
+
+    function renderProgress() {
+      const bar = document.getElementById('progressBar');
+      bar.innerHTML = '';
+      for (let i = 1; i <= 10; i++) {
+        const seg = document.createElement('div');
+        seg.className = 'segment' + (i <= state.step ? ' active' : '');
+        bar.appendChild(seg);
+      }
+    }
+
+    function validateNextBtn() {
+      const btn = document.getElementById('btnNext');
+      let isValid = false;
+      if (state.step === 1) isValid = state.store !== '';
+      if (state.step === 2) isValid = true;
+      if (state.step === 3) isValid = state.meals.length > 0;
+      if (state.step === 4) isValid = true;
+      if (state.step === 5) isValid = true; 
+      if (state.step === 6) isValid = state.persons.every(p => p.dietType !== '');
+      if (state.step === 7) isValid = true; 
+      if (state.step === 8) isValid = true; 
+      if (isValid) btn.classList.add('active'); else btn.classList.remove('active');
+    }
+
+    function selectStore(name, el) {
+      state.store = name;
+      document.querySelectorAll('.store-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      validateNextBtn();
+    }
+
+    function changeAdults(delta) {
+      let newVal = state.adultsCount + delta;
+      if (newVal < 1) newVal = 1; if (newVal > 6) newVal = 6;
+      if (newVal === 1) state.meals = state.meals.filter(m => !m.startsWith('family-'));
+      state.adultsCount = newVal;
+      document.getElementById('adultsCount').textContent = newVal;
+      document.getElementById('summaryText').textContent = `Готовим на ${newVal} человек`;
+      initPersons(); renderMealsStep();
+    }
+
+    function toggleKids() { state.hasKids = !state.hasKids; document.getElementById('kidsToggle').classList.toggle('active', state.hasKids); }
+
+    function renderMealsStep() {
+      const container = document.getElementById('mealGroupsContainer');
+      container.innerHTML = '';
+      const selfGroup = document.createElement('div');
+      selfGroup.className = 'meal-group';
+      selfGroup.innerHTML = `<div class="meal-group-title">${state.adultsCount === 1 ? 'Твои приёмы пищи' : 'Личные приёмы пищи'}</div>`;
+      [ { id: 'self-breakfast', label: 'Завтрак ☕' }, { id: 'self-lunch', label: 'Обед 🍲' }, { id: 'self-dinner', label: 'Ужин 🍽️' } ].forEach(opt => {
+        const isSelected = state.meals.includes(opt.id);
+        selfGroup.innerHTML += `<div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)"><div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div></div>`;
+      });
+      container.appendChild(selfGroup);
+
+      if (state.adultsCount > 1) {
+        const familyGroup = document.createElement('div');
+        familyGroup.className = 'meal-group';
+        familyGroup.innerHTML = `<div class="meal-group-title" style="margin-top: 20px;">Общие приёмы пищи</div><div class="hint" style="margin-bottom: 10px; margin-left: 0;">Готовим сразу на всех.</div>`;
+        [ { id: 'family-breakfast', label: 'Общие завтраки ☕' }, { id: 'family-lunch', label: 'Общие обеды 🍲' }, { id: 'family-dinner', label: 'Общие ужины 🍽️' } ].forEach(opt => {
+          const isSelected = state.meals.includes(opt.id);
+          familyGroup.innerHTML += `<div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)"><div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div></div>`;
+        });
+        container.appendChild(familyGroup);
+      }
+    }
+
+    function toggleMeal(mealId, el) {
+      if (state.meals.includes(mealId)) { state.meals = state.meals.filter(id => id !== mealId); el.classList.remove('selected'); }
+      else { state.meals.push(mealId); el.classList.add('selected'); }
+      validateNextBtn();
+    }
+
+    function updateBudget(val) {
+      state.budget = parseInt(val);
+      document.getElementById('budgetDisplay').textContent = `${state.budget} BYN`;
+      const perPerson = Math.round(state.budget / state.adultsCount);
+      document.getElementById('budgetPerPersonDisplay').textContent = `≈ ${perPerson} BYN на человека в неделю`;
+      
+      const noticeBox = document.getElementById('budgetNotice');
+      if (perPerson < 75) { noticeBox.className = 'budget-notice warning'; noticeBox.innerHTML = '<div>⚠️</div><div><strong>Экономный бюджет</strong><br><span>Базовые продукты: крупы, курица, овощи.</span></div>'; }
+      else if (perPerson < 150) { noticeBox.className = 'budget-notice'; noticeBox.innerHTML = '<div>✅</div><div><strong>Хороший бюджет</strong><br><span>Хватит на рыбу, фрукты и заготовки.</span></div>'; }
+      else { noticeBox.className = 'budget-notice'; noticeBox.innerHTML = '<div>⭐</div><div><strong>Отличный бюджет</strong><br><span>Можно добавить деликатесы и орехи.</span></div>'; }
+    }
+
+    function renderPersons() {
+      const container = document.getElementById('personsContainer');
+      container.innerHTML = '';
+      state.persons.forEach((person, index) => {
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        card.innerHTML = `
+          <div class="person-title">Человек ${person.id}</div>
+          <div class="gender-btns">
+            <div class="gender-btn ${person.gender === 'male' ? 'active' : ''}" onclick="updatePerson(${index}, 'gender', 'male')">👨 Мужской</div>
+            <div class="gender-btn ${person.gender === 'female' ? 'active' : ''}" onclick="updatePerson(${index}, 'gender', 'female')">👩 Женский</div>
+          </div>
+          <div class="tabs">
+            <div class="tab ${person.mode === 'know' ? 'active' : ''}" onclick="updatePerson(${index}, 'mode', 'know')">Знаю норму</div>
+            <div class="tab ${person.mode === 'calc' ? 'active' : ''}" onclick="updatePerson(${index}, 'mode', 'calc')">Рассчитать</div>
+          </div>
+          <div>${person.mode === 'know' ? `<div class="input-group"><label>Ваша норма (ккал/день)</label><input type="number" value="${person.calories}" onchange="updatePerson(${index}, 'calories', this.value)"></div>` : `
+            <div class="input-group"><label>Возраст</label><input type="number" value="${person.age}" onchange="updatePerson(${index}, 'age', this.value)"></div>
+            <div class="input-group"><label>Рост (см)</label><input type="number" value="${person.height}" onchange="updatePerson(${index}, 'height', this.value)"></div>
+            <div class="input-group"><label>Вес (кг)</label><input type="number" value="${person.weight}" onchange="updatePerson(${index}, 'weight', this.value)"></div>
+            <div class="input-group"><label>Цель</label>
+              <div class="goal-btns">
+                <div class="goal-btn ${person.goal === 'lose' ? 'active' : ''}" onclick="updatePerson(${index}, 'goal', 'lose')">Похудеть</div>
+                <div class="goal-btn ${person.goal === 'maintain' ? 'active' : ''}" onclick="updatePerson(${index}, 'goal', 'maintain')">Держать</div>
+                <div class="goal-btn ${person.goal === 'gain' ? 'active' : ''}" onclick="updatePerson(${index}, 'goal', 'gain')">Набрать</div>
+              </div>
+            </div>
+            <div class="result-box" id="calc-result-${index}">
+              ${person.age && person.height && person.weight ? `Рекомендуемая норма: ${calculateCalories(person)} ккал/день` : 'Заполните данные'}
+            </div>
+          `}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updatePerson(index, field, value) {
+      state.persons[index][field] = value;
+      if (field !== 'calories') {
+        const p = state.persons[index];
+        if (p.mode === 'calc' && p.age && p.height && p.weight) p.calories = calculateCalories(p);
+      }
+      if (field === 'gender' || field === 'mode' || field === 'goal') renderPersons();
+      else if (field === 'age' || field === 'height' || field === 'weight') {
+        const resBox = document.getElementById(`calc-result-${index}`);
+        if (resBox && state.persons[index].age && state.persons[index].height && state.persons[index].weight) {
+          resBox.textContent = `Рекомендуемая норма: ${calculateCalories(state.persons[index])} ккал/день`;
+        }
+      }
+    }
+
+    function calculateCalories(person) {
+      const age = parseFloat(person.age) || 0; const height = parseFloat(person.height) || 0; const weight = parseFloat(person.weight) || 0;
+      if (age === 0 || height === 0 || weight === 0) return 0;
+      let bmr = person.gender === 'male' ? (10 * weight) + (6.25 * height) - (5 * age) + 5 : (10 * weight) + (6.25 * height) - (5 * age) - 161;
+      let total = bmr * 1.2; 
+      if (person.goal === 'lose') total *= 0.8;
+      if (person.goal === 'gain') total *= 1.15;
+      return Math.round(total);
+    }
+
+    function renderDietTypes() {
+      const container = document.getElementById('dietContainer');
+      container.innerHTML = '';
+      state.persons.forEach((person, index) => {
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        const diets = [ { id: 'meat', name: 'Всеядный', emoji: '🥩' }, { id: 'fish', name: 'Пескетарианец', emoji: '🐟' }, { id: 'vegetarian', name: 'Вегетарианец', emoji: '🥗' }, { id: 'vegan', name: 'Веган', emoji: '🌱' } ];
+        let gridHtml = '<div class="diet-grid">';
+        diets.forEach(d => { gridHtml += `<div class="diet-card ${person.dietType === d.id ? 'selected' : ''}" onclick="setDiet(${index}, '${d.id}')"><div class="diet-emoji">${d.emoji}</div><div class="diet-name">${d.name}</div></div>`; });
+        gridHtml += '</div>';
+        card.innerHTML = `<div class="person-title">Человек ${person.id}</div>${gridHtml}`;
+        container.appendChild(card);
+      });
+    }
+
+    function setDiet(index, diet) { state.persons[index].dietType = diet; renderDietTypes(); validateNextBtn(); }
+
+    function initSwipes() {
+      const diets = state.persons.map(p => p.dietType);
+      state.currentDishes = allDishes.filter(dish => {
+        if (diets.includes('vegan') && !dish.tags.includes('vegan')) return false;
+        if (diets.includes('vegetarian') && !dish.tags.includes('vegetarian') && !dish.tags.includes('vegan')) return false;
+        if (!diets.includes('meat') && !diets.includes('fish') && dish.tags.includes('meat')) return false;
+        return true;
+      });
+      if (state.currentDishes.length === 0) state.currentDishes = allDishes;
+      state.currentDishIndex = 0; renderSwipeCards();
+    }
+
+    function renderSwipeCards() {
+      const container = document.getElementById('swipeContainer'); container.innerHTML = '';
+      const counter = document.getElementById('swipeCounter');
+      if (state.currentDishIndex >= state.currentDishes.length) {
+        counter.style.display = 'none'; document.getElementById('swipeActions').style.display = 'none';
+        container.innerHTML = `<div class="swipe-done"><div class="swipe-done-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><h3>Предпочтения приняты!</h3><p>Мы учтем твои вкусы.</p></div>`;
+        return;
+      }
+      counter.style.display = 'block'; counter.textContent = `${state.currentDishIndex + 1} из ${state.currentDishes.length}`;
+      document.getElementById('swipeActions').style.display = 'flex';
+      for (let i = state.currentDishIndex; i < Math.min(state.currentDishIndex + 2, state.currentDishes.length); i++) {
+        const dish = state.currentDishes[i]; const card = document.createElement('div');
+        card.className = 'swipe-card'; card.id = `card-${i}`;
+        if (i > state.currentDishIndex) { card.style.transform = 'scale(0.95) translateY(10px)'; card.style.opacity = '0.5'; card.style.zIndex = '1'; } else card.style.zIndex = '2';
+        card.innerHTML = `<img src="${dish.image}" alt="${dish.name}"><div class="swipe-info"><div class="swipe-title">${dish.name}</div><div class="swipe-calories">${dish.calories} ккал</div></div>`;
+        container.appendChild(card);
+      }
+    }
+
+    function swipeCard(direction) {
+      const currentCard = document.getElementById(`card-${state.currentDishIndex}`); if (!currentCard) return;
+      const dish = state.currentDishes[state.currentDishIndex];
+      if (direction === 'right') { currentCard.classList.add('card-anim-right'); state.likedDishes.push(dish.id); }
+      else { currentCard.classList.add('card-anim-left'); state.dislikedDishes.push(dish.id); }
+      setTimeout(() => { state.currentDishIndex++; renderSwipeCards(); }, 300);
+    }
+
+    function renderAllergiesAndEquipment() {
+      const allergyContainer = document.getElementById('allergyContainer');
+      const equipmentContainer = document.getElementById('equipmentContainer');
+      allergyContainer.innerHTML = ''; equipmentContainer.innerHTML = '';
+      const allergens = [ { id: 'gluten', label: '🌾 Глютен' }, { id: 'lactose', label: '🥛 Лактоза' }, { id: 'nuts', label: '🥜 Орехи' }, { id: 'eggs', label: '🥚 Яйца' }, { id: 'fish', label: '🐟 Рыба' }, { id: 'seafood', label: '🦐 Морепродукты' }, { id: 'soy', label: '🫘 Соя' }, { id: 'mushrooms', label: '🍄 Грибы' } ];
+      const equipmentList = [ { id: 'stove', label: '🔥 Плита' }, { id: 'oven', label: '♨️ Духовка' }, { id: 'multicooker', label: '🍲 Мультиварка' } ];
+      
+      let eqHtml = '<div class="tag-grid">';
+      equipmentList.forEach(e => { eqHtml += `<div class="tag-item ${state.equipment.includes(e.id) ? 'selected' : ''}" onclick="toggleEquipment('${e.id}')">${e.label}</div>`; });
+      eqHtml += '</div>'; equipmentContainer.innerHTML = eqHtml;
+
+      state.persons.forEach((person, index) => {
+        const card = document.createElement('div'); card.className = 'person-card';
+        let html = '<div class="tag-grid">';
+        allergens.forEach(a => { html += `<div class="tag-item ${person.allergies.includes(a.id) ? 'selected' : ''}" onclick="toggleAllergy(${index}, '${a.id}')">${a.label}</div>`; });
+        html += '</div>'; card.innerHTML = `<div class="person-title">Человек ${person.id}</div>${html}`;
+        allergyContainer.appendChild(card);
+      });
+    }
+
+    function toggleAllergy(index, id) { const p = state.persons[index]; p.allergies.includes(id) ? p.allergies = p.allergies.filter(a => a !== id) : p.allergies.push(id); renderAllergiesAndEquipment(); }
+    function toggleEquipment(id) { state.equipment.includes(id) ? state.equipment = state.equipment.filter(e => e !== id) : state.equipment.push(id); renderAllergiesAndEquipment(); }
+
+    function validateFinalForm() {
+      const name = document.getElementById('userName').value;
+      const contact = document.getElementById('userContact').value;
+      const btn = document.getElementById('btnNext');
+      if (name.length > 1 && contact.length > 3 && state.finalForm.agreement) btn.classList.add('active');
+      else btn.classList.remove('active');
+    }
+    function selectMessenger(m) {
+      state.finalForm.messenger = m;
+      document.getElementById('btnTg').classList.toggle('active', m === 'Telegram');
+      document.getElementById('btnViber').classList.toggle('active', m === 'Viber');
+      document.getElementById('contactLabel').textContent = m === 'Telegram' ? 'Твой ник в Telegram' : 'Твой номер в Viber';
+      document.getElementById('userContact').placeholder = m === 'Telegram' ? '@username' : '+375...';
+    }
+    function toggleAgreement() { state.finalForm.agreement = !state.finalForm.agreement; document.getElementById('agreeCheckbox').classList.toggle('active', state.finalForm.agreement); validateFinalForm(); }
+
+    function generatePlan() {
+      const perPersonBudget = state.budget / state.adultsCount;
+      let availableDishes = state.currentDishes.filter(d => perPersonBudget < 75 ? d.price <= 6 : true);
+      if (availableDishes.length < 3) availableDishes = state.currentDishes;
+      
+      const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+      const menuContainer = document.getElementById('resultMenu'); let menuHtml = '';
+
+      days.forEach(day => {
+        const b = availableDishes.filter(d => d.type === 'breakfast')[0] || allDishes[0];
+        const l = availableDishes.filter(d => d.type === 'lunch')[0] || allDishes[2];
+        const d = availableDishes.filter(d => d.type === 'dinner')[0] || allDishes[3];
+        menuHtml += `<div class="menu-day"><div class="menu-day-title">${day}</div>
+          <div class="menu-item"><span class="menu-item-name">Завтрак: ${b.name}</span><span class="menu-item-cal">${b.calories} ккал</span></div>
+          <div class="menu-item"><span class="menu-item-name">Обед: ${l.name}</span><span class="menu-item-cal">${l.calories} ккал</span></div>
+          <div class="menu-item"><span class="menu-item-name">Ужин: ${d.name}</span><span class="menu-item-cal">${d.calories} ккал</span></div>
+        </div>`;
+      });
+      menuContainer.innerHTML = menuHtml;
+
+      const totalCost = Math.round(state.budget * (0.9 + Math.random() * 0.2));
+      document.getElementById('resultShopping').innerHTML = `
+        <div class="receipt-container">
+          <div class="receipt-header"><div class="receipt-title">ТАРЕЛКА.БАЙ</div><div class="receipt-subtitle">Магазин: ${state.store}</div></div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-item"><span>Куриное филе</span><span>≈ 12.50 BYN</span></div>
+          <div class="receipt-item"><span>Гречка (1 кг)</span><span>≈ 3.20 BYN</span></div>
+          <div class="receipt-item"><span>Овсянка (500 г)</span><span>≈ 2.50 BYN</span></div>
+          <div class="receipt-item"><span>Яйца (10 шт)</span><span>≈ 4.10 BYN</span></div>
+          <div class="receipt-item"><span>Овощи</span><span>≈ 15.00 BYN</span></div>
+          <div class="receipt-item"><span>Фрукты</span><span>≈ 10.00 BYN</span></div>
+          <div class="receipt-divider"></div>
+          <div class="receipt-total"><span>ИТОГО:</span><span>≈ ${totalCost} BYN</span></div>
+          <div class="receipt-footer">Цены приблизительные.<br>Спасибо!</div>
+        </div>`;
+    }
+
+    function switchResultTab(tab) {
+      document.getElementById('tabMenu').classList.toggle('active', tab === 'menu');
+      document.getElementById('tabShopping').classList.toggle('active', tab === 'shopping');
+      document.getElementById('resultMenu').style.display = tab === 'menu' ? 'block' : 'none';
+      document.getElementById('resultShopping').style.display = tab === 'shopping' ? 'block' : 'none';
+    }
+  </script>
+</body>
+</html>
