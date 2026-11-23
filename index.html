@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #FEF9F3;
+      --text: #333333;
+      --primary: #F59E0B;
+      --primary-light: #FEF3C7;
+      --border: #E5E7EB;
+      --success: #10B981;
+      --muted: #9CA3AF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); padding: 20px 20px 100px; }
+    
+    .header { text-align: center; margin-bottom: 20px; }
+    .logo { font-size: 24px; font-weight: 800; color: var(--primary); }
+    .progress-bar { display: flex; gap: 6px; margin-top: 15px; }
+    .segment { flex: 1; height: 4px; border-radius: 4px; background: var(--border); }
+    .segment.active { background: var(--primary); }
+    .step-info { font-size: 12px; color: var(--muted); margin-top: 10px; font-weight: 600; text-align: center; }
+    
+    .step { display: none; animation: fadeIn 0.3s ease; }
+    .step.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    h1 { font-size: 24px; font-weight: 800; margin-bottom: 10px; line-height: 1.3; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 25px; }
+    
+    /* Шаг 1: Магазины */
+    .store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .store-card { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s; }
+    .store-card.selected { border-color: var(--primary); background: var(--primary-light); }
+    .store-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: white; }
+    .store-name { font-size: 13px; font-weight: 600; }
+    
+    /* Шаг 2: Счетчик */
+    .counter-card { background: white; border-radius: 16px; padding: 25px; border: 1px solid var(--border); }
+    .counter-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .counter-controls { display: flex; align-items: center; gap: 15px; }
+    .counter-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg); font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .counter-value { font-size: 32px; font-weight: 800; }
+    .kids-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 20px; }
+    .toggle { width: 50px; height: 28px; background: #ddd; border-radius: 20px; position: relative; cursor: pointer; transition: 0.2s; }
+    .toggle.active { background: var(--success); }
+    .toggle::after { content: ''; position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.2s; }
+    .toggle.active::after { left: 24px; }
+    .summary-box { background: var(--primary-light); padding: 15px; border-radius: 12px; text-align: center; margin-top: 25px; font-size: 14px; font-weight: 600; }
+    
+    /* Кнопка Далее */
+    .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: var(--bg); border-top: 1px solid var(--border); }
+    .btn-next { width: 100%; background: var(--primary); color: #333; font-size: 18px; font-weight: 800; border: none; padding: 18px; border-radius: 14px; cursor: pointer; transition: 0.2s; opacity: 0.5; pointer-events: none; }
+    .btn-next.active { opacity: 1; pointer-events: auto; }
+    .btn-back { background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer; position: absolute; left: 20px; top: 30px; display: none; }
+    .btn-back.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <button class="btn-back" id="btnBack" onclick="prevStep()">←</button>
+
+  <div class="header">
+    <div class="logo">Тарелка.бай</div>
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="step-info" id="stepInfo">Шаг 1 из 9</div>
+  </div>
+
+  <!-- Шаг 1 -->
+  <div class="step active" id="step1">
+    <h1>Где покупаешь продукты?</h1>
+    <p class="subtitle">Соберём меню из того, что есть на полках.</p>
+    <div class="store-grid">
+      <div class="store-card" onclick="selectStore('Евроопт', this)">
+        <div class="store-circle" style="background:#E31E24">Евроопт</div>
+        <div class="store-name">Евроопт</div>
+      </div>
+      <div class="store-card" onclick="selectStore('Санта', this)">
+        <div class="store-circle" style="background:#D91A21">Санта</div>
+        <div class="store-name">Санта</div>
+      </div>
+      <div class="store-card" onclick="selectStore('Green', this)">
+        <div class="store-circle" style="background:#8CC63F">GREEN</div>
+        <div class="store-name">Green</div>
+      </div>
+      <div class="store-card" onclick="selectStore('Гиппо', this)">
+        <div class="store-circle" style="background:#FDB913; color: #333">Гиппо</div>
+        <div class="store-name">Гиппо</div>
+      </div>
+      <div class="store-card" onclick="selectStore('ProStore', this)">
+        <div class="store-circle" style="background:#0055A5">ProStore</div>
+        <div class="store-name">ProStore</div>
+      </div>
+      <div class="store-card" onclick="selectStore('Соседи', this)">
+        <div class="store-circle" style="background:#009640">Соседи</div>
+        <div class="store-name">Соседи</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Шаг 2 -->
+  <div class="step" id="step2">
+    <h1>Кто будет кушать?</h1>
+    <div class="counter-card">
+      <div class="counter-row">
+        <div style="font-weight: 600; font-size: 16px;">👨‍👩‍👧 Взрослые</div>
+        <div class="counter-controls">
+          <button class="counter-btn" onclick="changeAdults(-1)">−</button>
+          <div class="counter-value" id="adultsCount">2</div>
+          <button class="counter-btn" onclick="changeAdults(1)">+</button>
+        </div>
+      </div>
+      <div class="kids-row">
+        <div style="font-weight: 600; font-size: 16px;">👶 Есть дети?</div>
+        <div class="toggle" id="kidsToggle" onclick="toggleKids()"></div>
+      </div>
+      <div class="summary-box" id="summaryText">Готовим на 2 человек</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button class="btn-next" id="btnNext" onclick="nextStep()">Далее →</button>
+  </div>
+
+  <script>
+    // --- ДАННЫЕ (Стейт) ---
+    let state = {
+      step: 1,
+      totalSteps: 9,
+      store: '',
+      adultsCount: 2,
+      hasKids: false
+    };
+
+    // --- ИНИЦИАЛИЗАЦИЯ ---
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.setHeaderColor('#FEF9F3');
+    renderProgress();
+
+    // --- ЛОГИКА ПЕРЕХОДОВ ---
+    function nextStep() {
+      if (state.step < state.totalSteps) {
+        state.step++;
+        updateUI();
+      }
+    }
+
+    function prevStep() {
+      if (state.step > 1) {
+        state.step--;
+        updateUI();
+      }
+    }
+
+    function updateUI() {
+      // Скрываем все шаги
+      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+      // Показываем текущий
+      const currentStepEl = document.getElementById('step' + state.step);
+      if (currentStepEl) currentStepEl.classList.add('active');
+      
+      // Обновляем шапку
+      document.getElementById('stepInfo').textContent = `Шаг ${state.step} из ${state.totalSteps}`;
+      renderProgress();
+      
+      // Кнопка Назад
+      const btnBack = document.getElementById('btnBack');
+      if (state.step > 1) btnBack.classList.add('show');
+      else btnBack.classList.remove('show');
+
+      // Проверка кнопки Далее
+      validateNextBtn();
+      window.scrollTo(0, 0);
+    }
+
+    function renderProgress() {
+      const bar = document.getElementById('progressBar');
+      bar.innerHTML = '';
+      for (let i = 1; i <= state.totalSteps; i++) {
+        const seg = document.createElement('div');
+        seg.className = 'segment' + (i <= state.step ? ' active' : '');
+        bar.appendChild(seg);
+      }
+    }
+
+    function validateNextBtn() {
+      const btn = document.getElementById('btnNext');
+      let isValid = false;
+
+      if (state.step === 1) isValid = state.store !== '';
+      if (state.step === 2) isValid = true; // Всегда можно нажать (значение по умолчанию 2)
+      
+      if (isValid) btn.classList.add('active');
+      else btn.classList.remove('active');
+    }
+
+    // --- ЛОГИКА ШАГА 1 ---
+    function selectStore(name, el) {
+      state.store = name;
+      document.querySelectorAll('.store-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      validateNextBtn();
+    }
+
+    // --- ЛОГИКА ШАГА 2 ---
+    function changeAdults(delta) {
+      let newVal = state.adultsCount + delta;
+      if (newVal < 1) newVal = 1;
+      if (newVal > 6) newVal = 6;
+      state.adultsCount = newVal;
+      document.getElementById('adultsCount').textContent = newVal;
+      document.getElementById('summaryText').textContent = `Готовим на ${newVal} человек`;
+    }
+
+    function toggleKids() {
+      state.hasKids = !state.hasKids;
+      document.getElementById('kidsToggle').classList.toggle('active', state.hasKids);
+    }
+  </script>
+</body>
+</html>
