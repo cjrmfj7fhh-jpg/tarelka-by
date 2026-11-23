@@ -443,8 +443,7 @@
             "calories": null,
             "type": "lunch",
             "tags": [
-              "meat",
-              "fish"
+              "meat"
             ],
             "recipeStatus": "needs_review",
             "allergenStatus": "needs_review",
@@ -5499,14 +5498,22 @@
           const unit = Array.isArray(item) ? String(item[2] || '') : '';
           const knownQuantity = canScale && Number.isFinite(quantity) && quantity > 0 &&
             unit && unit !== 'по вкусу';
-          const key = normalized.key + '|' + (knownQuantity ? unit.toLocaleLowerCase('ru') : 'unknown');
+          const key = normalized.key;
           if (!shoppingItems.has(key)) {
             shoppingItems.set(key, { name: normalized.displayName, unit: knownQuantity ? unit : '',
               quantity: 0, complete: true });
           }
           const entry = shoppingItems.get(key);
-          if (knownQuantity) entry.quantity += quantity * factor;
-          else entry.complete = false;
+          if (knownQuantity) {
+            if (entry.unit && entry.unit.toLocaleLowerCase('ru') !== unit.toLocaleLowerCase('ru')) {
+              entry.complete = false;
+            } else {
+              entry.unit = unit;
+              entry.quantity += quantity * factor;
+            }
+          } else {
+            entry.complete = false;
+          }
         });
       });
       const formatShoppingQuantity = value => {
@@ -5519,7 +5526,7 @@
           shoppingEntries.map(item => {
             const amount = item.complete && item.quantity > 0
               ? formatShoppingQuantity(item.quantity) + ' ' + item.unit + ' · черновой расчёт'
-              : 'количество уточняется';
+              : (item.quantity > 0 ? 'количество уточняется (часть данных известна)' : 'количество уточняется');
             return '<li style="margin:8px 0;line-height:1.45;"><strong>' + item.name + '</strong> — ' + amount + '</li>';
           }).join('') + '</ul>'
         : '<p style="font-size:14px;line-height:1.5;">Пока нет продуктов для списка: для выбранных приёмов пищи не нашлось рецептов с известным составом.</p>';
