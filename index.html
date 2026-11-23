@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #FEF9F3; /* Теплый фон */
+      --text: #1F2937; /* Темно-серый текст */
+      --primary: #059669; /* Изумрудный зеленый */
+      --primary-light: #ECFDF5; /* Нежно-мятный */
+      --border: #E5E7EB;
+      --success: #059669;
+      --success-light: #ECFDF5;
+      --muted: #6B7280;
+      --danger: #EF4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); padding: 20px 20px 100px; }
+    
+    .header { text-align: center; margin-bottom: 20px; }
+    .logo { font-size: 24px; font-weight: 800; color: var(--primary); }
+    .progress-bar { display: flex; gap: 6px; margin-top: 15px; }
+    .segment { flex: 1; height: 4px; border-radius: 4px; background: var(--border); }
+    .segment.active { background: var(--primary); }
+    .step-info { font-size: 12px; color: var(--muted); margin-top: 10px; font-weight: 600; text-align: center; }
+    
+    .step { display: none; animation: fadeIn 0.3s ease; }
+    .step.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    h1 { font-size: 24px; font-weight: 800; margin-bottom: 10px; line-height: 1.3; }
+    .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 25px; }
+    
+    /* Шаг 1: Магазины */
+    .store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .store-card { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s; }
+    .store-card.selected { border-color: var(--primary); background: var(--primary-light); }
+    .store-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: white; }
+    .store-name { font-size: 13px; font-weight: 600; }
+    
+    /* Шаг 2: Счетчик */
+    .counter-card { background: white; border-radius: 16px; padding: 25px; border: 1px solid var(--border); }
+    .counter-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .counter-controls { display: flex; align-items: center; gap: 15px; }
+    .counter-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg); font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .counter-value { font-size: 32px; font-weight: 800; }
+    .kids-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 20px; }
+    .toggle { width: 50px; height: 28px; background: #ddd; border-radius: 20px; position: relative; cursor: pointer; transition: 0.2s; }
+    .toggle.active { background: var(--success); }
+    .toggle::after { content: ''; position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.2s; }
+    .toggle.active::after { left: 24px; }
+    .summary-box { background: var(--primary-light); padding: 15px; border-radius: 12px; text-align: center; margin-top: 25px; font-size: 14px; font-weight: 600; }
+    
+    /* Шаг 3: Приемы пищи */
+    .meal-group { margin-bottom: 20px; }
+    .meal-group-title { font-weight: 700; font-size: 15px; margin-bottom: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .meal-option { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; }
+    .meal-option.selected { border-color: var(--primary); background: var(--primary-light); }
+    .meal-checkbox { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+    .meal-option.selected .meal-checkbox { background: var(--primary); border-color: var(--primary); }
+    .meal-checkbox::after { content: '✓'; color: white; font-size: 14px; display: none; }
+    .meal-option.selected .meal-checkbox::after { display: block; }
+    .meal-text { font-size: 15px; font-weight: 600; }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 5px; margin-left: 34px; }
+    
+    /* Шаг 4: Бюджет */
+    .budget-display { text-align: center; margin: 30px 0; }
+    .budget-amount { font-size: 48px; font-weight: 800; color: var(--primary); }
+    .budget-per-person { font-size: 14px; color: var(--muted); margin-top: 5px; }
+    .slider-container { padding: 0 10px; }
+    input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+    input[type=range]:focus { outline: none; }
+    input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: var(--border); border-radius: 3px; }
+    input[type=range]::-webkit-slider-thumb { height: 24px; width: 24px; border-radius: 50%; background: var(--primary); cursor: pointer; -webkit-appearance: none; margin-top: -9px; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+    .budget-limits { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 10px; font-weight: 600; }
+    .budget-notice { background: var(--success-light); border: 1px solid var(--success); color: #065F46; padding: 15px; border-radius: 12px; margin-top: 25px; display: flex; gap: 10px; align-items: center; font-size: 14px; }
+    .budget-notice.warning { background: #FEF3C7; border-color: #F59E0B; color: #92400E; }
+    
+    /* Шаг 5: Калории */
+    .person-card { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; }
+    .person-title { font-weight: 800; font-size: 18px; margin-bottom: 15px; }
+    .gender-btns { display: flex; gap: 10px; margin-bottom: 15px; }
+    .gender-btn { flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; text-align: center; font-weight: 600; cursor: pointer; }
+    .gender-btn.active { border-color: var(--primary); background: var(--primary-light); }
+    .tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 15px; }
+    .tab { flex: 1; text-align: center; padding: 8px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; color: var(--muted); }
+    .tab.active { background: white; color: var(--text); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .input-group { margin-bottom: 12px; }
+    .input-group label { font-size: 13px; color: var(--muted); margin-bottom: 4px; display: block; }
+    .input-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 16px; outline: none; }
+    .input-group input:focus { border-color: var(--primary); }
+    .goal-btns { display: flex; gap: 8px; margin-top: 10px; }
+    .goal-btn { flex: 1; padding: 8px 4px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; text-align: center; cursor: pointer; font-weight: 600; }
+    .goal-btn.active { border-color: var(--primary); background: var(--primary-light); }
+    .result-box { background: var(--success-light); color: var(--success); padding: 12px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 18px; margin-top: 15px; }
+    
+    /* Шаг 6: Тип питания */
+    .diet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .diet-card { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; text-align: center; }
+    .diet-card.selected { border-color: var(--primary); background: var(--primary-light); }
+    .diet-emoji { font-size: 32px; }
+    .diet-name { font-size: 14px; font-weight: 700; }
+    .diet-desc { font-size: 11px; color: var(--muted); }
+
+    /* Кнопка Далее */
+    .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: var(--bg); border-top: 1px solid var(--border); z-index: 10; }
+    .btn-next { width: 100%; background: var(--primary); color: #FFFFFF; font-size: 18px; font-weight: 800; border: none; padding: 18px; border-radius: 14px; cursor: pointer; transition: 0.2s; opacity: 0.5; pointer-events: none; }
+    .btn-next.active { opacity: 1; pointer-events: auto; }
+    .btn-back { background: white; border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 20px; cursor: pointer; position: absolute; left: 20px; top: 20px; display: none; z-index: 20; }
+    .btn-back.show { display: flex; }
+  </style>
+</head>
+<body>
+
+  <button class="btn-back" id="btnBack" onclick="prevStep()">←</button>
+
+  <div class="header">
+    <div class="logo">Тарелка.бай</div>
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="step-info" id="stepInfo">Шаг 1 из 9</div>
+  </div>
+
+  <!-- Шаг 1 -->
+  <div class="step active" id="step1">
+    <h1>Где покупаешь продукты?</h1>
+    <p class="subtitle">Соберём меню из того, что есть на полках.</p>
+    <div class="store-grid">
+      <div class="store-card" onclick="selectStore('Евроопт', this)"><div class="store-circle" style="background:#E31E24">Евроопт</div><div class="store-name">Евроопт</div></div>
+      <div class="store-card" onclick="selectStore('Санта', this)"><div class="store-circle" style="background:#D91A21">Санта</div><div class="store-name">Санта</div></div>
+      <div class="store-card" onclick="selectStore('Green', this)"><div class="store-circle" style="background:#8CC63F">GREEN</div><div class="store-name">Green</div></div>
+      <div class="store-card" onclick="selectStore('Гиппо', this)"><div class="store-circle" style="background:#FDB913; color: #333">Гиппо</div><div class="store-name">Гиппо</div></div>
+      <div class="store-card" onclick="selectStore('ProStore', this)"><div class="store-circle" style="background:#0055A5">ProStore</div><div class="store-name">ProStore</div></div>
+      <div class="store-card" onclick="selectStore('Соседи', this)"><div class="store-circle" style="background:#009640">Соседи</div><div class="store-name">Соседи</div></div>
+    </div>
+  </div>
+
+  <!-- Шаг 2 -->
+  <div class="step" id="step2">
+    <h1>Кто будет кушать?</h1>
+    <div class="counter-card">
+      <div class="counter-row">
+        <div style="font-weight: 600; font-size: 16px;">👨‍👩‍👧 Взрослые</div>
+        <div class="counter-controls">
+          <button class="counter-btn" onclick="changeAdults(-1)">−</button>
+          <div class="counter-value" id="adultsCount">2</div>
+          <button class="counter-btn" onclick="changeAdults(1)">+</button>
+        </div>
+      </div>
+      <div class="kids-row">
+        <div style="font-weight: 600; font-size: 16px;">👶 Есть дети?</div>
+        <div class="toggle" id="kidsToggle" onclick="toggleKids()"></div>
+      </div>
+      <div class="summary-box" id="summaryText">Готовим на 2 человек</div>
+    </div>
+  </div>
+
+  <!-- Шаг 3 -->
+  <div class="step" id="step3">
+    <h1>Сколько приёмов пищи в день?</h1>
+    <div id="mealGroupsContainer"></div>
+  </div>
+
+  <!-- Шаг 4 -->
+  <div class="step" id="step4">
+    <h1>Бюджет на неделю</h1>
+    <p class="subtitle">Не будем предлагать то, что в него не влезет.</p>
+    <div class="budget-display">
+      <div class="budget-amount" id="budgetDisplay">200 BYN</div>
+      <div class="budget-per-person" id="budgetPerPersonDisplay">≈ 100 BYN на человека в неделю</div>
+    </div>
+    <div class="slider-container">
+      <input type="range" id="budgetSlider" min="100" max="500" step="50" value="200" oninput="updateBudget(this.value)">
+      <div class="budget-limits"><span>100 BYN</span><span>500 BYN</span></div>
+    </div>
+    <div class="budget-notice" id="budgetNotice">
+      <div>✅</div>
+      <div><strong id="budgetNoticeTitle">Хороший бюджет</strong><br><span id="budgetNoticeText">Хватит на рыбу, фрукты и заготовки впрок.</span></div>
+    </div>
+  </div>
+
+  <!-- Шаг 5 -->
+  <div class="step" id="step5">
+    <h1>Настройка питания</h1>
+    <p class="subtitle">Рассчитаем норму калорий для каждого.</p>
+    <div id="personsContainer"></div>
+  </div>
+
+  <!-- Шаг 6 -->
+  <div class="step" id="step6">
+    <h1>Какой у тебя тип питания?</h1>
+    <p class="subtitle">Это поможет подобрать подходящие блюда.</p>
+    <div class="diet-grid">
+      <div class="diet-card" onclick="selectDiet('meat', this)"><div class="diet-emoji">🥩</div><div class="diet-name">Всеядный</div><div class="diet-desc">Ем всё</div></div>
+      <div class="diet-card" onclick="selectDiet('fish', this)"><div class="diet-emoji">🐟</div><div class="diet-name">Пескетарианец</div><div class="diet-desc">Рыба и морепродукты</div></div>
+      <div class="diet-card" onclick="selectDiet('vegetarian', this)"><div class="diet-emoji">🥗</div><div class="diet-name">Вегетарианец</div><div class="diet-desc">Без мяса и рыбы</div></div>
+      <div class="diet-card" onclick="selectDiet('vegan', this)"><div class="diet-emoji">🌱</div><div class="diet-name">Веган</div><div class="diet-desc">Только растительное</div></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button class="btn-next" id="btnNext" onclick="nextStep()">Далее →</button>
+  </div>
+
+  <script>
+    // --- ДАННЫЕ (Стейт) ---
+    let state = {
+      step: 1,
+      totalSteps: 9,
+      store: '',
+      adultsCount: 2,
+      hasKids: false,
+      meals: [],
+      budget: 200,
+      persons: [],
+      dietType: ''
+    };
+
+    function initPersons() {
+      state.persons = [];
+      for (let i = 1; i <= state.adultsCount; i++) {
+        state.persons.push({
+          id: i,
+          gender: i === 1 ? 'male' : 'female',
+          mode: 'calc',
+          calories: 2000,
+          age: '', height: '', weight: '',
+          goal: 'maintain'
+        });
+      }
+    }
+    initPersons();
+
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.setHeaderColor('#FEF9F3');
+    renderProgress();
+    renderMealsStep();
+
+    // --- ЛОГИКА ПЕРЕХОДОВ ---
+    function nextStep() {
+      if (state.step < state.totalSteps) {
+        state.step++;
+        updateUI();
+      }
+    }
+
+    function prevStep() {
+      if (state.step > 1) {
+        state.step--;
+        updateUI();
+      }
+    }
+
+    function updateUI() {
+      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+      const currentStepEl = document.getElementById('step' + state.step);
+      if (currentStepEl) currentStepEl.classList.add('active');
+      
+      document.getElementById('stepInfo').textContent = `Шаг ${state.step} из ${state.totalSteps}`;
+      renderProgress();
+      
+      const btnBack = document.getElementById('btnBack');
+      if (state.step > 1) btnBack.classList.add('show');
+      else btnBack.classList.remove('show');
+
+      if (state.step === 4) updateBudget(state.budget);
+      if (state.step === 5) renderPersons();
+
+      validateNextBtn();
+      window.scrollTo(0, 0);
+    }
+
+    function renderProgress() {
+      const bar = document.getElementById('progressBar');
+      bar.innerHTML = '';
+      for (let i = 1; i <= state.totalSteps; i++) {
+        const seg = document.createElement('div');
+        seg.className = 'segment' + (i <= state.step ? ' active' : '');
+        bar.appendChild(seg);
+      }
+    }
+
+    function validateNextBtn() {
+      const btn = document.getElementById('btnNext');
+      let isValid = false;
+
+      if (state.step === 1) isValid = state.store !== '';
+      if (state.step === 2) isValid = true;
+      if (state.step === 3) isValid = state.meals.length > 0;
+      if (state.step === 4) isValid = true;
+      if (state.step === 5) isValid = true; 
+      if (state.step === 6) isValid = state.dietType !== '';
+      
+      if (isValid) btn.classList.add('active');
+      else btn.classList.remove('active');
+    }
+
+    // --- ШАГ 1 ---
+    function selectStore(name, el) {
+      state.store = name;
+      document.querySelectorAll('.store-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      validateNextBtn();
+    }
+
+    // --- ШАГ 2 ---
+    function changeAdults(delta) {
+      let newVal = state.adultsCount + delta;
+      if (newVal < 1) newVal = 1;
+      if (newVal > 6) newVal = 6;
+      
+      if (newVal === 1) state.meals = state.meals.filter(m => !m.startsWith('family-'));
+      
+      state.adultsCount = newVal;
+      document.getElementById('adultsCount').textContent = newVal;
+      document.getElementById('summaryText').textContent = `Готовим на ${newVal} человек`;
+      
+      initPersons();
+      renderMealsStep();
+    }
+
+    function toggleKids() {
+      state.hasKids = !state.hasKids;
+      document.getElementById('kidsToggle').classList.toggle('active', state.hasKids);
+    }
+
+    // --- ШАГ 3 ---
+    function renderMealsStep() {
+      const container = document.getElementById('mealGroupsContainer');
+      container.innerHTML = '';
+
+      const selfGroup = document.createElement('div');
+      selfGroup.className = 'meal-group';
+      selfGroup.innerHTML = `<div class="meal-group-title">${state.adultsCount === 1 ? 'Твои приёмы пищи' : 'Личные приёмы пищи'}</div>`;
+      
+      const selfOptions = [
+        { id: 'self-breakfast', label: 'Завтрак ☕' },
+        { id: 'self-lunch', label: 'Обед 🍲' },
+        { id: 'self-dinner', label: 'Ужин 🍽️' }
+      ];
+      
+      selfOptions.forEach(opt => {
+        const isSelected = state.meals.includes(opt.id);
+        selfGroup.innerHTML += `
+          <div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)">
+            <div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div>
+          </div>`;
+      });
+      container.appendChild(selfGroup);
+
+      if (state.adultsCount > 1) {
+        const familyGroup = document.createElement('div');
+        familyGroup.className = 'meal-group';
+        familyGroup.innerHTML = `
+          <div class="meal-group-title" style="margin-top: 20px;">Общие приёмы пищи</div>
+          <div class="hint" style="margin-bottom: 10px; margin-left: 0;">Готовим сразу на всех, остальное — одной порцией для тебя.</div>
+        `;
+        
+        const familyOptions = [
+          { id: 'family-breakfast', label: 'Общие завтраки ☕' },
+          { id: 'family-lunch', label: 'Общие обеды 🍲' },
+          { id: 'family-dinner', label: 'Общие ужины 🍽️' }
+        ];
+        
+        familyOptions.forEach(opt => {
+          const isSelected = state.meals.includes(opt.id);
+          familyGroup.innerHTML += `
+            <div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)">
+              <div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div>
+            </div>`;
+        });
+        container.appendChild(familyGroup);
+      }
+    }
+
+    function toggleMeal(mealId, el) {
+      if (state.meals.includes(mealId)) {
+        state.meals = state.meals.filter(id => id !== mealId);
+        el.classList.remove('selected');
+      } else {
+        state.meals.push(mealId);
+        el.classList.add('selected');
+      }
+      validateNextBtn();
+    }
+
+    // --- ШАГ 4 ---
+    function updateBudget(val) {
+      state.budget = parseInt(val);
+      document.getElementById('budgetDisplay').textContent = `${state.budget} BYN`;
+      
+      const perPerson = Math.round(state.budget / state.adultsCount);
+      document.getElementById('budgetPerPersonDisplay').textContent = `≈ ${perPerson} BYN на человека в неделю`;
+      
+      const noticeBox = document.getElementById('budgetNotice');
+      const title = document.getElementById('budgetNoticeTitle');
+      const text = document.getElementById('budgetNoticeText');
+      const icon = noticeBox.querySelector('div');
+
+      if (perPerson < 75) {
+        noticeBox.className = 'budget-notice warning';
+        icon.textContent = '⚠️'; title.textContent = 'Экономный бюджет'; text.textContent = 'Будем искать базовые продукты: крупы, курицу, сезонные овощи.';
+      } else if (perPerson >= 75 && perPerson < 150) {
+        noticeBox.className = 'budget-notice';
+        icon.textContent = '✅'; title.textContent = 'Хороший бюджет'; text.textContent = 'Хватит на рыбу, фрукты и заготовки впрок.';
+      } else {
+        noticeBox.className = 'budget-notice';
+        icon.textContent = '⭐'; title.textContent = 'Отличный бюджет'; text.textContent = 'Можно добавить деликатесы, орехи, больше мяса.';
+      }
+    }
+
+    // --- ШАГ 5: КАЛОРИИ ---
+    function renderPersons() {
+      const container = document.getElementById('personsContainer');
+      container.innerHTML = '';
+
+      state.persons.forEach((person, index) => {
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        
+        card.innerHTML = `
+          <div class="person-title">Человек ${person.id}</div>
+          
+          <div class="gender-btns">
+            <div class="gender-btn ${person.gender === 'male' ? 'active' : ''}" onclick="updatePerson(${index}, 'gender', 'male')">👨 Мужской</div>
+            <div class="gender-btn ${person.gender === 'female' ? 'active' : ''}" onclick="updatePerson(${index}, 'gender', 'female')">👩 Женский</div>
+          </div>
+
+          <div class="tabs">
+            <div class="tab ${person.mode === 'know' ? 'active' : ''}" onclick="updatePerson(${index}, 'mode', 'know')">Знаю норму</div>
+            <div class="tab ${person.mode === 'calc' ? 'active' : ''}" onclick="updatePerson(${index}, 'mode', 'calc')">Рассчитать</div>
+          </div>
+
+          <div>
+            ${person.mode === 'know' ? renderKnowMode(person, index) : renderCalcMode(person, index)}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderKnowMode(person, index) {
+      return `
+        <div class="input-group">
+          <label>Ваша норма (ккал/день)</label>
+          <input type="number" value="${person.calories}" onchange="updatePerson(${index}, 'calories', this.value)">
+        </div>
+      `;
+    }
+
+    function renderCalcMode(person, index) {
+      return `
+        <div class="input-group"><label>Возраст</label><input type="number" value="${person.age}" onchange="updatePerson(${index}, 'age', this.value)"></div>
+        <div class="input-group"><label>Рост (см)</label><input type="number" value="${person.height}" onchange="updatePerson(${index}, 'height', this.value)"></div>
+        <div class="input-group"><label>Вес (кг)</label><input type="number" value="${person.weight}" onchange="updatePerson(${index}, 'weight', this.value)"></div>
+        <div class="input-group">
+          <label>Цель</label>
+          <div class="goal-btns">
+            <div class="goal-btn ${person.goal === 'lose' ? 'active' : ''}" onclick="updatePerson(${index}, 'goal', 'lose')">Похудеть</div>
+            <div class="goal-btn ${person.goal === 'maintain' ? 'active' : ''}" onclick="updatePerson(${index}, 'goal', 'maintain')">Держать</div>
+            <div class="goal-btn ${person.goal === 'gain' ? 'active' : ''}" onclick="updatePerson(${index}, 'goal', 'gain')">Набрать</div>
+          </div>
+        </div>
+        <div class="result-box" id="calc-result-${index}">
+          ${person.age && person.height && person.weight ? `Рекомендуемая норма: ${calculateCalories(person, index)} ккал/день` : 'Заполните данные для расчета'}
+        </div>
+      `;
+    }
+
+    function updatePerson(index, field, value) {
+      state.persons[index][field] = value;
+      
+      if (field === 'age' || field === 'height' || field === 'weight' || field === 'goal' || field === 'gender' || field === 'mode') {
+        // Пересчитываем калории, если в режиме "Рассчитать"
+        if (state.persons[index].mode === 'calc') {
+          const p = state.persons[index];
+          if (p.age && p.height && p.weight) {
+            p.calories = calculateCalories(p, index);
+          }
+        }
+      }
+      
+      // Перерисовываем только если изменили пол, цель или вкладку
+      if (field === 'gender' || field === 'mode' || field === 'goal') {
+        renderPersons();
+      } else if (field === 'age' || field === 'height' || field === 'weight') {
+        // Обновляем только текст результата, чтобы не терять фокус с инпута
+        const resBox = document.getElementById(`calc-result-${index}`);
+        if (resBox && state.persons[index].age && state.persons[index].height && state.persons[index].weight) {
+          resBox.textContent = `Рекомендуемая норма: ${calculateCalories(state.persons[index], index)} ккал/день`;
+        }
+      }
+    }
+
+    function calculateCalories(person, index) {
+      const age = parseFloat(person.age) || 0;
+      const height = parseFloat(person.height) || 0;
+      const weight = parseFloat(person.weight) || 0;
+      
+      if (age === 0 || height === 0 || weight === 0) return 0;
+
+      let bmr = 0;
+      if (person.gender === 'male') {
+        bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+      } else {
+        bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+      }
+      
+      let total = bmr * 1.2; // Сидячий образ жизни
+      
+      if (person.goal === 'lose') total = total * 0.8;
+      if (person.goal === 'gain') total = total * 1.15;
+      
+      return Math.round(total);
+    }
+
+    // --- ШАГ 6 ---
+    function selectDiet(diet, el) {
+      state.dietType = diet;
+      document.querySelectorAll('.diet-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      validateNextBtn();
+    }
+  </script>
+</body>
+</html>
