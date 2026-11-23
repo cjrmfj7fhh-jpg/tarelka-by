@@ -1,0 +1,931 @@
+{
+  "schemaVersion": 1,
+  "statusLegend": {
+    "candidate_needs_review": "Состав найден в источнике, но ещё не утверждён как рецепт приложения",
+    "needs_recipe_authoring": "Нужна отдельная редактура/сборка рецепта под название блюда",
+    "nutrition_source_only": "Пищевая ценность приведена как значение источника и не перенесена в приложение"
+  },
+  "note": "Все записи — исследовательские кандидаты, а не опубликованные рецепты. Нельзя использовать их для медицинской фильтрации, расчёта стоимости или генерации покупок до редакторской проверки и пересчёта по точному составу.",
+  "recipes": [
+    {
+      "id": 1,
+      "name": "Овсянка с ягодами",
+      "status": "candidate_needs_review",
+      "servings": 1,
+      "timeMinutes": 15,
+      "ingredients": [
+        [
+          "Овсяные хлопья",
+          50,
+          "г"
+        ],
+        [
+          "Молоко 2.5%",
+          200,
+          "г"
+        ],
+        [
+          "Мёд",
+          8,
+          "г"
+        ],
+        [
+          "Сливочное масло",
+          10,
+          "г"
+        ],
+        [
+          "Свежие ягоды",
+          50,
+          "г"
+        ]
+      ],
+      "allergenCandidates": [
+        "gluten_cereals",
+        "milk"
+      ],
+      "equipmentCandidates": [
+        "stove"
+      ],
+      "methodCandidates": [
+        "boiling"
+      ],
+      "nutritionPerServing": {
+        "kcal": 416,
+        "protein_g": 13,
+        "fat_g": 17,
+        "carbs_g": 55,
+        "sourceStatus": "nutrition_source_only"
+      },
+      "source": "https://piknifood.ru/recipe/ovsyanka-s-yagodami-breakfast/",
+      "reviewNotes": "Овёс сам по себе не равен пшенице/ржи/ячменю; проверить маркировку безглютеновости и перекрёстный контакт. Варианты с орехами/йогуртом не смешивать с этой версией."
+    },
+    {
+      "id": 2,
+      "name": "Омлет с сыром",
+      "status": "candidate_needs_review",
+      "servings": 1,
+      "timeMinutes": 20,
+      "ingredients": [
+        [
+          "Яйцо",
+          2,
+          "шт."
+        ],
+        [
+          "Молоко",
+          3,
+          "ст. л."
+        ],
+        [
+          "Сыр",
+          30,
+          "г"
+        ],
+        [
+          "Соль",
+          null,
+          "по вкусу"
+        ]
+      ],
+      "allergenCandidates": [
+        "eggs",
+        "milk"
+      ],
+      "equipmentCandidates": [
+        "stove",
+        "oven"
+      ],
+      "methodCandidates": [
+        "frying",
+        "baking"
+      ],
+      "nutritionPerServing": {
+        "kcal": 324.2,
+        "protein_g": 25.1,
+        "fat_g": 22.3,
+        "carbs_g": 4.4,
+        "sourceStatus": "nutrition_source_only"
+      },
+      "source": "https://www.maggi.ru/recipes/prostoy-omlet-s-syrom",
+      "reviewNotes": "Источник даёт 1 порцию, но способ приготовления и время проверить: на странице приведены 10 минут и отдельный вариант запекания."
+    },
+    {
+      "id": 3,
+      "name": "Куриная грудка с гречкой",
+      "status": "candidate_needs_review",
+      "servings": 3,
+      "timeMinutes": 40,
+      "ingredients": [
+        [
+          "Куриная грудка без кожи и костей",
+          450,
+          "г"
+        ],
+        [
+          "Гречневая крупа сухая",
+          180,
+          "г"
+        ],
+        [
+          "Лук",
+          100,
+          "г"
+        ],
+        [
+          "Морковь",
+          100,
+          "г"
+        ],
+        [
+          "Подсолнечное масло",
+          20,
+          "г"
+        ],
+        [
+          "Вода",
+          450,
+          "г"
+        ],
+        [
+          "Соль",
+          5,
+          "г"
+        ],
+        [
+          "Чёрный перец",
+          1,
+          "г"
+        ]
+      ],
+      "allergenCandidates": [],
+      "equipmentCandidates": [
+        "stove"
+      ],
+      "methodCandidates": [
+        "boiling",
+        "stewing"
+      ],
+      "nutritionPerServing": {
+        "kcal": 549.9,
+        "protein_g": 51.8,
+        "fat_g": 13.8,
+        "carbs_g": 53.2,
+        "sourceStatus": "nutrition_source_only"
+      },
+      "source": "https://wayeat.ru/recipes/kurinaya-grudka-s-grechkoy-8ad4ab8c-ed4e-48a8-b86f-10e2a49148f7",
+      "reviewNotes": "Гречка не содержит глютен по природе, но проверить примеси/маркировку."
+    },
+    {
+      "id": 4,
+      "name": "Лосось с овощами",
+      "status": "candidate_needs_review",
+      "servings": 1,
+      "timeMinutes": 50,
+      "ingredients": [
+        [
+          "Лосось/сёмга",
+          180,
+          "г"
+        ],
+        [
+          "Брокколи",
+          100,
+          "г"
+        ],
+        [
+          "Морковь",
+          80,
+          "г"
+        ],
+        [
+          "Оливковое масло",
+          15,
+          "г"
+        ],
+        [
+          "Лимон",
+          10,
+          "г"
+        ],
+        [
+          "Соль",
+          2,
+          "г"
+        ],
+        [
+          "Чёрный перец",
+          1,
+          "г"
+        ],
+        [
+          "Укроп",
+          5,
+          "г"
+        ]
+      ],
+      "allergenCandidates": [
+        "fish"
+      ],
+      "equipmentCandidates": [
+        "oven"
+      ],
+      "methodCandidates": [
+        "baking"
+      ],
+      "nutritionPerServing": {
+        "kcal": 577,
+        "protein_g": 40,
+        "fat_g": 39,
+        "carbs_g": 14,
+        "sourceStatus": "nutrition_source_only"
+      },
+      "source": "https://piknifood.ru/recipe/losos-zapechyonnyy-s-ovoschami-dinner/",
+      "reviewNotes": "Источник указывает одну порцию; проверить время и фактический вес после приготовления."
+    },
+    {
+      "id": 5,
+      "name": "Тофу с рисом и брокколи",
+      "status": "needs_recipe_authoring",
+      "servings": null,
+      "timeMinutes": null,
+      "ingredients": [
+        [
+          "Тофу",
+          100,
+          "г"
+        ],
+        [
+          "Кукуруза консервированная",
+          50,
+          "г"
+        ],
+        [
+          "Соевый соус",
+          1,
+          "ст. л."
+        ],
+        [
+          "Рис",
+          30,
+          "г"
+        ],
+        [
+          "Оливковое масло",
+          1,
+          "ч. л."
+        ],
+        [
+          "Паприка и специи",
+          null,
+          "по вкусу"
+        ]
+      ],
+      "allergenCandidates": [
+        "soy"
+      ],
+      "equipmentCandidates": [
+        "stove"
+      ],
+      "methodCandidates": [
+        "frying",
+        "boiling",
+        "stewing"
+      ],
+      "nutritionPerServing": {
+        "kcal": 364,
+        "protein_g": 15,
+        "fat_g": 8,
+        "carbs_g": 39,
+        "sourceStatus": "nutrition_source_only",
+        "basis": "на 100 г по источнику"
+      },
+      "source": "https://www.sportmaster.ru/media/nutrition/tofu-s-risom/",
+      "reviewNotes": "Найден вариант с кукурузой, а не брокколи; не подменять ингредиент молча. Соевый соус может содержать пшеницу — сверять этикетку."
+    },
+    {
+      "id": 6,
+      "name": "Индейка в сливочном соусе",
+      "status": "candidate_needs_review",
+      "servings": 4,
+      "timeMinutes": 35,
+      "ingredients": [
+        [
+          "Филе бедра индейки",
+          600,
+          "г"
+        ],
+        [
+          "Лисички свежие",
+          200,
+          "г"
+        ],
+        [
+          "Сливки 20%",
+          250,
+          "мл"
+        ],
+        [
+          "Лук",
+          100,
+          "г"
+        ],
+        [
+          "Растительное масло",
+          20,
+          "мл"
+        ],
+        [
+          "Соль",
+          null,
+          "по вкусу"
+        ],
+        [
+          "Чёрный перец",
+          null,
+          "по вкусу"
+        ]
+      ],
+      "allergenCandidates": [
+        "milk"
+      ],
+      "equipmentCandidates": [
+        "stove"
+      ],
+      "methodCandidates": [
+        "frying",
+        "stewing"
+      ],
+      "nutritionPerServing": {
+        "kcal": 419.82,
+        "protein_g": 26.9,
+        "fat_g": 31.5,
+        "carbs_g": 6.01,
+        "sourceStatus": "nutrition_source_only"
+      },
+      "source": "https://www.gastronom.ru/recipe/67309/indejka-v-slivochnom-souse-na-skovorode",
+      "reviewNotes": "Источник включает грибы; проверить, соответствует ли это целевой карточке."
+    },
+    {
+      "id": 7,
+      "name": "Греческий салат",
+      "status": "candidate_needs_review",
+      "servings": 3,
+      "timeMinutes": null,
+      "ingredients": [
+        [
+          "Помидоры",
+          190,
+          "г"
+        ],
+        [
+          "Огурец",
+          100,
+          "г"
+        ],
+        [
+          "Красный сладкий перец",
+          145,
+          "г"
+        ],
+        [
+          "Листья салата",
+          10,
+          "г"
+        ],
+        [
+          "Фета",
+          50,
+          "г"
+        ],
+        [
+          "Маслины",
+          20,
+          "г"
+        ],
+        [
+          "Оливковое масло",
+          5,
+          "г"
+        ],
+        [
+          "Соль",
+          2,
+          "г"
+        ]
+      ],
+      "allergenCandidates": [
+        "milk"
+      ],
+      "equipmentCandidates": [],
+      "methodCandidates": [
+        "no_cook"
+      ],
+      "nutritionPerServing": {
+        "kcal": 105.5,
+        "protein_g": 4.6,
+        "fat_g": 6.5,
+        "carbs_g": 6.2,
+        "sourceStatus": "nutrition_source_only"
+      },
+      "source": "https://calorizator.ru/recipe/49295",
+      "reviewNotes": "Состав и КБЖУ приведены для 3 порций по данным источника; проверить выход."
+    },
+    {
+      "id": 8,
+      "name": "Суп-пюре из тыквы",
+      "status": "candidate_needs_review",
+      "servings": 4,
+      "timeMinutes": 35,
+      "ingredients": [
+        [
+          "Вода",
+          800,
+          "мл"
+        ],
+        [
+          "Красный болгарский перец",
+          4,
+          "шт."
+        ],
+        [
+          "Тыква",
+          500,
+          "г"
+        ],
+        [
+          "Сливки 20%",
+          250,
+          "мл"
+        ],
+        [
+          "Лук",
+          1,
+          "шт."
+        ],
+        [
+          "Сливочное масло",
+          30,
+          "г"
+        ],
+        [
+          "Тыквенные семечки",
+          2,
+          "ст. л."
+        ],
+        [
+          "Имбирь молотый",
+          2,
+          "ч. л."
+        ],
+        [
+          "Чеснок",
+          1,
+          "г"
+        ],
+        [
+          "Приправа",
+          3,
+          "ч. л."
+        ]
+      ],
+      "allergenCandidates": [
+        "milk"
+      ],
+      "equipmentCandidates": [
+        "stove",
+        "blender"
+      ],
+      "methodCandidates": [
+        "boiling"
+      ],
+      "nutritionPerServing": {
+        "kcal": 386.8,
+        "protein_g": 8.1,
+        "fat_g": 27.8,
+        "carbs_g": 29.5,
+        "sourceStatus": "nutrition_source_only"
+      },
+      "source": "https://www.maggi.ru/recipes/sup-pyure-iz-tykvy",
+      "reviewNotes": "В составе есть готовая приправа неизвестного состава; нельзя считать список аллергенов исчерпывающим без состава приправы."
+    },
+    {
+      "id": 9,
+      "name": "Стейк из говядины",
+      "status": "candidate_needs_review",
+      "servings": 2,
+      "timeMinutes": 20,
+      "ingredients": [
+        [
+          "Говяжий стейк",
+          2,
+          "шт."
+        ],
+        [
+          "Сливочное масло",
+          15,
+          "г"
+        ],
+        [
+          "Соль",
+          null,
+          "по вкусу"
+        ],
+        [
+          "Чёрный перец",
+          null,
+          "по вкусу"
+        ],
+        [
+          "Тимьян",
+          5,
+          "веточек"
+        ]
+      ],
+      "allergenCandidates": [
+        "milk"
+      ],
+      "equipmentCandidates": [
+        "stove"
+      ],
+      "methodCandidates": [
+        "frying",
+        "grilling"
+      ],
+      "nutritionPerServing": {
+        "kcal": 247,
+        "protein_g": 28,
+        "fat_g": 15,
+        "carbs_g": 0,
+        "sourceStatus": "nutrition_source_only",
+        "basis": "на 100 г по источнику"
+      },
+      "source": "https://lefood.menu/recipes/govyazhiy-steyk-na-skovorode/",
+      "reviewNotes": "Пищевая ценность дана на 100 г, не на порцию. Уточнить вид и массу каждого стейка."
+    },
+    {
+      "id": 10,
+      "name": "Сырники со сметаной",
+      "status": "candidate_needs_review",
+      "servings": 1,
+      "timeMinutes": 25,
+      "ingredients": [
+        [
+          "Творог 9%",
+          180,
+          "г"
+        ],
+        [
+          "Яйцо",
+          55,
+          "г"
+        ],
+        [
+          "Пшеничная мука",
+          25,
+          "г"
+        ],
+        [
+          "Сахар",
+          10,
+          "г"
+        ],
+        [
+          "Подсолнечное масло",
+          7,
+          "г"
+        ],
+        [
+          "Сметана 15%",
+          30,
+          "г"
+        ],
+        [
+          "Соль",
+          1,
+          "г"
+        ]
+      ],
+      "allergenCandidates": [
+        "milk",
+        "eggs",
+        "gluten_cereals"
+      ],
+      "equipmentCandidates": [
+        "stove"
+      ],
+      "methodCandidates": [
+        "frying"
+      ],
+      "nutritionPerServing": {
+        "kcal": 613.7,
+        "protein_g": 40.4,
+        "fat_g": 34.3,
+        "carbs_g": 33.9,
+        "sourceStatus": "nutrition_source_only"
+      },
+      "source": "https://norma-fitness.com/recipes/syrniki-klassicheskie-so-smetanoy",
+      "reviewNotes": "Источник указывает одну порцию 277 г; проверить, что подача со сметаной включена в нутриенты."
+    },
+    {
+      "id": 11,
+      "name": "Креветки с рисом",
+      "status": "candidate_needs_review",
+      "servings": 1,
+      "timeMinutes": 20,
+      "ingredients": [
+        [
+          "Креветки очищенные",
+          150,
+          "г"
+        ],
+        [
+          "Рис круглозёрный сухой",
+          80,
+          "г"
+        ],
+        [
+          "Овощная смесь",
+          150,
+          "г"
+        ],
+        [
+          "Соевый соус",
+          15,
+          "г"
+        ],
+        [
+          "Подсолнечное масло",
+          10,
+          "г"
+        ],
+        [
+          "Чеснок",
+          5,
+          "г"
+        ],
+        [
+          "Соль",
+          2,
+          "г"
+        ]
+      ],
+      "allergenCandidates": [
+        "crustaceans",
+        "soy",
+        "gluten_cereals"
+      ],
+      "equipmentCandidates": [
+        "stove"
+      ],
+      "methodCandidates": [
+        "boiling",
+        "frying",
+        "stewing"
+      ],
+      "nutritionPerServing": {
+        "kcal": 630,
+        "protein_g": 47,
+        "fat_g": 12,
+        "carbs_g": 85,
+        "sourceStatus": "nutrition_source_only"
+      },
+      "source": "https://piknifood.ru/recipe/krevetki-s-risom-i-ovoschami-lunch/",
+      "reviewNotes": "В источнике заявлены глютен и моллюски; по составу креветки относятся к ракообразным. Проверить состав соевого соуса и смесь овощей."
+    },
+    {
+      "id": 12,
+      "name": "Фалафель с хумусом",
+      "status": "candidate_needs_review",
+      "servings": null,
+      "timeMinutes": 45,
+      "ingredients": [
+        [
+          "Нут",
+          900,
+          "г"
+        ],
+        [
+          "Лук",
+          800,
+          "г"
+        ],
+        [
+          "Чеснок",
+          4,
+          "зубчика"
+        ],
+        [
+          "Кориандр",
+          1,
+          "ч. л."
+        ],
+        [
+          "Разрыхлитель",
+          0.5,
+          "ч. л."
+        ],
+        [
+          "Мука",
+          4,
+          "ст. л."
+        ],
+        [
+          "Петрушка",
+          1,
+          "пучок"
+        ],
+        [
+          "Тмин",
+          1,
+          "ч. л."
+        ],
+        [
+          "Лимон",
+          0.5,
+          "шт."
+        ],
+        [
+          "Оливковое масло",
+          3,
+          "ст. л."
+        ]
+      ],
+      "allergenCandidates": [
+        "gluten_cereals"
+      ],
+      "equipmentCandidates": [
+        "stove",
+        "blender"
+      ],
+      "methodCandidates": [
+        "frying"
+      ],
+      "nutritionPerServing": {
+        "kcal": 226,
+        "protein_g": 3,
+        "fat_g": 13,
+        "carbs_g": 30,
+        "sourceStatus": "nutrition_source_only",
+        "basis": "на 100 г по источнику"
+      },
+      "source": "https://m.povar.ru/recipes/falafel_s_humusom-68403.html",
+      "reviewNotes": "В рецепте хумус готовится из части нута; нужно редакторски сверить количества и наличие тахини/кунжута в выбранной версии."
+    },
+    {
+      "id": 13,
+      "name": "Запеченная курица с овощами",
+      "status": "candidate_needs_review",
+      "servings": 4,
+      "timeMinutes": 35,
+      "ingredients": [
+        [
+          "Куриная грудка",
+          300,
+          "г"
+        ],
+        [
+          "Зелёная стручковая фасоль",
+          200,
+          "г"
+        ],
+        [
+          "Красный перец",
+          300,
+          "г"
+        ],
+        [
+          "Лук",
+          50,
+          "г"
+        ],
+        [
+          "Сыр",
+          50,
+          "г"
+        ],
+        [
+          "Оливковое масло",
+          10,
+          "г"
+        ]
+      ],
+      "allergenCandidates": [
+        "milk"
+      ],
+      "equipmentCandidates": [
+        "stove",
+        "oven"
+      ],
+      "methodCandidates": [
+        "frying",
+        "baking"
+      ],
+      "nutritionPerServing": {
+        "kcal": 174,
+        "protein_g": 23.4,
+        "fat_g": 4.8,
+        "carbs_g": 6.8,
+        "sourceStatus": "nutrition_source_only"
+      },
+      "source": "https://online.daily-menu.ru/dailymenu/recipes/view/107444",
+      "reviewNotes": "Источник включает краткое обжаривание и затем запекание; время 20+15 минут. Проверить, что это совпадает с изображением и названием."
+    },
+    {
+      "id": 14,
+      "name": "Творог с фруктами",
+      "status": "candidate_needs_review",
+      "servings": 1,
+      "timeMinutes": 10,
+      "ingredients": [
+        [
+          "Творог 5%",
+          150,
+          "г"
+        ],
+        [
+          "Нектарин",
+          100,
+          "г"
+        ],
+        [
+          "Киви",
+          50,
+          "г"
+        ]
+      ],
+      "allergenCandidates": [
+        "milk"
+      ],
+      "equipmentCandidates": [],
+      "methodCandidates": [
+        "no_cook"
+      ],
+      "nutritionPerServing": {
+        "kcal": 99,
+        "protein_g": 11.4,
+        "fat_g": 2.8,
+        "carbs_g": 6.2,
+        "sourceStatus": "nutrition_source_only",
+        "basis": "на 100 г по источнику"
+      },
+      "source": "https://health-diet.ru/people/user/813527/",
+      "reviewNotes": "В источнике общая масса ингредиентов 300 г и масса готового блюда 290 г; КБЖУ указаны на 100 г."
+    },
+    {
+      "id": 15,
+      "name": "Смузи-боул",
+      "status": "candidate_needs_review",
+      "servings": 1,
+      "timeMinutes": null,
+      "ingredients": [
+        [
+          "Банан",
+          50,
+          "г"
+        ],
+        [
+          "Кешью",
+          30,
+          "г"
+        ],
+        [
+          "Овсяные отруби",
+          40,
+          "г"
+        ],
+        [
+          "Кокосовая стружка",
+          10,
+          "г"
+        ],
+        [
+          "Молоко 2.5%",
+          150,
+          "г"
+        ]
+      ],
+      "allergenCandidates": [
+        "tree_nuts",
+        "milk",
+        "gluten_cereals"
+      ],
+      "equipmentCandidates": [
+        "blender"
+      ],
+      "methodCandidates": [
+        "no_cook"
+      ],
+      "nutritionPerServing": {
+        "kcal": 161.8,
+        "protein_g": 6.4,
+        "fat_g": 8.6,
+        "carbs_g": 17.5,
+        "sourceStatus": "nutrition_source_only",
+        "basis": "на 100 г по источнику"
+      },
+      "source": "https://health-diet.ru/table_calorie_users/2437654/",
+      "reviewNotes": "Источник даёт один вариант с кешью, овсяными отрубями и молоком. Отруби требуют проверки маркировки на глютен/перекрёстный контакт."
+    }
+  ]
+}
