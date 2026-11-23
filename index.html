@@ -270,6 +270,7 @@
   <div class="step" id="step7">
     <h1>Мои вкусовые предпочтения</h1>
     <p class="subtitle">Выбери продукты и ингредиенты, которые любишь, а затем отметь те, которые не хочешь видеть в меню.</p>
+    <div id="tastePersonTabs" class="taste-mode" style="margin-bottom:12px;"></div>
     <div class="taste-mode">
       <button type="button" id="tasteLoveTab" class="active-love" onclick="setTasteMode('love')">♥ Люблю</button>
       <button type="button" id="tasteAvoidTab" onclick="setTasteMode('avoid')">✕ Не люблю</button>
@@ -4710,7 +4711,7 @@
     let state = {
       step: 1, totalSteps: 10, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
       persons: [], equipment: ['stove'], cookingMethods: [],
-      tasteMode: 'love', likedIngredients: [], dislikedIngredients: [],
+      tasteMode: 'love', tastePersonIndex: 0,
       finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
     };
 
@@ -4723,7 +4724,7 @@
           id: i, gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'),
           mode: existing ? existing.mode : 'calc', calories: existing ? existing.calories : 2000, activity: existing ? existing.activity : 1.2,
           age: existing ? existing.age : '', height: existing ? existing.height : '', weight: existing ? existing.weight : '',
-          goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : [], intolerances: existing ? (existing.intolerances || []) : []
+          goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : [], intolerances: existing ? (existing.intolerances || []) : [], likedIngredients: existing ? (existing.likedIngredients || []) : [], dislikedIngredients: existing ? (existing.dislikedIngredients || []) : []
         });
       }
     }
@@ -5016,7 +5017,7 @@
     }
 
     function getPreferenceFilteredDishes(dishes) {
-      const disliked = state.dislikedIngredients || [];
+      const disliked = getAllFamilyDislikedIngredients();
       // Если состав неизвестен, при активных исключениях не включаем блюдо:
       // иначе нелюбимый продукт может попасть в меню незаметно.
       return dishes.filter(dish => {
@@ -5064,19 +5065,50 @@
       gluten_cereals: ['Пшеничный хлеб','Ржаной хлеб','Лаваш','Макароны','Булгур','Кускус','Перловка']
     };
 
-    function getFamilyAllergyBlockedIngredients() {
+    function getActiveTastePerson() {
+      return state.persons[state.tastePersonIndex] || state.persons[0] || { likedIngredients: [], dislikedIngredients: [], allergies: [] };
+    }
+
+    function getPersonAllergyBlockedIngredients(person) {
       const blocked = new Set();
-      (state.persons || []).forEach(person => (person.allergies || []).forEach(allergen => {
+      (person?.allergies || []).forEach(allergen => {
         (allergyBlockedIngredients[allergen] || []).forEach(name => blocked.add(name));
-      }));
+      });
       return blocked;
     }
 
-    function isIngredientBlockedByAllergy(name) {
+    function isIngredientBlockedByAllergy(name, person = getActiveTastePerson()) {
       const normalized = normalizeIngredientText(name);
-      return [...getFamilyAllergyBlockedIngredients()].some(item =>
+      return [...getPersonAllergyBlockedIngredients(person)].some(item =>
         normalizeIngredientText(item) === normalized
       );
+    }
+
+    function getAllFamilyLikedIngredients() {
+      return [...new Set((state.persons || []).flatMap(person => person.likedIngredients || []))];
+    }
+
+    function getAllFamilyDislikedIngredients() {
+      return [...new Set((state.persons || []).flatMap(person => person.dislikedIngredients || []))];
+    }
+
+    function setTastePerson(index) {
+      state.tastePersonIndex = index;
+      renderTastePreferences();
+    }
+
+    function renderTastePersonTabs() {
+      const container = document.getElementById('tastePersonTabs');
+      if (!container) return;
+      container.innerHTML = '';
+      state.persons.forEach((person, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = 'Человек ' + person.id;
+        button.className = index === state.tastePersonIndex ? 'active-love' : '';
+        button.addEventListener('click', () => setTastePerson(index));
+        container.appendChild(button);
+      });
     }
 
     function setTasteMode(mode) {
@@ -5085,15 +5117,18 @@
     }
 
     function toggleIngredient(name) {
+      const person = getActiveTastePerson();
+      person.likedIngredients = person.likedIngredients || [];
+      person.dislikedIngredients = person.dislikedIngredients || [];
       if (state.tasteMode === 'love') {
-        if (isIngredientBlockedByAllergy(name)) return;
-        state.likedIngredients = state.likedIngredients.includes(name)
-          ? state.likedIngredients.filter(item => item !== name) : [...state.likedIngredients, name];
-        state.dislikedIngredients = state.dislikedIngredients.filter(item => item !== name);
+        if (isIngredientBlockedByAllergy(name, person)) return;
+        person.likedIngredients = person.likedIngredients.includes(name)
+          ? person.likedIngredients.filter(item => item !== name) : [...person.likedIngredients, name];
+        person.dislikedIngredients = person.dislikedIngredients.filter(item => item !== name);
       } else {
-        state.dislikedIngredients = state.dislikedIngredients.includes(name)
-          ? state.dislikedIngredients.filter(item => item !== name) : [...state.dislikedIngredients, name];
-        state.likedIngredients = state.likedIngredients.filter(item => item !== name);
+        person.dislikedIngredients = person.dislikedIngredients.includes(name)
+          ? person.dislikedIngredients.filter(item => item !== name) : [...person.dislikedIngredients, name];
+        person.likedIngredients = person.likedIngredients.filter(item => item !== name);
       }
       renderTastePreferences();
     }
@@ -5104,8 +5139,12 @@
       if (!loveTab || !avoidTab) return;
       loveTab.className = state.tasteMode === 'love' ? 'active-love' : '';
       avoidTab.className = state.tasteMode === 'avoid' ? 'active-avoid' : '';
-      document.getElementById('lovedCount').textContent = 'Люблю: ' + state.likedIngredients.length;
-      document.getElementById('dislikedCount').textContent = 'Не люблю: ' + state.dislikedIngredients.length;
+      const person = getActiveTastePerson();
+      person.likedIngredients = person.likedIngredients || [];
+      person.dislikedIngredients = person.dislikedIngredients || [];
+      renderTastePersonTabs();
+      document.getElementById('lovedCount').textContent = 'Люблю: ' + person.likedIngredients.length;
+      document.getElementById('dislikedCount').textContent = 'Не люблю: ' + person.dislikedIngredients.length;
       document.getElementById('tasteModeHint').textContent = state.tasteMode === 'love'
         ? 'Отмечай продукты, которые тебе нравятся. Они будут приоритетом при составлении меню.'
         : 'Отмечай продукты, которые не хочешь видеть в меню. Они будут исключены из подбора.';
@@ -5133,8 +5172,8 @@
           const button = document.createElement('button');
           button.type = 'button';
           button.className = 'ingredient-chip' +
-            (state.likedIngredients.includes(name) ? ' loved' : '') +
-            (state.dislikedIngredients.includes(name) ? ' disliked' : '');
+            (getActiveTastePerson().likedIngredients.includes(name) ? ' loved' : '') +
+            (getActiveTastePerson().dislikedIngredients.includes(name) ? ' disliked' : '');
           button.textContent = name;
           const allergyBlocked = isIngredientBlockedByAllergy(name);
           if (allergyBlocked) {
@@ -5142,7 +5181,7 @@
             button.title = 'Исключено из-за аллергии у члена семьи';
             button.classList.add('allergy-blocked');
           }
-          button.setAttribute('aria-pressed', String(state.likedIngredients.includes(name) || state.dislikedIngredients.includes(name)));
+          button.setAttribute('aria-pressed', String(getActiveTastePerson().likedIngredients.includes(name) || getActiveTastePerson().dislikedIngredients.includes(name)));
           button.addEventListener('click', () => toggleIngredient(name));
           grid.appendChild(button);
         });
@@ -5234,8 +5273,8 @@
       const removing = p.allergies.includes(id);
       p.allergies = removing ? p.allergies.filter(a => a !== id) : [...p.allergies, id];
       if (!removing) {
-        const blocked = getFamilyAllergyBlockedIngredients();
-        state.likedIngredients = state.likedIngredients.filter(item =>
+        const blocked = getPersonAllergyBlockedIngredients(p);
+        p.likedIngredients = (p.likedIngredients || []).filter(item =>
           ![...blocked].some(name => normalizeIngredientText(name) === normalizeIngredientText(item))
         );
       }
@@ -5286,7 +5325,7 @@
 
       // Повторно проверяем пищевые ограничения и вкусовые предпочтения на этапе генерации.
       const compatible = getPreferenceFilteredDishes(getCompatibleDishes());
-      const lovedIngredients = state.likedIngredients || [];
+      const lovedIngredients = getAllFamilyLikedIngredients();
       const rotation = { breakfast: 0, lunch: 0, dinner: 0 };
       const menuContainer = document.getElementById('resultMenu');
       let menuHtml = '';
@@ -5319,7 +5358,7 @@
           menuHtml += '<div class="menu-day"><div class="menu-day-title">' + day + '</div>' +
             dayHtml + '</div>';
         });
-        const preferenceNote = (state.likedIngredients.length || state.dislikedIngredients.length)
+        const preferenceNote = (getAllFamilyLikedIngredients().length || getAllFamilyDislikedIngredients().length)
           ? '<p class="hint" style="margin:0 0 14px;">Подбор учитывает выбранные любимые и нелюбимые продукты по предварительным составам рецептов. Составы ещё проверяются; это не фильтр аллергенов.</p>'
           : '';
         menuContainer.innerHTML = preferenceNote + menuHtml;
