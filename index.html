@@ -10,7 +10,7 @@
       --border: #E5E7EB; --success: #059669; --success-light: #ECFDF5; --muted: #6B7280; --danger: #EF4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); padding: 20px 20px 100px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); padding: 20px 16px calc(120px + env(safe-area-inset-bottom)); }
     
     .header { text-align: center; margin-bottom: 20px; }
     .logo { font-size: 24px; font-weight: 800; color: var(--primary); }
@@ -28,9 +28,9 @@
     
     /* Шаг 1 */
     .store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .store-card { background: white; border: 1.5px solid var(--border); border-radius: 12px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s; }
+    .store-card { min-width: 0; background: white; border: 1.5px solid var(--border); border-radius: 16px; padding: 20px 10px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s; }
     .store-card.selected { border-color: var(--primary); background: var(--primary-light); }
-    .store-circle { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: white; }
+    .store-circle { width: 68px; height: 68px; flex: 0 0 68px; padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-align: center; overflow-wrap: anywhere; line-height: 1.1; font-size: 12px; font-weight: 800; color: white; }
     .store-name { font-size: 13px; font-weight: 600; }
     
     /* Шаг 2 */
@@ -165,7 +165,7 @@
     .receipt-footer { text-align: center; font-size: 11px; color: #777; margin-top: 20px; }
 
     /* Кнопки */
-    .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 20px; background: var(--bg); border-top: 1px solid var(--border); z-index: 10; }
+    .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--border); z-index: 10; }
     .btn-next { width: 100%; background: var(--primary); color: #FFFFFF; font-size: 18px; font-weight: 800; border: none; padding: 18px; border-radius: 14px; cursor: pointer; transition: 0.2s; opacity: 0.5; pointer-events: none; }
     .btn-next.active { opacity: 1; pointer-events: auto; }
     .btn-back { background: white; border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 20px; cursor: pointer; position: absolute; left: 20px; top: 20px; display: none; z-index: 20; }
@@ -220,11 +220,11 @@
   </div>
 
   <div class="step" id="step4">
-    <h1>Бюджет на неделю</h1>
-    <p class="subtitle">Не будем предлагать то, что в него не влезет.</p>
+    <h1>Бюджет семьи на неделю</h1>
+    <p class="subtitle">Укажи общий ориентир на продукты для всей семьи. Пока это настройка меню, а не гарантия итоговой стоимости.</p>
     <div class="budget-display">
       <div class="budget-amount" id="budgetDisplay">200 BYN</div>
-      <div class="budget-per-person" id="budgetPerPersonDisplay">≈ 100 BYN на человека в неделю</div>
+      <div class="budget-per-person" id="budgetPerPersonDisplay">Общий бюджет семьи за 7 дней</div>
     </div>
     <div class="slider-container">
       <input type="range" id="budgetSlider" min="100" max="500" step="50" value="200" oninput="updateBudget(this.value)">
@@ -261,7 +261,7 @@
 
   <div class="step" id="step8">
     <h1>Детали готовки</h1>
-    <p class="subtitle">Учтем аллергии и то, что есть на кухне.</p>
+    <p class="subtitle">Учтём ограничения и кухонную технику. Важно: пока рецепты демонстрационные, поэтому проверка аллергенов не заменяет чтение состава продуктов.</p>
     <div class="section-title">🍳 Что есть на кухне?</div>
     <div id="equipmentContainer"></div>
     <div class="section-title">🚫 Аллергии и стоп-лист</div>
@@ -269,27 +269,10 @@
   </div>
 
   <div class="step" id="step9">
-    <h1>Твой план готов! 🎉</h1>
-    <p class="subtitle">Куда прислать меню и список покупок?</p>
-    <div class="final-form">
-      <div class="input-group">
-        <label>Как тебя зовут?</label>
-        <input type="text" id="userName" placeholder="Имя" oninput="validateFinalForm()">
-      </div>
-      <label>Куда прислать план?</label>
-      <div class="messenger-select">
-        <div class="messenger-btn active" id="btnTg" onclick="selectMessenger('Telegram')">✈️ Telegram</div>
-        <div class="messenger-btn" id="btnViber" onclick="selectMessenger('Viber')">📞 Viber</div>
-      </div>
-      <div class="input-group">
-        <label id="contactLabel">Твой ник в Telegram</label>
-        <input type="text" id="userContact" placeholder="@username" oninput="validateFinalForm()">
-      </div>
-      <div class="checkbox-row" onclick="toggleAgreement()">
-        <div class="checkbox-custom" id="agreeCheckbox"></div>
-        <div>Я согласен на обработку персональных данных</div>
-      </div>
-    </div>
+    <h1>Почти готово! 🎉</h1>
+    <p class="subtitle">Сформируем предварительное меню прямо в приложении.</p>
+    <div class="budget-notice"><div>ℹ️</div><div><strong>Пока без отправки контактов</strong><br><span>В этой версии нет сервера для отправки заявок. Не нужно оставлять имя, телефон или никнейм.</span></div></div>
+    <p class="subtitle" style="margin-top:18px;">Меню будет сформировано из демонстрационного набора блюд. Составы ингредиентов и цены магазинов ещё подключаются.</p>
   </div>
 
   <div class="step" id="step10">
@@ -347,7 +330,7 @@
         const existing = oldPersons[i-1];
         state.persons.push({
           id: i, gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'),
-          mode: existing ? existing.mode : 'calc', calories: existing ? existing.calories : 2000,
+          mode: existing ? existing.mode : 'calc', calories: existing ? existing.calories : 2000, activity: existing ? existing.activity : 1.2,
           age: existing ? existing.age : '', height: existing ? existing.height : '', weight: existing ? existing.weight : '',
           goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : []
         });
@@ -405,7 +388,7 @@
       if (state.step === 7) initSwipes();
       if (state.step === 8) renderAllergiesAndEquipment();
       
-      if (state.step === 9) { document.getElementById('btnNext').textContent = 'Получить план →'; validateFinalForm(); }
+      if (state.step === 9) { document.getElementById('btnNext').textContent = 'Сформировать меню →'; document.getElementById('btnNext').classList.add('active'); }
       else if (state.step < 9) { document.getElementById('btnNext').textContent = 'Далее →'; validateNextBtn(); }
 
       window.scrollTo(0, 0);
@@ -487,13 +470,12 @@
     function updateBudget(val) {
       state.budget = parseInt(val);
       document.getElementById('budgetDisplay').textContent = `${state.budget} BYN`;
-      const perPerson = Math.round(state.budget / state.adultsCount);
-      document.getElementById('budgetPerPersonDisplay').textContent = `≈ ${perPerson} BYN на человека в неделю`;
+      document.getElementById('budgetPerPersonDisplay').textContent = 'Общий бюджет семьи за 7 дней';
       
       const noticeBox = document.getElementById('budgetNotice');
-      if (perPerson < 75) { noticeBox.className = 'budget-notice warning'; noticeBox.innerHTML = '<div>⚠️</div><div><strong>Экономный бюджет</strong><br><span>Базовые продукты: крупы, курица, овощи.</span></div>'; }
-      else if (perPerson < 150) { noticeBox.className = 'budget-notice'; noticeBox.innerHTML = '<div>✅</div><div><strong>Хороший бюджет</strong><br><span>Хватит на рыбу, фрукты и заготовки.</span></div>'; }
-      else { noticeBox.className = 'budget-notice'; noticeBox.innerHTML = '<div>⭐</div><div><strong>Отличный бюджет</strong><br><span>Можно добавить деликатесы и орехи.</span></div>'; }
+      if (state.budget < 200) { noticeBox.className = 'budget-notice warning'; noticeBox.innerHTML = '<div>ℹ️</div><div><strong>Сдержанный ориентир</strong><br><span>Итоговую стоимость можно будет проверить после подключения цен.</span></div>'; }
+      else if (state.budget < 400) { noticeBox.className = 'budget-notice'; noticeBox.innerHTML = '<div>ℹ️</div><div><strong>Средний ориентир</strong><br><span>Это желаемый предел, а не рассчитанная стоимость корзины.</span></div>'; }
+      else { noticeBox.className = 'budget-notice'; noticeBox.innerHTML = '<div>ℹ️</div><div><strong>Более свободный ориентир</strong><br><span>Сравнение фактической стоимости появится после подключения цен.</span></div>'; }
     }
 
     function renderPersons() {
@@ -513,9 +495,10 @@
             <div class="tab ${person.mode === 'calc' ? 'active' : ''}" onclick="updatePerson(${index}, 'mode', 'calc')">Рассчитать</div>
           </div>
           <div>${person.mode === 'know' ? `<div class="input-group"><label>Ваша норма (ккал/день)</label><input type="number" value="${person.calories}" onchange="updatePerson(${index}, 'calories', this.value)"></div>` : `
-            <div class="input-group"><label>Возраст</label><input type="number" value="${person.age}" onchange="updatePerson(${index}, 'age', this.value)"></div>
-            <div class="input-group"><label>Рост (см)</label><input type="number" value="${person.height}" onchange="updatePerson(${index}, 'height', this.value)"></div>
-            <div class="input-group"><label>Вес (кг)</label><input type="number" value="${person.weight}" onchange="updatePerson(${index}, 'weight', this.value)"></div>
+            <div class="input-group"><label>Возраст (лет)</label><input type="number" min="18" max="100" value="${person.age}" onchange="updatePerson(${index}, 'age', this.value)"></div>
+            <div class="input-group"><label>Рост (см)</label><input type="number" min="120" max="230" value="${person.height}" onchange="updatePerson(${index}, 'height', this.value)"></div>
+            <div class="input-group"><label>Вес (кг)</label><input type="number" min="30" max="300" value="${person.weight}" onchange="updatePerson(${index}, 'weight', this.value)"></div>
+            <div class="input-group"><label>Уровень активности</label><select onchange="updatePerson(${index}, 'activity', this.value)"><option value="1.2" ${person.activity === 1.2 ? 'selected' : ''}>Низкая — преимущественно сидячий образ жизни</option><option value="1.375" ${person.activity === 1.375 ? 'selected' : ''}>Лёгкая — тренировки 1–3 раза в неделю</option><option value="1.55" ${person.activity === 1.55 ? 'selected' : ''}>Средняя — тренировки 3–5 раз в неделю</option><option value="1.725" ${person.activity === 1.725 ? 'selected' : ''}>Высокая — интенсивные тренировки 6–7 раз</option></select></div>
             <div class="input-group"><label>Цель</label>
               <div class="goal-btns">
                 <div class="goal-btn ${person.goal === 'lose' ? 'active' : ''}" onclick="updatePerson(${index}, 'goal', 'lose')">Похудеть</div>
@@ -524,8 +507,8 @@
               </div>
             </div>
             <div class="result-box" id="calc-result-${index}">
-              ${person.age && person.height && person.weight ? `Рекомендуемая норма: ${calculateCalories(person)} ккал/день` : 'Заполните данные'}
-            </div>
+              ${person.age && person.height && person.weight ? (calculateCalories(person) > 0 ? `Ориентир: ${calculateCalories(person)} ккал/день` : 'Проверьте возраст, рост и вес') : 'Заполните данные'}
+            </div><p class="hint" style="margin:10px 0 0;">Приблизительная оценка по формуле, не медицинская рекомендация. Для детей и особых состояний этот расчёт не подходит.</p>
           `}</div>
         `;
         container.appendChild(card);
@@ -533,25 +516,26 @@
     }
 
     function updatePerson(index, field, value) {
-      state.persons[index][field] = value;
+      state.persons[index][field] = field === 'activity' ? parseFloat(value) : value;
       if (field !== 'calories') {
         const p = state.persons[index];
         if (p.mode === 'calc' && p.age && p.height && p.weight) p.calories = calculateCalories(p);
       }
-      if (field === 'gender' || field === 'mode' || field === 'goal') renderPersons();
+      if (field === 'gender' || field === 'mode' || field === 'goal' || field === 'activity') renderPersons();
       else if (field === 'age' || field === 'height' || field === 'weight') {
         const resBox = document.getElementById(`calc-result-${index}`);
         if (resBox && state.persons[index].age && state.persons[index].height && state.persons[index].weight) {
-          resBox.textContent = `Рекомендуемая норма: ${calculateCalories(state.persons[index])} ккал/день`;
+          const estimate = calculateCalories(state.persons[index]);
+          resBox.textContent = estimate > 0 ? `Ориентир: ${estimate} ккал/день` : 'Проверьте возраст, рост и вес';
         }
       }
     }
 
     function calculateCalories(person) {
       const age = parseFloat(person.age) || 0; const height = parseFloat(person.height) || 0; const weight = parseFloat(person.weight) || 0;
-      if (age === 0 || height === 0 || weight === 0) return 0;
+      if (age < 18 || age > 100 || height < 120 || height > 230 || weight < 30 || weight > 300) return 0;
       let bmr = person.gender === 'male' ? (10 * weight) + (6.25 * height) - (5 * age) + 5 : (10 * weight) + (6.25 * height) - (5 * age) - 161;
-      let total = bmr * 1.2; 
+      let total = bmr * (parseFloat(person.activity) || 1.2); 
       if (person.goal === 'lose') total *= 0.8;
       if (person.goal === 'gain') total *= 1.15;
       return Math.round(total);
