@@ -270,6 +270,7 @@
   <div class="step" id="step7">
     <h1>Мои вкусовые предпочтения</h1>
     <p class="subtitle">Выбери продукты и ингредиенты, которые любишь, а затем отметь те, которые не хочешь видеть в меню.</p>
+    <div id="tastePersonTabs" class="taste-mode" style="margin-bottom:12px;"></div>
     <div class="taste-mode">
       <button type="button" id="tasteLoveTab" class="active-love" onclick="setTasteMode('love')">♥ Люблю</button>
       <button type="button" id="tasteAvoidTab" onclick="setTasteMode('avoid')">✕ Не люблю</button>
@@ -330,922 +331,4389 @@
 
   <script>
     const allDishes =       [
-        {
-          "id": 1,
-          "name": "Овсянка с ягодами",
-          "image": "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/porridge_with_berries.jpg",
-          "calories": null,
-          "type": "breakfast",
-          "tags": [
-            "vegetarian"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Овсяные хлопья",
-              50,
-              "г"
-            ],
-            [
-              "Молоко 2.5%",
-              200,
-              "г"
-            ],
-            [
-              "Мёд",
-              8,
-              "г"
-            ],
-            [
-              "Сливочное масло",
-              10,
-              "г"
-            ],
-            [
-              "Свежие ягоды",
-              50,
-              "г"
-            ]
-          ],
-          "servings": 1,
-          "timeMinutes": 15,
-          "allergenCandidates": [
-            "gluten_cereals",
-            "milk"
-          ],
-          "equipmentCandidates": [
-            "stove"
-          ],
-          "methodCandidates": [
-            "boiling"
-          ],
-          "source": "https://piknifood.ru/recipe/ovsyanka-s-yagodami-breakfast/",
-          "reviewNotes": "Овёс сам по себе не равен пшенице/ржи/ячменю; проверить маркировку безглютеновости и перекрёстный контакт. Варианты с орехами/йогуртом не смешивать с этой версией."
-        },
-        {
-          "id": 2,
-          "name": "Омлет с сыром",
-          "image": "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/cheese_omelet.jpg",
-          "calories": null,
-          "type": "breakfast",
-          "tags": [
-            "vegetarian"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Яйцо",
-              2,
-              "шт."
-            ],
-            [
-              "Молоко",
-              3,
-              "ст. л."
-            ],
-            [
-              "Сыр",
-              30,
-              "г"
-            ],
-            [
-              "Соль",
-              null,
-              "по вкусу"
-            ]
-          ],
-          "servings": 1,
-          "timeMinutes": 20,
-          "allergenCandidates": [
-            "eggs",
-            "milk"
-          ],
-          "equipmentCandidates": [
-            "stove",
-            "oven"
-          ],
-          "methodCandidates": [
-            "frying",
-            "baking"
-          ],
-          "source": "https://www.maggi.ru/recipes/prostoy-omlet-s-syrom",
-          "reviewNotes": "Источник даёт 1 порцию, но способ приготовления и время проверить: на странице приведены 10 минут и отдельный вариант запекания."
-        },
-        {
-          "id": 3,
-          "name": "Куриная грудка с гречкой",
-          "image": "https://www.arise-app.com/images/dishes/ru/kurinaa-grudka-s-greckoj-i-ovosnym-salatom-4zgh1n.webp",
-          "calories": null,
-          "type": "lunch",
-          "tags": [
-            "meat"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Куриная грудка без кожи и костей",
-              450,
-              "г"
-            ],
-            [
-              "Гречневая крупа сухая",
-              180,
-              "г"
-            ],
-            [
-              "Лук",
-              100,
-              "г"
-            ],
-            [
-              "Морковь",
-              100,
-              "г"
-            ],
-            [
-              "Подсолнечное масло",
-              20,
-              "г"
-            ],
-            [
-              "Вода",
-              450,
-              "г"
-            ],
-            [
-              "Соль",
-              5,
-              "г"
-            ],
-            [
-              "Чёрный перец",
-              1,
-              "г"
-            ]
-          ],
-          "servings": 3,
-          "timeMinutes": 40,
-          "allergenCandidates": [],
-          "equipmentCandidates": [
-            "stove"
-          ],
-          "methodCandidates": [
-            "boiling",
-            "stewing"
-          ],
-          "source": "https://wayeat.ru/recipes/kurinaya-grudka-s-grechkoy-8ad4ab8c-ed4e-48a8-b86f-10e2a49148f7",
-          "reviewNotes": "Гречка не содержит глютен по природе, но проверить примеси/маркировку."
-        },
-        {
-          "id": 4,
-          "name": "Лосось с овощами",
-          "image": "https://www.arise-app.com/images/dishes/de/lachs-mit-gemuse-1cg1qy.webp",
-          "calories": null,
-          "type": "dinner",
-          "tags": [
-            "fish"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Лосось/сёмга",
-              180,
-              "г"
-            ],
-            [
-              "Брокколи",
-              100,
-              "г"
-            ],
-            [
-              "Морковь",
-              80,
-              "г"
-            ],
-            [
-              "Оливковое масло",
-              15,
-              "г"
-            ],
-            [
-              "Лимон",
-              10,
-              "г"
-            ],
-            [
-              "Соль",
-              2,
-              "г"
-            ],
-            [
-              "Чёрный перец",
-              1,
-              "г"
-            ],
-            [
-              "Укроп",
-              5,
-              "г"
-            ]
-          ],
-          "servings": 1,
-          "timeMinutes": 50,
-          "allergenCandidates": [
-            "fish"
-          ],
-          "equipmentCandidates": [
-            "oven"
-          ],
-          "methodCandidates": [
-            "baking"
-          ],
-          "source": "https://piknifood.ru/recipe/losos-zapechyonnyy-s-ovoschami-dinner/",
-          "reviewNotes": "Источник указывает одну порцию; проверить время и фактический вес после приготовления."
-        },
-        {
-          "id": 5,
-          "name": "Тофу с рисом и брокколи",
-          "image": "https://i5.walmartimages.com/asr/75b28093-3179-44f8-8e24-d265f149d74f.ffd279b272cba62c5d4473af8ecbc156.jpeg?odnBg=FFFFFF&odnHeight=768&odnWidth=768",
-          "calories": null,
-          "type": "lunch",
-          "tags": [
-            "vegan"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Тофу",
-              100,
-              "г"
-            ],
-            [
-              "Кукуруза консервированная",
-              50,
-              "г"
-            ],
-            [
-              "Соевый соус",
-              1,
-              "ст. л."
-            ],
-            [
-              "Рис",
-              30,
-              "г"
-            ],
-            [
-              "Оливковое масло",
-              1,
-              "ч. л."
-            ],
-            [
-              "Паприка и специи",
-              null,
-              "по вкусу"
-            ]
-          ],
-          "servings": null,
-          "timeMinutes": null,
-          "allergenCandidates": [
-            "soy"
-          ],
-          "equipmentCandidates": [
-            "stove"
-          ],
-          "methodCandidates": [
-            "frying",
-            "boiling",
-            "stewing"
-          ],
-          "source": "https://www.sportmaster.ru/media/nutrition/tofu-s-risom/",
-          "reviewNotes": "Найден вариант с кукурузой, а не брокколи; не подменять ингредиент молча. Соевый соус может содержать пшеницу — сверять этикетку."
-        },
-        {
-          "id": 6,
-          "name": "Индейка в сливочном соусе",
-          "image": "https://caseguru.ru/upload/img/image3eowifodfjsdovfvdvhfjg.jpg",
-          "calories": null,
-          "type": "dinner",
-          "tags": [
-            "meat"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Филе бедра индейки",
-              600,
-              "г"
-            ],
-            [
-              "Лисички свежие",
-              200,
-              "г"
-            ],
-            [
-              "Сливки 20%",
-              250,
-              "мл"
-            ],
-            [
-              "Лук",
-              100,
-              "г"
-            ],
-            [
-              "Растительное масло",
-              20,
-              "мл"
-            ],
-            [
-              "Соль",
-              null,
-              "по вкусу"
-            ],
-            [
-              "Чёрный перец",
-              null,
-              "по вкусу"
-            ]
-          ],
-          "servings": 4,
-          "timeMinutes": 35,
-          "allergenCandidates": [
-            "milk"
-          ],
-          "equipmentCandidates": [
-            "stove"
-          ],
-          "methodCandidates": [
-            "frying",
-            "stewing"
-          ],
-          "source": "https://www.gastronom.ru/recipe/67309/indejka-v-slivochnom-souse-na-skovorode",
-          "reviewNotes": "Источник включает грибы; проверить, соответствует ли это целевой карточке."
-        },
-        {
-          "id": 7,
-          "name": "Греческий салат",
-          "image": "https://kaskanaus.lt/uploads/recipes/klasikines-graikiskos-salotos-000294.webp",
-          "calories": null,
-          "type": "lunch",
-          "tags": [
-            "vegetarian"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Помидоры",
-              190,
-              "г"
-            ],
-            [
-              "Огурец",
-              100,
-              "г"
-            ],
-            [
-              "Красный сладкий перец",
-              145,
-              "г"
-            ],
-            [
-              "Листья салата",
-              10,
-              "г"
-            ],
-            [
-              "Фета",
-              50,
-              "г"
-            ],
-            [
-              "Маслины",
-              20,
-              "г"
-            ],
-            [
-              "Оливковое масло",
-              5,
-              "г"
-            ],
-            [
-              "Соль",
-              2,
-              "г"
-            ]
-          ],
-          "servings": 3,
-          "timeMinutes": null,
-          "allergenCandidates": [
-            "milk"
-          ],
-          "equipmentCandidates": [],
-          "methodCandidates": [
-            "no_cook"
-          ],
-          "source": "https://calorizator.ru/recipe/49295",
-          "reviewNotes": "Состав и КБЖУ приведены для 3 порций по данным источника; проверить выход."
-        },
-        {
-          "id": 8,
-          "name": "Суп-пюре из тыквы",
-          "image": null,
-          "calories": null,
-          "type": "lunch",
-          "tags": [
-            "vegetarian"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Вода",
-              800,
-              "мл"
-            ],
-            [
-              "Красный болгарский перец",
-              4,
-              "шт."
-            ],
-            [
-              "Тыква",
-              500,
-              "г"
-            ],
-            [
-              "Сливки 20%",
-              250,
-              "мл"
-            ],
-            [
-              "Лук",
-              1,
-              "шт."
-            ],
-            [
-              "Сливочное масло",
-              30,
-              "г"
-            ],
-            [
-              "Тыквенные семечки",
-              2,
-              "ст. л."
-            ],
-            [
-              "Имбирь молотый",
-              2,
-              "ч. л."
-            ],
-            [
-              "Чеснок",
-              1,
-              "г"
-            ],
-            [
-              "Приправа",
-              3,
-              "ч. л."
-            ]
-          ],
-          "servings": 4,
-          "timeMinutes": 35,
-          "allergenCandidates": [
-            "milk"
-          ],
-          "equipmentCandidates": [
-            "stove",
-            "blender"
-          ],
-          "methodCandidates": [
-            "boiling"
-          ],
-          "source": "https://www.maggi.ru/recipes/sup-pyure-iz-tykvy",
-          "reviewNotes": "В составе есть готовая приправа неизвестного состава; нельзя считать список аллергенов исчерпывающим без состава приправы."
-        },
-        {
-          "id": 9,
-          "name": "Стейк из говядины",
-          "image": "https://i.1.creatium.io/08/5b/a3/84161c9d13f1ae5d41bebdf103f67480ad/be635a4fbc4bef8a1063f3d72db4185e.jpg",
-          "calories": null,
-          "type": "dinner",
-          "tags": [
-            "meat"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Говяжий стейк",
-              2,
-              "шт."
-            ],
-            [
-              "Сливочное масло",
-              15,
-              "г"
-            ],
-            [
-              "Соль",
-              null,
-              "по вкусу"
-            ],
-            [
-              "Чёрный перец",
-              null,
-              "по вкусу"
-            ],
-            [
-              "Тимьян",
-              5,
-              "веточек"
-            ]
-          ],
-          "servings": 2,
-          "timeMinutes": 20,
-          "allergenCandidates": [
-            "milk"
-          ],
-          "equipmentCandidates": [
-            "stove"
-          ],
-          "methodCandidates": [
-            "frying",
-            "grilling"
-          ],
-          "source": "https://lefood.menu/recipes/govyazhiy-steyk-na-skovorode/",
-          "reviewNotes": "Пищевая ценность дана на 100 г, не на порцию. Уточнить вид и массу каждого стейка."
-        },
-        {
-          "id": 10,
-          "name": "Сырники со сметаной",
-          "image": "https://shuba.life/static/content/thumbs/1088x1088/8/5d/jxxphi---c1x1x50px50p-up--82002c8ddc276b02c2e8a80d4f3e15d8.jpg",
-          "calories": null,
-          "type": "breakfast",
-          "tags": [
-            "vegetarian"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Творог 9%",
-              180,
-              "г"
-            ],
-            [
-              "Яйцо",
-              55,
-              "г"
-            ],
-            [
-              "Пшеничная мука",
-              25,
-              "г"
-            ],
-            [
-              "Сахар",
-              10,
-              "г"
-            ],
-            [
-              "Подсолнечное масло",
-              7,
-              "г"
-            ],
-            [
-              "Сметана 15%",
-              30,
-              "г"
-            ],
-            [
-              "Соль",
-              1,
-              "г"
-            ]
-          ],
-          "servings": 1,
-          "timeMinutes": 25,
-          "allergenCandidates": [
-            "milk",
-            "eggs",
-            "gluten_cereals"
-          ],
-          "equipmentCandidates": [
-            "stove"
-          ],
-          "methodCandidates": [
-            "frying"
-          ],
-          "source": "https://norma-fitness.com/recipes/syrniki-klassicheskie-so-smetanoy",
-          "reviewNotes": "Источник указывает одну порцию 277 г; проверить, что подача со сметаной включена в нутриенты."
-        },
-        {
-          "id": 11,
-          "name": "Креветки с рисом",
-          "image": "https://www.arise-app.com/images/dishes/de/garnelen-mit-reis-1ldro0.webp",
-          "calories": null,
-          "type": "dinner",
-          "tags": [
-            "seafood"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Креветки очищенные",
-              150,
-              "г"
-            ],
-            [
-              "Рис круглозёрный сухой",
-              80,
-              "г"
-            ],
-            [
-              "Овощная смесь",
-              150,
-              "г"
-            ],
-            [
-              "Соевый соус",
-              15,
-              "г"
-            ],
-            [
-              "Подсолнечное масло",
-              10,
-              "г"
-            ],
-            [
-              "Чеснок",
-              5,
-              "г"
-            ],
-            [
-              "Соль",
-              2,
-              "г"
-            ]
-          ],
-          "servings": 1,
-          "timeMinutes": 20,
-          "allergenCandidates": [
-            "crustaceans",
-            "soy",
-            "gluten_cereals"
-          ],
-          "equipmentCandidates": [
-            "stove"
-          ],
-          "methodCandidates": [
-            "boiling",
-            "frying",
-            "stewing"
-          ],
-          "source": "https://piknifood.ru/recipe/krevetki-s-risom-i-ovoschami-lunch/",
-          "reviewNotes": "В источнике заявлены глютен и моллюски; по составу креветки относятся к ракообразным. Проверить состав соевого соуса и смесь овощей."
-        },
-        {
-          "id": 12,
-          "name": "Фалафель с хумусом",
-          "image": "https://bosra-lebensmittel.de/images/inhalt/arabischelebensmittel.jpg",
-          "calories": null,
-          "type": "lunch",
-          "tags": [
-            "vegan"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Нут",
-              900,
-              "г"
-            ],
-            [
-              "Лук",
-              800,
-              "г"
-            ],
-            [
-              "Чеснок",
-              4,
-              "зубчика"
-            ],
-            [
-              "Кориандр",
-              1,
-              "ч. л."
-            ],
-            [
-              "Разрыхлитель",
-              0.5,
-              "ч. л."
-            ],
-            [
-              "Мука",
-              4,
-              "ст. л."
-            ],
-            [
-              "Петрушка",
-              1,
-              "пучок"
-            ],
-            [
-              "Тмин",
-              1,
-              "ч. л."
-            ],
-            [
-              "Лимон",
-              0.5,
-              "шт."
-            ],
-            [
-              "Оливковое масло",
-              3,
-              "ст. л."
-            ]
-          ],
-          "servings": null,
-          "timeMinutes": 45,
-          "allergenCandidates": [
-            "gluten_cereals"
-          ],
-          "equipmentCandidates": [
-            "stove",
-            "blender"
-          ],
-          "methodCandidates": [
-            "frying"
-          ],
-          "source": "https://m.povar.ru/recipes/falafel_s_humusom-68403.html",
-          "reviewNotes": "В рецепте хумус готовится из части нута; нужно редакторски сверить количества и наличие тахини/кунжута в выбранной версии."
-        },
-        {
-          "id": 13,
-          "name": "Запеченная курица с овощами",
-          "image": "https://3.bp.blogspot.com/-RYlnMFfpO8E/XAWLn_tGaYI/AAAAAAAAPgY/b_ntJA59eF08QbFBGHxSc8lEV1MsaeiagCLcBGAs/s1600/istinye%2Btavukcusu%2Bsariyer%2Bistanbul.jpg",
-          "calories": null,
-          "type": "dinner",
-          "tags": [
-            "meat"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Куриная грудка",
-              300,
-              "г"
-            ],
-            [
-              "Зелёная стручковая фасоль",
-              200,
-              "г"
-            ],
-            [
-              "Красный перец",
-              300,
-              "г"
-            ],
-            [
-              "Лук",
-              50,
-              "г"
-            ],
-            [
-              "Сыр",
-              50,
-              "г"
-            ],
-            [
-              "Оливковое масло",
-              10,
-              "г"
-            ]
-          ],
-          "servings": 4,
-          "timeMinutes": 35,
-          "allergenCandidates": [
-            "milk"
-          ],
-          "equipmentCandidates": [
-            "stove",
-            "oven"
-          ],
-          "methodCandidates": [
-            "frying",
-            "baking"
-          ],
-          "source": "https://online.daily-menu.ru/dailymenu/recipes/view/107444",
-          "reviewNotes": "Источник включает краткое обжаривание и затем запекание; время 20+15 минут. Проверить, что это совпадает с изображением и названием."
-        },
-        {
-          "id": 14,
-          "name": "Творог с фруктами",
-          "image": "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/fruit_salad_with_cottage_cheese.jpg",
-          "calories": null,
-          "type": "breakfast",
-          "tags": [
-            "vegetarian"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Творог 5%",
-              150,
-              "г"
-            ],
-            [
-              "Нектарин",
-              100,
-              "г"
-            ],
-            [
-              "Киви",
-              50,
-              "г"
-            ]
-          ],
-          "servings": 1,
-          "timeMinutes": 10,
-          "allergenCandidates": [
-            "milk"
-          ],
-          "equipmentCandidates": [],
-          "methodCandidates": [
-            "no_cook"
-          ],
-          "source": "https://health-diet.ru/people/user/813527/",
-          "reviewNotes": "В источнике общая масса ингредиентов 300 г и масса готового блюда 290 г; КБЖУ указаны на 100 г."
-        },
-        {
-          "id": 15,
-          "name": "Смузи-боул",
-          "image": "https://www.mojegotowanie.pl/media/cache/default_big_format/uploads/media/recipe/0002/45/smoothie-bowl.jpg",
-          "calories": null,
-          "type": "breakfast",
-          "tags": [
-            "vegetarian"
-          ],
-          "recipeStatus": "needs_review",
-          "allergenStatus": "needs_review",
-          "ingredients": [
-            [
-              "Банан",
-              50,
-              "г"
-            ],
-            [
-              "Кешью",
-              30,
-              "г"
-            ],
-            [
-              "Овсяные отруби",
-              40,
-              "г"
-            ],
-            [
-              "Кокосовая стружка",
-              10,
-              "г"
-            ],
-            [
-              "Молоко 2.5%",
-              150,
-              "г"
-            ]
-          ],
-          "servings": 1,
-          "timeMinutes": null,
-          "allergenCandidates": [
-            "tree_nuts",
-            "milk",
-            "gluten_cereals"
-          ],
-          "equipmentCandidates": [
-            "blender"
-          ],
-          "methodCandidates": [
-            "no_cook"
-          ],
-          "source": "https://health-diet.ru/table_calorie_users/2437654/",
-          "reviewNotes": "Источник даёт один вариант с кешью, овсяными отрубями и молоком. Отруби требуют проверки маркировки на глютен/перекрёстный контакт."
-        }
-      ];
+          {
+            "id": 1,
+            "name": "Овсянка с ягодами",
+            "image": "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/porridge_with_berries.jpg",
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Овсяные хлопья",
+                50,
+                "г"
+              ],
+              [
+                "Молоко 2.5%",
+                200,
+                "г"
+              ],
+              [
+                "Мёд",
+                8,
+                "г"
+              ],
+              [
+                "Сливочное масло",
+                10,
+                "г"
+              ],
+              [
+                "Свежие ягоды",
+                50,
+                "г"
+              ]
+            ],
+            "servings": 1,
+            "timeMinutes": 15,
+            "allergenCandidates": [
+              "gluten_cereals",
+              "milk"
+            ],
+            "equipmentCandidates": [
+              "stove"
+            ],
+            "methodCandidates": [
+              "boiling"
+            ],
+            "source": "https://piknifood.ru/recipe/ovsyanka-s-yagodami-breakfast/",
+            "reviewNotes": "Овёс сам по себе не равен пшенице/ржи/ячменю; проверить маркировку безглютеновости и перекрёстный контакт. Варианты с орехами/йогуртом не смешивать с этой версией.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 2,
+            "name": "Омлет с сыром",
+            "image": "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/cheese_omelet.jpg",
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Яйцо",
+                2,
+                "шт."
+              ],
+              [
+                "Молоко",
+                3,
+                "ст. л."
+              ],
+              [
+                "Сыр",
+                30,
+                "г"
+              ],
+              [
+                "Соль",
+                null,
+                "по вкусу"
+              ]
+            ],
+            "servings": 1,
+            "timeMinutes": 20,
+            "allergenCandidates": [
+              "eggs",
+              "milk"
+            ],
+            "equipmentCandidates": [
+              "stove",
+              "oven"
+            ],
+            "methodCandidates": [
+              "frying",
+              "baking"
+            ],
+            "source": "https://www.maggi.ru/recipes/prostoy-omlet-s-syrom",
+            "reviewNotes": "Источник даёт 1 порцию, но способ приготовления и время проверить: на странице приведены 10 минут и отдельный вариант запекания.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 3,
+            "name": "Куриная грудка с гречкой",
+            "image": "https://www.arise-app.com/images/dishes/ru/kurinaa-grudka-s-greckoj-i-ovosnym-salatom-4zgh1n.webp",
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "meat",
+              "fish"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Куриная грудка без кожи и костей",
+                450,
+                "г"
+              ],
+              [
+                "Гречневая крупа сухая",
+                180,
+                "г"
+              ],
+              [
+                "Лук",
+                100,
+                "г"
+              ],
+              [
+                "Морковь",
+                100,
+                "г"
+              ],
+              [
+                "Подсолнечное масло",
+                20,
+                "г"
+              ],
+              [
+                "Вода",
+                450,
+                "г"
+              ],
+              [
+                "Соль",
+                5,
+                "г"
+              ],
+              [
+                "Чёрный перец",
+                1,
+                "г"
+              ]
+            ],
+            "servings": 3,
+            "timeMinutes": 40,
+            "allergenCandidates": [],
+            "equipmentCandidates": [
+              "stove"
+            ],
+            "methodCandidates": [
+              "boiling",
+              "stewing"
+            ],
+            "source": "https://wayeat.ru/recipes/kurinaya-grudka-s-grechkoy-8ad4ab8c-ed4e-48a8-b86f-10e2a49148f7",
+            "reviewNotes": "Гречка не содержит глютен по природе, но проверить примеси/маркировку.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 4,
+            "name": "Лосось с овощами",
+            "image": "https://www.arise-app.com/images/dishes/de/lachs-mit-gemuse-1cg1qy.webp",
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "fish"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Лосось/сёмга",
+                180,
+                "г"
+              ],
+              [
+                "Брокколи",
+                100,
+                "г"
+              ],
+              [
+                "Морковь",
+                80,
+                "г"
+              ],
+              [
+                "Оливковое масло",
+                15,
+                "г"
+              ],
+              [
+                "Лимон",
+                10,
+                "г"
+              ],
+              [
+                "Соль",
+                2,
+                "г"
+              ],
+              [
+                "Чёрный перец",
+                1,
+                "г"
+              ],
+              [
+                "Укроп",
+                5,
+                "г"
+              ]
+            ],
+            "servings": 1,
+            "timeMinutes": 50,
+            "allergenCandidates": [
+              "fish"
+            ],
+            "equipmentCandidates": [
+              "oven"
+            ],
+            "methodCandidates": [
+              "baking"
+            ],
+            "source": "https://piknifood.ru/recipe/losos-zapechyonnyy-s-ovoschami-dinner/",
+            "reviewNotes": "Источник указывает одну порцию; проверить время и фактический вес после приготовления.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 5,
+            "name": "Тофу с рисом и брокколи",
+            "image": "https://i5.walmartimages.com/asr/75b28093-3179-44f8-8e24-d265f149d74f.ffd279b272cba62c5d4473af8ecbc156.jpeg?odnBg=FFFFFF&odnHeight=768&odnWidth=768",
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegan"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Тофу",
+                100,
+                "г"
+              ],
+              [
+                "Кукуруза консервированная",
+                50,
+                "г"
+              ],
+              [
+                "Соевый соус",
+                1,
+                "ст. л."
+              ],
+              [
+                "Рис",
+                30,
+                "г"
+              ],
+              [
+                "Оливковое масло",
+                1,
+                "ч. л."
+              ],
+              [
+                "Паприка и специи",
+                null,
+                "по вкусу"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [
+              "soy"
+            ],
+            "equipmentCandidates": [
+              "stove"
+            ],
+            "methodCandidates": [
+              "frying",
+              "boiling",
+              "stewing"
+            ],
+            "source": "https://www.sportmaster.ru/media/nutrition/tofu-s-risom/",
+            "reviewNotes": "Найден вариант с кукурузой, а не брокколи; не подменять ингредиент молча. Соевый соус может содержать пшеницу — сверять этикетку.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 6,
+            "name": "Индейка в сливочном соусе",
+            "image": "https://caseguru.ru/upload/img/image3eowifodfjsdovfvdvhfjg.jpg",
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "meat"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Филе бедра индейки",
+                600,
+                "г"
+              ],
+              [
+                "Лисички свежие",
+                200,
+                "г"
+              ],
+              [
+                "Сливки 20%",
+                250,
+                "мл"
+              ],
+              [
+                "Лук",
+                100,
+                "г"
+              ],
+              [
+                "Растительное масло",
+                20,
+                "мл"
+              ],
+              [
+                "Соль",
+                null,
+                "по вкусу"
+              ],
+              [
+                "Чёрный перец",
+                null,
+                "по вкусу"
+              ]
+            ],
+            "servings": 4,
+            "timeMinutes": 35,
+            "allergenCandidates": [
+              "milk"
+            ],
+            "equipmentCandidates": [
+              "stove"
+            ],
+            "methodCandidates": [
+              "frying",
+              "stewing"
+            ],
+            "source": "https://www.gastronom.ru/recipe/67309/indejka-v-slivochnom-souse-na-skovorode",
+            "reviewNotes": "Источник включает грибы; проверить, соответствует ли это целевой карточке.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 7,
+            "name": "Греческий салат",
+            "image": "https://kaskanaus.lt/uploads/recipes/klasikines-graikiskos-salotos-000294.webp",
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Помидоры",
+                190,
+                "г"
+              ],
+              [
+                "Огурец",
+                100,
+                "г"
+              ],
+              [
+                "Красный сладкий перец",
+                145,
+                "г"
+              ],
+              [
+                "Листья салата",
+                10,
+                "г"
+              ],
+              [
+                "Фета",
+                50,
+                "г"
+              ],
+              [
+                "Маслины",
+                20,
+                "г"
+              ],
+              [
+                "Оливковое масло",
+                5,
+                "г"
+              ],
+              [
+                "Соль",
+                2,
+                "г"
+              ]
+            ],
+            "servings": 3,
+            "timeMinutes": null,
+            "allergenCandidates": [
+              "milk"
+            ],
+            "equipmentCandidates": [],
+            "methodCandidates": [
+              "no_cook"
+            ],
+            "source": "https://calorizator.ru/recipe/49295",
+            "reviewNotes": "Состав и КБЖУ приведены для 3 порций по данным источника; проверить выход.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 8,
+            "name": "Суп-пюре из тыквы",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Вода",
+                800,
+                "мл"
+              ],
+              [
+                "Красный болгарский перец",
+                4,
+                "шт."
+              ],
+              [
+                "Тыква",
+                500,
+                "г"
+              ],
+              [
+                "Сливки 20%",
+                250,
+                "мл"
+              ],
+              [
+                "Лук",
+                1,
+                "шт."
+              ],
+              [
+                "Сливочное масло",
+                30,
+                "г"
+              ],
+              [
+                "Тыквенные семечки",
+                2,
+                "ст. л."
+              ],
+              [
+                "Имбирь молотый",
+                2,
+                "ч. л."
+              ],
+              [
+                "Чеснок",
+                1,
+                "г"
+              ],
+              [
+                "Приправа",
+                3,
+                "ч. л."
+              ]
+            ],
+            "servings": 4,
+            "timeMinutes": 35,
+            "allergenCandidates": [
+              "milk"
+            ],
+            "equipmentCandidates": [
+              "stove",
+              "blender"
+            ],
+            "methodCandidates": [
+              "boiling"
+            ],
+            "source": "https://www.maggi.ru/recipes/sup-pyure-iz-tykvy",
+            "reviewNotes": "В составе есть готовая приправа неизвестного состава; нельзя считать список аллергенов исчерпывающим без состава приправы.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 9,
+            "name": "Стейк из говядины",
+            "image": "https://i.1.creatium.io/08/5b/a3/84161c9d13f1ae5d41bebdf103f67480ad/be635a4fbc4bef8a1063f3d72db4185e.jpg",
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "meat"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Говяжий стейк",
+                2,
+                "шт."
+              ],
+              [
+                "Сливочное масло",
+                15,
+                "г"
+              ],
+              [
+                "Соль",
+                null,
+                "по вкусу"
+              ],
+              [
+                "Чёрный перец",
+                null,
+                "по вкусу"
+              ],
+              [
+                "Тимьян",
+                5,
+                "веточек"
+              ]
+            ],
+            "servings": 2,
+            "timeMinutes": 20,
+            "allergenCandidates": [
+              "milk"
+            ],
+            "equipmentCandidates": [
+              "stove"
+            ],
+            "methodCandidates": [
+              "frying",
+              "grilling"
+            ],
+            "source": "https://lefood.menu/recipes/govyazhiy-steyk-na-skovorode/",
+            "reviewNotes": "Пищевая ценность дана на 100 г, не на порцию. Уточнить вид и массу каждого стейка.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 10,
+            "name": "Сырники со сметаной",
+            "image": "https://shuba.life/static/content/thumbs/1088x1088/8/5d/jxxphi---c1x1x50px50p-up--82002c8ddc276b02c2e8a80d4f3e15d8.jpg",
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Творог 9%",
+                180,
+                "г"
+              ],
+              [
+                "Яйцо",
+                55,
+                "г"
+              ],
+              [
+                "Пшеничная мука",
+                25,
+                "г"
+              ],
+              [
+                "Сахар",
+                10,
+                "г"
+              ],
+              [
+                "Подсолнечное масло",
+                7,
+                "г"
+              ],
+              [
+                "Сметана 15%",
+                30,
+                "г"
+              ],
+              [
+                "Соль",
+                1,
+                "г"
+              ]
+            ],
+            "servings": 1,
+            "timeMinutes": 25,
+            "allergenCandidates": [
+              "milk",
+              "eggs",
+              "gluten_cereals"
+            ],
+            "equipmentCandidates": [
+              "stove"
+            ],
+            "methodCandidates": [
+              "frying"
+            ],
+            "source": "https://norma-fitness.com/recipes/syrniki-klassicheskie-so-smetanoy",
+            "reviewNotes": "Источник указывает одну порцию 277 г; проверить, что подача со сметаной включена в нутриенты.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 11,
+            "name": "Креветки с рисом",
+            "image": "https://www.arise-app.com/images/dishes/de/garnelen-mit-reis-1ldro0.webp",
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "seafood"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Креветки очищенные",
+                150,
+                "г"
+              ],
+              [
+                "Рис круглозёрный сухой",
+                80,
+                "г"
+              ],
+              [
+                "Овощная смесь",
+                150,
+                "г"
+              ],
+              [
+                "Соевый соус",
+                15,
+                "г"
+              ],
+              [
+                "Подсолнечное масло",
+                10,
+                "г"
+              ],
+              [
+                "Чеснок",
+                5,
+                "г"
+              ],
+              [
+                "Соль",
+                2,
+                "г"
+              ]
+            ],
+            "servings": 1,
+            "timeMinutes": 20,
+            "allergenCandidates": [
+              "crustaceans",
+              "soy",
+              "gluten_cereals"
+            ],
+            "equipmentCandidates": [
+              "stove"
+            ],
+            "methodCandidates": [
+              "boiling",
+              "frying",
+              "stewing"
+            ],
+            "source": "https://piknifood.ru/recipe/krevetki-s-risom-i-ovoschami-lunch/",
+            "reviewNotes": "В источнике заявлены глютен и моллюски; по составу креветки относятся к ракообразным. Проверить состав соевого соуса и смесь овощей.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 12,
+            "name": "Фалафель с хумусом",
+            "image": "https://bosra-lebensmittel.de/images/inhalt/arabischelebensmittel.jpg",
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegan"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Нут",
+                900,
+                "г"
+              ],
+              [
+                "Лук",
+                800,
+                "г"
+              ],
+              [
+                "Чеснок",
+                4,
+                "зубчика"
+              ],
+              [
+                "Кориандр",
+                1,
+                "ч. л."
+              ],
+              [
+                "Разрыхлитель",
+                0.5,
+                "ч. л."
+              ],
+              [
+                "Мука",
+                4,
+                "ст. л."
+              ],
+              [
+                "Петрушка",
+                1,
+                "пучок"
+              ],
+              [
+                "Тмин",
+                1,
+                "ч. л."
+              ],
+              [
+                "Лимон",
+                0.5,
+                "шт."
+              ],
+              [
+                "Оливковое масло",
+                3,
+                "ст. л."
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": 45,
+            "allergenCandidates": [
+              "gluten_cereals"
+            ],
+            "equipmentCandidates": [
+              "stove",
+              "blender"
+            ],
+            "methodCandidates": [
+              "frying"
+            ],
+            "source": "https://m.povar.ru/recipes/falafel_s_humusom-68403.html",
+            "reviewNotes": "В рецепте хумус готовится из части нута; нужно редакторски сверить количества и наличие тахини/кунжута в выбранной версии.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 13,
+            "name": "Запеченная курица с овощами",
+            "image": "https://3.bp.blogspot.com/-RYlnMFfpO8E/XAWLn_tGaYI/AAAAAAAAPgY/b_ntJA59eF08QbFBGHxSc8lEV1MsaeiagCLcBGAs/s1600/istinye%2Btavukcusu%2Bsariyer%2Bistanbul.jpg",
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "meat"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Куриная грудка",
+                300,
+                "г"
+              ],
+              [
+                "Зелёная стручковая фасоль",
+                200,
+                "г"
+              ],
+              [
+                "Красный перец",
+                300,
+                "г"
+              ],
+              [
+                "Лук",
+                50,
+                "г"
+              ],
+              [
+                "Сыр",
+                50,
+                "г"
+              ],
+              [
+                "Оливковое масло",
+                10,
+                "г"
+              ]
+            ],
+            "servings": 4,
+            "timeMinutes": 35,
+            "allergenCandidates": [
+              "milk"
+            ],
+            "equipmentCandidates": [
+              "stove",
+              "oven"
+            ],
+            "methodCandidates": [
+              "frying",
+              "baking"
+            ],
+            "source": "https://online.daily-menu.ru/dailymenu/recipes/view/107444",
+            "reviewNotes": "Источник включает краткое обжаривание и затем запекание; время 20+15 минут. Проверить, что это совпадает с изображением и названием.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 14,
+            "name": "Творог с фруктами",
+            "image": "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/fruit_salad_with_cottage_cheese.jpg",
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Творог 5%",
+                150,
+                "г"
+              ],
+              [
+                "Нектарин",
+                100,
+                "г"
+              ],
+              [
+                "Киви",
+                50,
+                "г"
+              ]
+            ],
+            "servings": 1,
+            "timeMinutes": 10,
+            "allergenCandidates": [
+              "milk"
+            ],
+            "equipmentCandidates": [],
+            "methodCandidates": [
+              "no_cook"
+            ],
+            "source": "https://health-diet.ru/people/user/813527/",
+            "reviewNotes": "В источнике общая масса ингредиентов 300 г и масса готового блюда 290 г; КБЖУ указаны на 100 г.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 15,
+            "name": "Смузи-боул",
+            "image": "https://www.mojegotowanie.pl/media/cache/default_big_format/uploads/media/recipe/0002/45/smoothie-bowl.jpg",
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Банан",
+                50,
+                "г"
+              ],
+              [
+                "Кешью",
+                30,
+                "г"
+              ],
+              [
+                "Овсяные отруби",
+                40,
+                "г"
+              ],
+              [
+                "Кокосовая стружка",
+                10,
+                "г"
+              ],
+              [
+                "Молоко 2.5%",
+                150,
+                "г"
+              ]
+            ],
+            "servings": 1,
+            "timeMinutes": null,
+            "allergenCandidates": [
+              "tree_nuts",
+              "milk",
+              "gluten_cereals"
+            ],
+            "equipmentCandidates": [
+              "blender"
+            ],
+            "methodCandidates": [
+              "no_cook"
+            ],
+            "source": "https://health-diet.ru/table_calorie_users/2437654/",
+            "reviewNotes": "Источник даёт один вариант с кешью, овсяными отрубями и молоком. Отруби требуют проверки маркировки на глютен/перекрёстный контакт.",
+            "ingredientDataStatus": "candidate_needs_review"
+          },
+          {
+            "id": 16,
+            "name": "Сырники с ягодами",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Творог",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйцо",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Пшеничная мука",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Ягоды",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 17,
+            "name": "Пшённая каша с тыквой",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Пшено",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Тыква",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Вода",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 18,
+            "name": "Гречневая каша с грибами",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Гречка",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Шампиньоны",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 19,
+            "name": "Рисовая каша на молоке",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Молоко",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сахар",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 20,
+            "name": "Овсяноблин с бананом",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Овсяные хлопья",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйцо",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Молоко",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Банан",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 21,
+            "name": "Блины с творогом",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Пшеничная мука",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Молоко",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйцо",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Творог",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 22,
+            "name": "Блины с яблоками",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Пшеничная мука",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Молоко",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйцо",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яблоки",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 23,
+            "name": "Тосты с авокадо и яйцом",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Хлеб",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Авокадо",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 24,
+            "name": "Творожная запеканка",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Творог",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Манная крупа",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сметана",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 25,
+            "name": "Запечённые яблоки с творогом",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Яблоки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Творог",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Мёд",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 26,
+            "name": "Ячневая каша с молоком",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Ячневая крупа",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Молоко",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 27,
+            "name": "Пшённая каша с яблоком",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Пшено",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яблоки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Вода",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 28,
+            "name": "Кукурузная каша с сыром",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Кукурузная крупа",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Молоко",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сыр",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 29,
+            "name": "Яйца пашот с тостом",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Хлеб",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 30,
+            "name": "Шакшука",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Помидоры",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Болгарский перец",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 31,
+            "name": "Омлет со шпинатом",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Молоко",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Шпинат",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сыр",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 32,
+            "name": "Ленивые вареники",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Творог",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Пшеничная мука",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 33,
+            "name": "Гранола с йогуртом",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Овсяные хлопья",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Мёд",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Орехи",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Йогурт",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 34,
+            "name": "Бутерброды с тунцом",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "fish"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Хлеб",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Тунец",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Огурцы",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 35,
+            "name": "Морковные оладьи",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Пшеничная мука",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 36,
+            "name": "Борщ с говядиной",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Говядина",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Свёкла",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Капуста",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 37,
+            "name": "Куриный суп с лапшой",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Курица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Пшеничная лапша",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 38,
+            "name": "Суп с фрикадельками",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Фарш говяжий",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 39,
+            "name": "Гороховый суп",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Горох",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Копчёности",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 40,
+            "name": "Чечевичный суп",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Чечевица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Томатная паста",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 41,
+            "name": "Рассольник",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Говядина",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Перловка",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Солёные огурцы",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 42,
+            "name": "Солянка домашняя",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Говядина",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Колбаса",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Солёные огурцы",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Маслины",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 43,
+            "name": "Суп-пюре из брокколи",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Брокколи",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сливки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 44,
+            "name": "Грибной суп с перловкой",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Шампиньоны",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Перловка",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 45,
+            "name": "Уха из белой рыбы",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "fish"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Треска",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Укроп",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 46,
+            "name": "Холодник со свёклой",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Свёкла",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Кефир",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Огурцы",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 47,
+            "name": "Суп с фрикадельками из индейки",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Фарш индейки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 48,
+            "name": "Минестроне",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Кабачки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Фасоль",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Помидоры",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Макароны",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 49,
+            "name": "Суп из цветной капусты",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Цветная капуста",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Молоко",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 50,
+            "name": "Крем-суп из шампиньонов",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Шампиньоны",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сливки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 51,
+            "name": "Щи из свежей капусты",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Говядина",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Капуста",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 52,
+            "name": "Куриный суп с рисом",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Курица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 53,
+            "name": "Суп с клёцками",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Пшеничная мука",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 54,
+            "name": "Крем-суп из чечевицы",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Красная чечевица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 55,
+            "name": "Вермишелевый суп с индейкой",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Индейка",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Вермишель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 56,
+            "name": "Драники классические",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Пшеничная мука",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сметана",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 57,
+            "name": "Картофельная бабка",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Свинина",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 58,
+            "name": "Колдуны с мясом",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Фарш говяжий",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 59,
+            "name": "Куриные котлеты с пюре",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Куриный фарш",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Молоко",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сливочное масло",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 60,
+            "name": "Тефтели в томатном соусе",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Фарш говяжий",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Помидоры",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 61,
+            "name": "Паста с курицей и сливками",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Макароны",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Курица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сливки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сыр",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 62,
+            "name": "Паста болоньезе",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Макароны",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Говяжий фарш",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Помидоры",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 63,
+            "name": "Паста с грибами",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Макароны",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Шампиньоны",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сливки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сыр",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 64,
+            "name": "Рыбные котлеты с рисом",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "fish"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Филе трески",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Пшеничная мука",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 65,
+            "name": "Минтай, запечённый с овощами",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "fish"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Минтай",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Болгарский перец",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 66,
+            "name": "Курица с картофелем в духовке",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Курица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Чеснок",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Паприка",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 67,
+            "name": "Индейка с овощами на сковороде",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Индейка",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Кабачки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Болгарский перец",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 68,
+            "name": "Говядина тушёная с овощами",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Говядина",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 69,
+            "name": "Свинина с гречкой",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Свинина",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Гречка",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 70,
+            "name": "Плов с курицей",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Курица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 71,
+            "name": "Рис с овощами и яйцом",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Горошек",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 72,
+            "name": "Фаршированные перцы с мясом",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Болгарский перец",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Фарш говяжий",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 73,
+            "name": "Голубцы с мясом",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Капуста",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Фарш говяжий",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сметана",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 74,
+            "name": "Кабачки, фаршированные курицей",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Кабачки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Курица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Помидоры",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сыр",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 75,
+            "name": "Запеканка картофельная с фаршем",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Фарш говяжий",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сыр",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 76,
+            "name": "Овощное рагу с фасолью",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Кабачки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Фасоль",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Помидоры",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 77,
+            "name": "Гречка с куриной печенью",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Гречка",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Куриная печень",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 78,
+            "name": "Куриные бёдра с рисом",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Куриные бёдра",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Чеснок",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 79,
+            "name": "Лосось с рисом и брокколи",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "fish"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Лосось",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Брокколи",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лимон",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 80,
+            "name": "Форель с картофелем в духовке",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "fish"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Форель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лимон",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Укроп",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 81,
+            "name": "Креветки с овощами и лапшой",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "seafood"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Креветки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яичная лапша",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Болгарский перец",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Соевый соус",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 82,
+            "name": "Фрикасе из курицы",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Курица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сливки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Шампиньоны",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 83,
+            "name": "Курица терияки с рисом",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Курица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Рис",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Соевый соус",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Мёд",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 84,
+            "name": "Котлеты из индейки с булгуром",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Фарш индейки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Булгур",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 85,
+            "name": "Перловка с овощами",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Перловка",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лук",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Шампиньоны",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки."
+          },
+          {
+            "id": 86,
+            "name": "Салат с курицей и овощами",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Курица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Помидоры",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Огурцы",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Салатные листья",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "salad"
+          },
+          {
+            "id": 87,
+            "name": "Салат с тунцом и яйцом",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "fish"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Тунец",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Огурцы",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Помидоры",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "salad"
+          },
+          {
+            "id": 88,
+            "name": "Винегрет",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Свёкла",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Картофель",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Солёные огурцы",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Горошек",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "salad"
+          },
+          {
+            "id": 89,
+            "name": "Салат из капусты и моркови",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Капуста",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лимон",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "salad"
+          },
+          {
+            "id": 90,
+            "name": "Салат с фасолью и овощами",
+            "image": null,
+            "calories": null,
+            "type": "lunch",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Фасоль",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Помидоры",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Огурцы",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Болгарский перец",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "salad"
+          },
+          {
+            "id": 91,
+            "name": "Салат с авокадо и огурцом",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Авокадо",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Огурцы",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Салатные листья",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "salad"
+          },
+          {
+            "id": 92,
+            "name": "Салат с курицей и ананасом",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Курица",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Ананас",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Сыр",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "salad"
+          },
+          {
+            "id": 93,
+            "name": "Салат из свёклы с орехами",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Свёкла",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Грецкие орехи",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Чеснок",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "salad"
+          },
+          {
+            "id": 94,
+            "name": "Салат с креветками и авокадо",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "seafood"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Креветки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Авокадо",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Салатные листья",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "salad"
+          },
+          {
+            "id": 95,
+            "name": "Салат из помидоров с фетой",
+            "image": null,
+            "calories": null,
+            "type": "dinner",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Помидоры",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Фета",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Огурцы",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Оливки",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "salad"
+          },
+          {
+            "id": 96,
+            "name": "Яблоко с творогом и корицей",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Яблоки",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Творог",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Корица",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "snack"
+          },
+          {
+            "id": 97,
+            "name": "Бананово-овсяные маффины",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Бананы",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Овсяные хлопья",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Яйца",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Молоко",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "snack"
+          },
+          {
+            "id": 98,
+            "name": "Йогурт с ягодами и орехами",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Йогурт",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Ягоды",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Грецкие орехи",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "snack"
+          },
+          {
+            "id": 99,
+            "name": "Хумус с овощными палочками",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegan",
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Нут",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Тахини",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Лимон",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Морковь",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "snack"
+          },
+          {
+            "id": 100,
+            "name": "Творожный десерт с бананом",
+            "image": null,
+            "calories": null,
+            "type": "breakfast",
+            "tags": [
+              "vegetarian"
+            ],
+            "recipeStatus": "needs_review",
+            "ingredientDataStatus": "candidate_needs_review",
+            "allergenStatus": "needs_review",
+            "ingredients": [
+              [
+                "Творог",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Банан",
+                null,
+                "количество уточняется"
+              ],
+              [
+                "Йогурт",
+                null,
+                "количество уточняется"
+              ]
+            ],
+            "servings": null,
+            "timeMinutes": null,
+            "allergenCandidates": [],
+            "equipmentCandidates": [],
+            "methodCandidates": [],
+            "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
+            "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+            "category": "snack"
+          }
+        ];
 
     // Кандидатные ингредиенты сохраняем только для вкусового подбора.
     // Они НЕ являются подтверждённым составом и не используются для медицинской фильтрации.
@@ -1262,7 +4730,7 @@
     let state = {
       step: 1, totalSteps: 10, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
       persons: [], equipment: ['stove'], cookingMethods: [],
-      tasteMode: 'love', likedIngredients: [], dislikedIngredients: [],
+      tasteMode: 'love', tastePersonIndex: 0,
       finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
     };
 
@@ -1275,7 +4743,7 @@
           id: i, gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'),
           mode: existing ? existing.mode : 'calc', calories: existing ? existing.calories : 2000, activity: existing ? existing.activity : 1.2,
           age: existing ? existing.age : '', height: existing ? existing.height : '', weight: existing ? existing.weight : '',
-          goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : [], intolerances: existing ? (existing.intolerances || []) : []
+          goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : [], intolerances: existing ? (existing.intolerances || []) : [], likedIngredients: existing ? (existing.likedIngredients || []) : [], dislikedIngredients: existing ? (existing.dislikedIngredients || []) : []
         });
       }
     }
@@ -1568,7 +5036,7 @@
     }
 
     function getPreferenceFilteredDishes(dishes) {
-      const disliked = state.dislikedIngredients || [];
+      const disliked = getAllFamilyDislikedIngredients();
       // Если состав неизвестен, при активных исключениях не включаем блюдо:
       // иначе нелюбимый продукт может попасть в меню незаметно.
       return dishes.filter(dish => {
@@ -1598,20 +5066,88 @@
       { name: 'Хлеб, соусы и прочее', items: ['Пшеничный хлеб','Ржаной хлеб','Лаваш','Мёд','Сахар','Оливковое масло','Соевый соус','Томатный соус','Горчица','Майонез','Хумус','Тофу','Базилик','Острый перец'] }
     ];
 
+    // Аллергии имеют приоритет над вкусовыми предпочтениями.
+    // Если продукт выбран как любимый, а затем добавлена соответствующая аллергия,
+    // он удаляется из любимых и не восстанавливается автоматически при снятии аллергии.
+    const allergyBlockedIngredients = {
+      milk: ['Молоко','Сливки','Сметана','Творог','Сыр','Фета','Моцарелла','Йогурт','Кефир','Сливочное масло'],
+      eggs: ['Яйца'],
+      fish: ['Лосось','Форель','Треска','Судак','Скумбрия','Сельдь','Тунец'],
+      crustaceans: ['Креветки'],
+      soy: ['Тофу','Соевый соус'],
+      peanuts: ['Арахис'],
+      tree_nuts: ['Грецкие орехи','Миндаль','Фундук','Кешью'],
+      sesame: ['Кунжут'],
+      buckwheat: ['Гречка'],
+      corn: ['Кукуруза'],
+      mushrooms: ['Грибы'],
+      gluten_cereals: ['Пшеничный хлеб','Ржаной хлеб','Лаваш','Макароны','Булгур','Кускус','Перловка']
+    };
+
+    function getActiveTastePerson() {
+      return state.persons[state.tastePersonIndex] || state.persons[0] || { likedIngredients: [], dislikedIngredients: [], allergies: [] };
+    }
+
+    function getPersonAllergyBlockedIngredients(person) {
+      const blocked = new Set();
+      (person?.allergies || []).forEach(allergen => {
+        (allergyBlockedIngredients[allergen] || []).forEach(name => blocked.add(name));
+      });
+      return blocked;
+    }
+
+    function isIngredientBlockedByAllergy(name, person = getActiveTastePerson()) {
+      const normalized = normalizeIngredientText(name);
+      return [...getPersonAllergyBlockedIngredients(person)].some(item =>
+        normalizeIngredientText(item) === normalized
+      );
+    }
+
+    function getAllFamilyLikedIngredients() {
+      return [...new Set((state.persons || []).flatMap(person => person.likedIngredients || []))];
+    }
+
+    function getAllFamilyDislikedIngredients() {
+      return [...new Set((state.persons || []).flatMap(person => person.dislikedIngredients || []))];
+    }
+
+    function setTastePerson(index) {
+      state.tastePersonIndex = index;
+      renderTastePreferences();
+    }
+
+    function renderTastePersonTabs() {
+      const container = document.getElementById('tastePersonTabs');
+      if (!container) return;
+      container.innerHTML = '';
+      state.persons.forEach((person, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = 'Человек ' + person.id;
+        button.className = index === state.tastePersonIndex ? 'active-love' : '';
+        button.addEventListener('click', () => setTastePerson(index));
+        container.appendChild(button);
+      });
+    }
+
     function setTasteMode(mode) {
       state.tasteMode = mode;
       renderTastePreferences();
     }
 
     function toggleIngredient(name) {
+      const person = getActiveTastePerson();
+      person.likedIngredients = person.likedIngredients || [];
+      person.dislikedIngredients = person.dislikedIngredients || [];
       if (state.tasteMode === 'love') {
-        state.likedIngredients = state.likedIngredients.includes(name)
-          ? state.likedIngredients.filter(item => item !== name) : [...state.likedIngredients, name];
-        state.dislikedIngredients = state.dislikedIngredients.filter(item => item !== name);
+        if (isIngredientBlockedByAllergy(name, person)) return;
+        person.likedIngredients = person.likedIngredients.includes(name)
+          ? person.likedIngredients.filter(item => item !== name) : [...person.likedIngredients, name];
+        person.dislikedIngredients = person.dislikedIngredients.filter(item => item !== name);
       } else {
-        state.dislikedIngredients = state.dislikedIngredients.includes(name)
-          ? state.dislikedIngredients.filter(item => item !== name) : [...state.dislikedIngredients, name];
-        state.likedIngredients = state.likedIngredients.filter(item => item !== name);
+        person.dislikedIngredients = person.dislikedIngredients.includes(name)
+          ? person.dislikedIngredients.filter(item => item !== name) : [...person.dislikedIngredients, name];
+        person.likedIngredients = person.likedIngredients.filter(item => item !== name);
       }
       renderTastePreferences();
     }
@@ -1622,8 +5158,12 @@
       if (!loveTab || !avoidTab) return;
       loveTab.className = state.tasteMode === 'love' ? 'active-love' : '';
       avoidTab.className = state.tasteMode === 'avoid' ? 'active-avoid' : '';
-      document.getElementById('lovedCount').textContent = 'Люблю: ' + state.likedIngredients.length;
-      document.getElementById('dislikedCount').textContent = 'Не люблю: ' + state.dislikedIngredients.length;
+      const person = getActiveTastePerson();
+      person.likedIngredients = person.likedIngredients || [];
+      person.dislikedIngredients = person.dislikedIngredients || [];
+      renderTastePersonTabs();
+      document.getElementById('lovedCount').textContent = 'Люблю: ' + person.likedIngredients.length;
+      document.getElementById('dislikedCount').textContent = 'Не люблю: ' + person.dislikedIngredients.length;
       document.getElementById('tasteModeHint').textContent = state.tasteMode === 'love'
         ? 'Отмечай продукты, которые тебе нравятся. Они будут приоритетом при составлении меню.'
         : 'Отмечай продукты, которые не хочешь видеть в меню. Они будут исключены из подбора.';
@@ -1651,10 +5191,16 @@
           const button = document.createElement('button');
           button.type = 'button';
           button.className = 'ingredient-chip' +
-            (state.likedIngredients.includes(name) ? ' loved' : '') +
-            (state.dislikedIngredients.includes(name) ? ' disliked' : '');
+            (getActiveTastePerson().likedIngredients.includes(name) ? ' loved' : '') +
+            (getActiveTastePerson().dislikedIngredients.includes(name) ? ' disliked' : '');
           button.textContent = name;
-          button.setAttribute('aria-pressed', String(state.likedIngredients.includes(name) || state.dislikedIngredients.includes(name)));
+          const allergyBlocked = isIngredientBlockedByAllergy(name);
+          if (allergyBlocked) {
+            button.disabled = true;
+            button.title = 'Исключено из-за аллергии у члена семьи';
+            button.classList.add('allergy-blocked');
+          }
+          button.setAttribute('aria-pressed', String(getActiveTastePerson().likedIngredients.includes(name) || getActiveTastePerson().dislikedIngredients.includes(name)));
           button.addEventListener('click', () => toggleIngredient(name));
           grid.appendChild(button);
         });
@@ -1743,8 +5289,16 @@
 
     function toggleAllergy(index, id) {
       const p = state.persons[index];
-      p.allergies.includes(id) ? p.allergies = p.allergies.filter(a => a !== id) : p.allergies.push(id);
+      const removing = p.allergies.includes(id);
+      p.allergies = removing ? p.allergies.filter(a => a !== id) : [...p.allergies, id];
+      if (!removing) {
+        const blocked = getPersonAllergyBlockedIngredients(p);
+        p.likedIngredients = (p.likedIngredients || []).filter(item =>
+          ![...blocked].some(name => normalizeIngredientText(name) === normalizeIngredientText(item))
+        );
+      }
       renderAllergiesAndEquipment();
+      renderTastePreferences();
     }
     function toggleIntolerance(index, id) {
       const p = state.persons[index];
@@ -1790,7 +5344,7 @@
 
       // Повторно проверяем пищевые ограничения и вкусовые предпочтения на этапе генерации.
       const compatible = getPreferenceFilteredDishes(getCompatibleDishes());
-      const lovedIngredients = state.likedIngredients || [];
+      const lovedIngredients = getAllFamilyLikedIngredients();
       const rotation = { breakfast: 0, lunch: 0, dinner: 0 };
       const menuContainer = document.getElementById('resultMenu');
       let menuHtml = '';
@@ -1823,7 +5377,7 @@
           menuHtml += '<div class="menu-day"><div class="menu-day-title">' + day + '</div>' +
             dayHtml + '</div>';
         });
-        const preferenceNote = (state.likedIngredients.length || state.dislikedIngredients.length)
+        const preferenceNote = (getAllFamilyLikedIngredients().length || getAllFamilyDislikedIngredients().length)
           ? '<p class="hint" style="margin:0 0 14px;">Подбор учитывает выбранные любимые и нелюбимые продукты по предварительным составам рецептов. Составы ещё проверяются; это не фильтр аллергенов.</p>'
           : '';
         menuContainer.innerHTML = preferenceNote + menuHtml;
