@@ -507,7 +507,7 @@
               </div>
             </div>
             <div class="result-box" id="calc-result-${index}">
-              ${person.age && person.height && person.weight ? `Ориентир: ${calculateCalories(person)} ккал/день` : 'Заполните данные'}
+              ${person.age && person.height && person.weight ? (calculateCalories(person) > 0 ? `Ориентир: ${calculateCalories(person)} ккал/день` : 'Проверьте возраст, рост и вес') : 'Заполните данные'}
             </div><p class="hint" style="margin:10px 0 0;">Приблизительная оценка по формуле, не медицинская рекомендация. Для детей и особых состояний этот расчёт не подходит.</p>
           `}</div>
         `;
@@ -525,7 +525,8 @@
       else if (field === 'age' || field === 'height' || field === 'weight') {
         const resBox = document.getElementById(`calc-result-${index}`);
         if (resBox && state.persons[index].age && state.persons[index].height && state.persons[index].weight) {
-          resBox.textContent = `Рекомендуемая норма: ${calculateCalories(state.persons[index])} ккал/день`;
+          const estimate = calculateCalories(state.persons[index]);
+          resBox.textContent = estimate > 0 ? `Ориентир: ${estimate} ккал/день` : 'Проверьте возраст, рост и вес';
         }
       }
     }
