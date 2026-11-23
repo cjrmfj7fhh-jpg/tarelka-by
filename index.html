@@ -5046,6 +5046,39 @@
       { name: 'Хлеб, соусы и прочее', items: ['Пшеничный хлеб','Ржаной хлеб','Лаваш','Мёд','Сахар','Оливковое масло','Соевый соус','Томатный соус','Горчица','Майонез','Хумус','Тофу','Базилик','Острый перец'] }
     ];
 
+    // Аллергии имеют приоритет над вкусовыми предпочтениями.
+    // Если продукт выбран как любимый, а затем добавлена соответствующая аллергия,
+    // он удаляется из любимых и не восстанавливается автоматически при снятии аллергии.
+    const allergyBlockedIngredients = {
+      milk: ['Молоко','Сливки','Сметана','Творог','Сыр','Фета','Моцарелла','Йогурт','Кефир','Сливочное масло'],
+      eggs: ['Яйца'],
+      fish: ['Лосось','Форель','Треска','Судак','Скумбрия','Сельдь','Тунец'],
+      crustaceans: ['Креветки'],
+      soy: ['Тофу','Соевый соус'],
+      peanuts: ['Арахис'],
+      tree_nuts: ['Грецкие орехи','Миндаль','Фундук','Кешью'],
+      sesame: ['Кунжут'],
+      buckwheat: ['Гречка'],
+      corn: ['Кукуруза'],
+      mushrooms: ['Грибы'],
+      gluten_cereals: ['Пшеничный хлеб','Ржаной хлеб','Лаваш','Макароны','Булгур','Кускус','Перловка']
+    };
+
+    function getFamilyAllergyBlockedIngredients() {
+      const blocked = new Set();
+      (state.persons || []).forEach(person => (person.allergies || []).forEach(allergen => {
+        (allergyBlockedIngredients[allergen] || []).forEach(name => blocked.add(name));
+      }));
+      return blocked;
+    }
+
+    function isIngredientBlockedByAllergy(name) {
+      const normalized = normalizeIngredientText(name);
+      return [...getFamilyAllergyBlockedIngredients()].some(item =>
+        normalizeIngredientText(item) === normalized
+      );
+    }
+
     function setTasteMode(mode) {
       state.tasteMode = mode;
       renderTastePreferences();
@@ -5053,6 +5086,7 @@
 
     function toggleIngredient(name) {
       if (state.tasteMode === 'love') {
+        if (isIngredientBlockedByAllergy(name)) return;
         state.likedIngredients = state.likedIngredients.includes(name)
           ? state.likedIngredients.filter(item => item !== name) : [...state.likedIngredients, name];
         state.dislikedIngredients = state.dislikedIngredients.filter(item => item !== name);
@@ -5102,6 +5136,12 @@
             (state.likedIngredients.includes(name) ? ' loved' : '') +
             (state.dislikedIngredients.includes(name) ? ' disliked' : '');
           button.textContent = name;
+          const allergyBlocked = isIngredientBlockedByAllergy(name);
+          if (allergyBlocked) {
+            button.disabled = true;
+            button.title = 'Исключено из-за аллергии у члена семьи';
+            button.classList.add('allergy-blocked');
+          }
           button.setAttribute('aria-pressed', String(state.likedIngredients.includes(name) || state.dislikedIngredients.includes(name)));
           button.addEventListener('click', () => toggleIngredient(name));
           grid.appendChild(button);
@@ -5191,8 +5231,16 @@
 
     function toggleAllergy(index, id) {
       const p = state.persons[index];
-      p.allergies.includes(id) ? p.allergies = p.allergies.filter(a => a !== id) : p.allergies.push(id);
+      const removing = p.allergies.includes(id);
+      p.allergies = removing ? p.allergies.filter(a => a !== id) : [...p.allergies, id];
+      if (!removing) {
+        const blocked = getFamilyAllergyBlockedIngredients();
+        state.likedIngredients = state.likedIngredients.filter(item =>
+          ![...blocked].some(name => normalizeIngredientText(name) === normalizeIngredientText(item))
+        );
+      }
       renderAllergiesAndEquipment();
+      renderTastePreferences();
     }
     function toggleIntolerance(index, id) {
       const p = state.persons[index];
