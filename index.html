@@ -355,8 +355,12 @@
     }
     initPersons();
 
-    window.Telegram.WebApp.ready();
-    window.Telegram.WebApp.setHeaderColor('#FEF9F3');
+    // Приложение может открываться в браузерном предпросмотре вне Telegram.
+    // Не прерываем запуск, если Telegram WebApp SDK недоступен.
+    if (window.Telegram && window.Telegram.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.setHeaderColor('#FEF9F3');
+    }
     renderProgress();
 
     function nextStep() {
