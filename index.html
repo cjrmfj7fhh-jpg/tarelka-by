@@ -5381,14 +5381,35 @@
       // Составляем список только из ингредиентов тех блюд, которые действительно попали в меню.
       // Непроверенные рецепты не используются, если активны аллергии/непереносимости.
       const shoppingItems = new Map();
+      const shoppingProductAliases = {
+        'яйцо': 'яйца',
+        'яйца': 'яйца',
+        'яйцо куриное': 'яйца',
+        'яйца куриные': 'яйца'
+      };
+      const normalizeShoppingProduct = name => {
+        const displayName = name.trim().replace(/\\s+/g, ' ').replace(/[.,;:]+$/g, '');
+        const normalizedName = displayName
+          .toLocaleLowerCase('ru')
+          .replace(/ё/g, 'е')
+          .replace(/[.,;:]+/g, '')
+          .replace(/\\s+/g, ' ')
+          .trim();
+        return {
+          key: shoppingProductAliases[normalizedName] || normalizedName,
+          displayName: shoppingProductAliases[normalizedName] ? 'Яйца' : displayName
+        };
+      };
       selectedDishes.forEach(dish => {
         if (!Array.isArray(dish.ingredients)) return;
         dish.ingredients.forEach(item => {
           const name = Array.isArray(item) ? item[0] : item;
           if (!name || typeof name !== 'string') return;
-          const key = name.trim().toLocaleLowerCase('ru');
-          if (!key) return;
-          if (!shoppingItems.has(key)) shoppingItems.set(key, name.trim());
+          const normalized = normalizeShoppingProduct(name);
+          if (!normalized.key) return;
+          if (!shoppingItems.has(normalized.key)) {
+            shoppingItems.set(normalized.key, normalized.displayName);
+          }
         });
       });
 
