@@ -121,6 +121,22 @@
     .swipe-done h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; }
     .swipe-done p { color: var(--muted); font-size: 14px; }
 
+
+    /* Новый раздел вкусовых предпочтений */
+    .taste-mode { display:flex; gap:10px; margin:18px 0; }
+    .taste-mode button { flex:1; border:1.5px solid var(--border); border-radius:12px; padding:13px 8px; background:#fff; font-weight:700; cursor:pointer; color:var(--text); }
+    .taste-mode button.active-love { border-color:var(--primary); background:var(--primary-light); color:var(--primary); }
+    .taste-mode button.active-avoid { border-color:var(--danger); background:#FEF2F2; color:var(--danger); }
+    .taste-search { width:100%; border:1px solid var(--border); border-radius:12px; padding:14px; font-size:16px; margin:4px 0 14px; background:white; }
+    .taste-summary { display:flex; gap:8px; margin:12px 0 18px; flex-wrap:wrap; }
+    .taste-count { padding:7px 10px; border-radius:20px; background:white; border:1px solid var(--border); font-size:12px; font-weight:700; }
+    .taste-category { margin:18px 0 8px; font-size:14px; font-weight:800; }
+    .ingredient-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .ingredient-chip { min-height:46px; padding:10px; border:1.5px solid var(--border); border-radius:11px; background:white; color:var(--text); text-align:left; font-size:13px; font-weight:600; cursor:pointer; }
+    .ingredient-chip.loved { border-color:var(--primary); background:var(--primary-light); color:#047857; }
+    .ingredient-chip.disliked { border-color:var(--danger); background:#FEF2F2; color:#B91C1C; }
+    .taste-empty { padding:20px; text-align:center; color:var(--muted); font-size:13px; }
+
     /* Шаг 8 */
     .section-title { font-weight: 800; font-size: 16px; margin-top: 25px; margin-bottom: 10px; color: var(--text); }
     .tag-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
@@ -252,14 +268,19 @@
   </div>
 
   <div class="step" id="step7">
-    <h1>Что тебе нравится?</h1>
-    <p class="subtitle">Свайпни вправо — нравится, влево — нет.</p>
-    <div class="swipe-container" id="swipeContainer"></div>
-    <div class="swipe-actions" id="swipeActions">
-      <button class="swipe-btn btn-dislike" onclick="swipeCard('left')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-      <button class="swipe-btn btn-like" onclick="swipeCard('right')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
+    <h1>Мои вкусовые предпочтения</h1>
+    <p class="subtitle">Выбери продукты и ингредиенты, которые любишь, а затем отметь те, которые не хочешь видеть в меню.</p>
+    <div class="taste-mode">
+      <button type="button" id="tasteLoveTab" class="active-love" onclick="setTasteMode('love')">♥ Люблю</button>
+      <button type="button" id="tasteAvoidTab" onclick="setTasteMode('avoid')">✕ Не люблю</button>
     </div>
-    <div class="swipe-counter" id="swipeCounter">0 из 0</div>
+    <input class="taste-search" id="ingredientSearch" type="search" placeholder="Найти продукт или ингредиент" oninput="renderIngredientCatalog()">
+    <div class="taste-summary">
+      <span class="taste-count" id="lovedCount">Люблю: 0</span>
+      <span class="taste-count" id="dislikedCount">Не люблю: 0</span>
+    </div>
+    <p class="hint" id="tasteModeHint" style="margin:0 0 12px;">Отмечай продукты, которые тебе нравятся. Они будут приоритетом при составлении меню.</p>
+    <div id="ingredientCatalog"></div>
   </div>
 
   <div class="step" id="step8">
@@ -1242,7 +1263,7 @@
     let state = {
       step: 1, totalSteps: 10, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
       persons: [], equipment: ['stove'], cookingMethods: [],
-      currentDishes: [], currentDishIndex: 0, likedDishes: [], dislikedDishes: [],
+      tasteMode: 'love', likedIngredients: [], dislikedIngredients: [],
       finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
     };
 
@@ -1308,7 +1329,7 @@
       if (state.step === 4) updateBudget(state.budget);
       if (state.step === 5) renderPersons();
       if (state.step === 6) renderDietTypes();
-      if (state.step === 7) initSwipes();
+      if (state.step === 7) renderTastePreferences();
       if (state.step === 8) renderAllergiesAndEquipment();
       
       if (state.step === 9) { document.getElementById('btnNext').textContent = 'Сформировать меню →'; document.getElementById('btnNext').classList.add('active'); }
@@ -1514,42 +1535,80 @@
       );
     }
 
-    function initSwipes() {
-      // Для общего семейного меню блюдо должно подходить каждому члену семьи.
-      state.currentDishes = getCompatibleDishes();
-      state.currentDishIndex = 0;
-      renderSwipeCards();
+    const ingredientGroups = [
+      { name: 'Мясо и птица', items: ['Курица','Индейка','Говядина','Свинина','Баранина','Кролик','Утка'] },
+      { name: 'Рыба и морепродукты', items: ['Лосось','Форель','Треска','Судак','Скумбрия','Сельдь','Тунец','Креветки','Кальмары','Мидии'] },
+      { name: 'Молочные продукты и яйца', items: ['Молоко','Сливки','Сметана','Творог','Сыр','Фета','Моцарелла','Йогурт','Кефир','Сливочное масло','Яйца'] },
+      { name: 'Овощи и зелень', items: ['Картофель','Помидоры','Огурцы','Болгарский перец','Морковь','Лук','Чеснок','Брокколи','Цветная капуста','Кабачки','Баклажаны','Тыква','Свёкла','Капуста','Шпинат','Салатные листья','Грибы','Авокадо','Оливки','Укроп','Петрушка','Кинза'] },
+      { name: 'Фрукты и ягоды', items: ['Яблоки','Бананы','Груши','Апельсины','Мандарины','Лимон','Киви','Нектарины','Персики','Виноград','Клубника','Малина','Черника','Смородина','Вишня'] },
+      { name: 'Крупы, бобовые и макароны', items: ['Гречка','Рис','Овсянка','Булгур','Кускус','Пшено','Перловка','Макароны','Чечевица','Нут','Фасоль','Горох','Кукуруза'] },
+      { name: 'Орехи, семена и добавки', items: ['Грецкие орехи','Миндаль','Фундук','Кешью','Арахис','Семечки подсолнечника','Тыквенные семечки','Кунжут','Семена чиа','Лён','Кокос'] },
+      { name: 'Хлеб, соусы и прочее', items: ['Пшеничный хлеб','Ржаной хлеб','Лаваш','Мёд','Сахар','Оливковое масло','Соевый соус','Томатный соус','Горчица','Майонез','Хумус','Тофу','Базилик','Острый перец'] }
+    ];
+
+    function setTasteMode(mode) {
+      state.tasteMode = mode;
+      renderTastePreferences();
     }
 
-    function renderSwipeCards() {
-      const container = document.getElementById('swipeContainer'); container.innerHTML = '';
-      const counter = document.getElementById('swipeCounter');
-      if (state.currentDishIndex >= state.currentDishes.length) {
-        counter.style.display = 'none'; document.getElementById('swipeActions').style.display = 'none';
-        container.innerHTML = `<div class="swipe-done"><div class="swipe-done-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><h3>Предпочтения приняты!</h3><p>Мы учтем твои вкусы.</p></div>`;
-        return;
+    function toggleIngredient(name) {
+      if (state.tasteMode === 'love') {
+        state.likedIngredients = state.likedIngredients.includes(name)
+          ? state.likedIngredients.filter(item => item !== name) : [...state.likedIngredients, name];
+        state.dislikedIngredients = state.dislikedIngredients.filter(item => item !== name);
+      } else {
+        state.dislikedIngredients = state.dislikedIngredients.includes(name)
+          ? state.dislikedIngredients.filter(item => item !== name) : [...state.dislikedIngredients, name];
+        state.likedIngredients = state.likedIngredients.filter(item => item !== name);
       }
-      counter.style.display = 'block'; counter.textContent = `${state.currentDishIndex + 1} из ${state.currentDishes.length}`;
-      document.getElementById('swipeActions').style.display = 'flex';
-      for (let i = state.currentDishIndex; i < Math.min(state.currentDishIndex + 2, state.currentDishes.length); i++) {
-        const dish = state.currentDishes[i]; const card = document.createElement('div');
-        card.className = 'swipe-card'; card.id = `card-${i}`;
-        if (i > state.currentDishIndex) { card.style.transform = 'scale(0.95) translateY(10px)'; card.style.opacity = '0.5'; card.style.zIndex = '1'; } else card.style.zIndex = '2';
-        const caloriesLabel = Number.isFinite(dish.calories) ? `${dish.calories} ккал` : 'КБЖУ уточняются';
-        const imageMarkup = dish.image
-          ? `<img src="${dish.image}" alt="${dish.name}" loading="lazy" onerror="this.hidden=true; this.nextElementSibling.hidden=false"><div class="swipe-image-placeholder" hidden><span class="placeholder-icon">🍽️</span><span>Фото скоро появится</span></div>`
-          : `<div class="swipe-image-placeholder"><span class="placeholder-icon">🍽️</span><span>Фото скоро появится</span></div>`;
-        card.innerHTML = imageMarkup + `<div class="swipe-info"><div class="swipe-title">${dish.name}</div><div class="swipe-calories">${caloriesLabel}</div></div>`;
-        container.appendChild(card);
-      }
+      renderTastePreferences();
     }
 
-    function swipeCard(direction) {
-      const currentCard = document.getElementById(`card-${state.currentDishIndex}`); if (!currentCard) return;
-      const dish = state.currentDishes[state.currentDishIndex];
-      if (direction === 'right') { currentCard.classList.add('card-anim-right'); state.likedDishes.push(dish.id); }
-      else { currentCard.classList.add('card-anim-left'); state.dislikedDishes.push(dish.id); }
-      setTimeout(() => { state.currentDishIndex++; renderSwipeCards(); }, 300);
+    function renderTastePreferences() {
+      const loveTab = document.getElementById('tasteLoveTab');
+      const avoidTab = document.getElementById('tasteAvoidTab');
+      if (!loveTab || !avoidTab) return;
+      loveTab.className = state.tasteMode === 'love' ? 'active-love' : '';
+      avoidTab.className = state.tasteMode === 'avoid' ? 'active-avoid' : '';
+      document.getElementById('lovedCount').textContent = 'Люблю: ' + state.likedIngredients.length;
+      document.getElementById('dislikedCount').textContent = 'Не люблю: ' + state.dislikedIngredients.length;
+      document.getElementById('tasteModeHint').textContent = state.tasteMode === 'love'
+        ? 'Отмечай продукты, которые тебе нравятся. Они будут приоритетом при составлении меню.'
+        : 'Отмечай продукты, которые не хочешь видеть в меню. Они будут исключены из подбора.';
+      renderIngredientCatalog();
+    }
+
+    function renderIngredientCatalog() {
+      const input = document.getElementById('ingredientSearch');
+      const container = document.getElementById('ingredientCatalog');
+      if (!input || !container) return;
+      const query = input.value.trim().toLocaleLowerCase('ru');
+      container.innerHTML = '';
+      let found = 0;
+      ingredientGroups.forEach(group => {
+        const items = group.items.filter(name => name.toLocaleLowerCase('ru').includes(query));
+        if (!items.length) return;
+        found += items.length;
+        const heading = document.createElement('div');
+        heading.className = 'taste-category';
+        heading.textContent = group.name;
+        container.appendChild(heading);
+        const grid = document.createElement('div');
+        grid.className = 'ingredient-grid';
+        items.forEach(name => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'ingredient-chip' +
+            (state.likedIngredients.includes(name) ? ' loved' : '') +
+            (state.dislikedIngredients.includes(name) ? ' disliked' : '');
+          button.textContent = name;
+          button.setAttribute('aria-pressed', String(state.likedIngredients.includes(name) || state.dislikedIngredients.includes(name)));
+          button.addEventListener('click', () => toggleIngredient(name));
+          grid.appendChild(button);
+        });
+        container.appendChild(grid);
+      });
+      if (!found) container.innerHTML = '<div class="taste-empty">Ничего не найдено. Попробуй другое название.</div>';
     }
 
     function renderAllergiesAndEquipment() {
