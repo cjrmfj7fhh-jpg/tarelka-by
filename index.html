@@ -9244,7 +9244,10 @@
       if (state.kids.length >= 6) return;
       state.kids.push({ id: state.kids.length + 1, name: '', age: '', gender: 'male', height: '', weight: '', activity: 'sedentary', allergies: [], intolerances: [], likedIngredients: [], dislikedIngredients: [] });
       updateFamilySummary();
-      if (shouldRender && state.step === 5) renderPersons();
+      if (shouldRender && state.step === 5) {
+        renderPersons();
+        validateNextBtn();
+      }
     }
 
     function removeChildProfile(index) {
@@ -9254,6 +9257,7 @@
       updateFamilySummary();
       renderPersons();
       renderMealsStep();
+      validateNextBtn();
     }
 
     function updateChild(index, field, value) {
