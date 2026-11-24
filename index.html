@@ -7129,7 +7129,11 @@
         weight: Number(dish.servingWeightGrams),
         protein: Number(dish.proteinPerServing),
         fat: Number(dish.fatPerServing),
-        carbs: Number(dish.carbsPerServing)
+        carbs: Number(dish.carbsPerServing),
+        caloriesPer100g: Number(dish.caloriesPer100g),
+        proteinPer100g: Number(dish.proteinPer100g),
+        fatPer100g: Number(dish.fatPer100g),
+        carbsPer100g: Number(dish.carbsPer100g)
       };
       const hasCalories = Number.isFinite(fields.calories) && fields.calories > 0;
       const hasWeight = Number.isFinite(fields.weight) && fields.weight > 0;
@@ -7143,6 +7147,14 @@
             protein: hasMacros ? Math.round(fields.protein * 10) / 10 : null,
             fat: hasMacros ? Math.round(fields.fat * 10) / 10 : null,
             carbs: hasMacros ? Math.round(fields.carbs * 10) / 10 : null,
+            per100g: ['caloriesPer100g', 'proteinPer100g', 'fatPer100g', 'carbsPer100g'].every(key =>
+              Number.isFinite(fields[key]) && fields[key] >= 0
+            ) ? {
+              calories: Math.round(fields.caloriesPer100g),
+              protein: Math.round(fields.proteinPer100g * 10) / 10,
+              fat: Math.round(fields.fatPer100g * 10) / 10,
+              carbs: Math.round(fields.carbsPer100g * 10) / 10
+            } : null,
             nutritionStatus: dish.nutritionStatus || 'estimated'
           }
         : null;
@@ -7154,7 +7166,12 @@
         ? ' · Б ' + estimate.protein + ' г · Ж ' + estimate.fat + ' г · У ' + estimate.carbs + ' г'
         : '';
       const status = estimate.nutritionStatus === 'verified' ? '' : ' · оценка';
-      const portion = estimate.calories + ' ккал · ' + estimate.weight + ' г' + macros + status;
+      const per100g = estimate.per100g
+        ? '<div class="hint" style="margin-top:3px;">На 100 г: ' + estimate.per100g.calories +
+          ' ккал · Б ' + estimate.per100g.protein + ' г · Ж ' + estimate.per100g.fat +
+          ' г · У ' + estimate.per100g.carbs + ' г</div>'
+        : '';
+      const portion = estimate.calories + ' ккал · ' + estimate.weight + ' г' + macros + status + per100g;
       const count = Number(plannedServings);
       if (!Number.isFinite(count) || count <= 1) return portion;
       const total = Math.round(estimate.calories * count);
