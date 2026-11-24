@@ -10258,9 +10258,9 @@
         'баклажаны': 'баклажан', 'свекла': 'свекла'
       };
       const normalizeShoppingProduct = name => {
-        const displayName = name.trim().replace(/\\s+/g, ' ').replace(/[.,;:]+$/g, '');
+        const displayName = name.trim().replace(/\s+/g, ' ').replace(/[.,;:]+$/g, '');
         const normalizedName = displayName.toLocaleLowerCase('ru').replace(/ё/g, 'е')
-          .replace(/[.,;:]+/g, '').replace(/\\s+/g, ' ').trim();
+          .replace(/[.,;:]+/g, '').replace(/\s+/g, ' ').trim();
         const canonicalName = shoppingProduceAliases[normalizedName] || shoppingProductAliases[normalizedName] || normalizedName;
         const displayAliases = shoppingProduceAliases[normalizedName] ? canonicalName :
           (shoppingProductAliases[normalizedName] ? 'Яйца' : displayName);
