@@ -6212,17 +6212,43 @@
         const rounded = Math.round(value * 10) / 10;
         return Number.isInteger(rounded) ? String(rounded) : String(rounded).replace('.', ',');
       };
-      const shoppingEntries = [...shoppingItems.values()].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+      const shoppingEntries = [...shoppingItems.values()];
+      const shoppingCategoryRules = [
+        { name:'Овощи и зелень', test:/картоф|лук|морков|перец|помидор|томат свеж|огур|броккол|капуст|кабач|баклаж|свекл|тыкв|чеснок|шпинат|салат|гриб|укроп|петруш|кинз|авокадо|оливк/ },
+        { name:'Фрукты и ягоды', test:/банан|апельсин|яблок|груш|мандарин|киви|лимон|персик|нектарин|виноград|клубник|малин|черник|смородин|вишн|ягод/ },
+        { name:'Мясо и птица', test:/куриц|индейк|говядин|свинин|баранин|кролик|утк|фарш|бекон|ветчин/ },
+        { name:'Рыба и морепродукты', test:/лосос|с[её]мг|форел|треск|судак|скумбри|сельд|тунец|рыб|кревет|кальмар|мид|морепродукт/ },
+        { name:'Молочные продукты и яйца', test:/молок|сливк|сметан|творог|сыр|фет|моцарел|йогурт|кефир|масло сливоч|яйц/ },
+        { name:'Крупы, бобовые и макароны', test:/греч|рис|овся|булгур|кускус|пшен|перлов|макарон|чечевиц|нут|фасол|горох|кукуруз|отруб/ },
+        { name:'Хлеб и выпечка', test:/хлеб|лаваш|лепеш|булоч|мук|сухар|паниров/ },
+        { name:'Орехи, семена и сухофрукты', test:/орех|миндал|фундук|кешью|арахис|семеч|кунжут|чиа|лен|кокос|изюм|кураг/ },
+        { name:'Соусы, масла и приправы', test:/соус|масло раст|оливковое масло|уксус|горчиц|майонез|м[её]д|сахар|соль|перец черн|паприк|карри|спец|базилик|орегано/ }
+      ];
+      const getShoppingCategory = item => {
+        const value = item.name.toLocaleLowerCase('ru').replace(/ё/g,'е');
+        const rule = shoppingCategoryRules.find(entry => entry.test.test(value));
+        return rule ? rule.name : 'Прочее';
+      };
+      const shoppingCategoryOrder = ['Овощи и зелень','Фрукты и ягоды','Мясо и птица','Рыба и морепродукты',
+        'Молочные продукты и яйца','Крупы, бобовые и макароны','Хлеб и выпечка',
+        'Орехи, семена и сухофрукты','Соусы, масла и приправы','Прочее'];
+      const shoppingGroups = new Map();
+      shoppingEntries.forEach(item => {
+        const category = getShoppingCategory(item);
+        if (!shoppingGroups.has(category)) shoppingGroups.set(category, []);
+        shoppingGroups.get(category).push(item);
+      });
       const shoppingListHtml = shoppingEntries.length
-        ? '<ul style="padding-left:20px;margin:12px 0;">' +
-          shoppingEntries.map(item => {
-            const displayQuantity = item.unitKey === 'piece'
-              ? Math.ceil(item.quantity) : item.quantity;
-            const amount = item.complete && item.quantity > 0
-              ? formatShoppingQuantity(displayQuantity) + ' ' + item.unit + ' · черновой расчёт'
-              : (item.quantity > 0 ? 'количество уточняется (часть данных известна)' : 'количество уточняется');
-            return '<li style="margin:8px 0;line-height:1.45;"><strong>' + item.name + '</strong> — ' + amount + '</li>';
-          }).join('') + '</ul>'
+        ? shoppingCategoryOrder.filter(category => shoppingGroups.has(category)).map(category => {
+            const rows = shoppingGroups.get(category).sort((a,b) => a.name.localeCompare(b.name,'ru')).map(item => {
+              const displayQuantity = item.unitKey === 'piece' ? Math.ceil(item.quantity) : item.quantity;
+              const amount = item.complete && item.quantity > 0
+                ? formatShoppingQuantity(displayQuantity) + ' ' + item.unit + ' · черновой расчёт'
+                : (item.quantity > 0 ? 'количество уточняется (часть данных известна)' : 'количество уточняется');
+              return '<li style="margin:8px 0;line-height:1.45;"><strong>' + item.name + '</strong> — ' + amount + '</li>';
+            }).join('');
+            return '<section style="margin:18px 0 12px;"><h3 style="font-size:15px;font-weight:700;margin:0 0 8px;color:#46533A;">' + category + '</h3><ul style="padding-left:20px;margin:0;">' + rows + '</ul></section>';
+          }).join('')
         : '<p style="font-size:14px;line-height:1.5;">Пока нет продуктов для списка: для выбранных приёмов пищи не нашлось рецептов с известным составом.</p>';
       const shoppingQualityNote = '<div style="margin-top:12px;padding:12px;border-radius:10px;background:#FFF7E6;color:#854D0E;font-size:12px;line-height:1.5;">' +
         '<strong>Важно:</strong> количества рассчитаны ориентировочно по черновым карточкам рецептов и масштабу порций. Это не подтверждённая норма закупки; состав и граммовки ещё требуют проверки. Цены и стоимость корзины не рассчитываются.</div>';
