@@ -5962,6 +5962,17 @@
         : null;
     }
 
+    function getMealCandidates(dishes, mealType) {
+      const candidates = dishes.filter(dish => dish.type === mealType);
+      if (mealType !== 'lunch') return candidates;
+      // Обед должен быть самостоятельным сытным блюдом, а не салатом или супом.
+      // Пока в каталоге с указанным составом таким критериям соответствуют эти позиции:
+      // белковый компонент + крупа/другая основа. Новые рецепты добавлять сюда
+      // только после редакторской проверки состава и полноценности порции.
+      const substantialLunchIds = new Set([3, 5, 12]);
+      return candidates.filter(dish => substantialLunchIds.has(Number(dish.id)));
+    }
+
     function generatePlan() {
       const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
       const mealLabels = { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин' };
@@ -5984,6 +5995,9 @@
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
 
+      const childMenuNote = state.hasKids && state.kids.length
+        ? '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;"><strong>Детские профили учтены в общих ограничениях.</strong><br>Отдельное возрастное детское меню пока не формируется: в каталоге ещё нет достаточного количества проверенных по возрасту детских рецептов. Не будем выдавать взрослое блюдо за специально проверенное детское питание.</div>'
+        : '';
       const calorieIntro = '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;">' +
         '<strong>Справочный ориентир по калориям</strong><br>' +
         'Для блюда будет показана калорийность стандартной порции и её вес, если эти данные известны. Суточный ориентир приведён только для сравнения — приложение не решает за вас, сколько нужно съесть и не подбирает блюда под заданную норму. ' +
@@ -6001,8 +6015,7 @@
           let dayCaloriesComplete = true;
           let dayCaloriesTotal = 0;
           selectedMeals.forEach(meal => {
-            const candidates = compatible
-              .filter(dish => dish.type === meal.type)
+            const candidates = getMealCandidates(compatible, meal.type)
               .sort((a, b) =>
                 getDishPreferenceMatches(b, lovedIngredients).length -
                 getDishPreferenceMatches(a, lovedIngredients).length
@@ -6042,7 +6055,7 @@
         const calorieStatusNote = hasAnyDailyTarget
           ? '<p class="hint" style="margin:0 0 14px;">Суточный ориентир показан исключительно как справочная информация. Вы сами определяете размер своей порции и решаете, подходит ли вам предложенное блюдо.</p>'
           : '<p class="hint" style="margin:0 0 14px;">При желании укажите суточный ориентир калорий — он будет показан справочно и не повлияет на выбор блюд.</p>';
-        menuContainer.innerHTML = calorieIntro + preferenceNote + calorieStatusNote + menuHtml;
+        menuContainer.innerHTML = childMenuNote + calorieIntro + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед подбирается как сытное основное блюдо с белковым компонентом и гарниром/основой. Салат или суп в одиночку не считаются полноценным обедом.</p>' + menuHtml;
       }
 
       // Черновой расчёт количеств: масштабируем только рецепты с указанными
