@@ -1384,6 +1384,7 @@
     "methodCandidates": [
       "boiling"
     ],
+    "preparationOptions": [{"equipment":["stove","blender"],"methods":["boiling"]}],
     "source": "https://www.maggi.ru/recipes/sup-pyure-iz-tykvy",
     "reviewNotes": "В составе есть готовая приправа неизвестного состава; нельзя считать список аллергенов исчерпывающим без состава приправы.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1892,6 +1893,7 @@
     "methodCandidates": [
       "no_cook"
     ],
+    "preparationOptions": [{"equipment":["blender"],"methods":["no_cook"]}],
     "source": "https://health-diet.ru/table_calorie_users/2437654/",
     "reviewNotes": "Источник даёт один вариант с кешью, овсяными отрубями и молоком. Отруби требуют проверки маркировки на глютен/перекрёстный контакт.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -6629,6 +6631,7 @@
     "allergenCandidates": ["milk"],
     "equipmentCandidates": ["stove", "blender"],
     "methodCandidates": ["boiling"],
+    "preparationOptions": [{"equipment":["stove","blender"],"methods":["boiling"]}],
     "source": "https://calorizator.ru/recipe/51679",
     "reviewNotes": "Отдельная рецептура: тыква, картофель, курица и молоко вместо сливочной основы с перцем и семечками. Источник пользовательский; для текстуры пюре требуется блендер. Выход 1300 г указан как сумма ингредиентов; фактический вес после приготовления проверить.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -7051,15 +7054,19 @@
     }
 
     function isDishCompatibleWithKitchen(dish) {
-      // Для непроверенных демо-рецептов не делаем вид, что знаем их технику.
-      // После проверки карточки доступная техника и выбранные методы станут фильтрами.
-      if (dish.recipeStatus !== 'verified') return true;
-      const requiredEquipment = dish.equipment || [];
-      const methods = dish.cookingMethods || [];
-      const hasRequiredEquipment = requiredEquipment.every(item => state.equipment.includes(item));
-      const matchesMethod = state.cookingMethods.length === 0 ||
-        state.cookingMethods.some(method => methods.includes(method));
-      return hasRequiredEquipment && matchesMethod;
+      // Фильтруем только по способам приготовления, подтверждённым для конкретной карточки.
+      // preparationOptions связывает метод с нужной техникой: например, запекание требует духовку,
+      // а вариант того же блюда на сковороде — плиту.
+      const options = Array.isArray(dish.preparationOptions) ? dish.preparationOptions : [];
+      if (!options.length) return true; // Нет проверенных данных — не исключаем блюдо наугад.
+      return options.some(option => {
+        const requiredEquipment = option.equipment || [];
+        const methods = option.methods || [];
+        const hasRequiredEquipment = requiredEquipment.every(item => state.equipment.includes(item));
+        const matchesMethod = state.cookingMethods.length === 0 ||
+          state.cookingMethods.some(method => methods.includes(method));
+        return hasRequiredEquipment && matchesMethod;
+      });
     }
 
     // Сопоставление пользовательских предпочтений с кандидатными названиями ингредиентов.
