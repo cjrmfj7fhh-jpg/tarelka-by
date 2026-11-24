@@ -454,6 +454,98 @@
       .menu-dish-card:hover { transform: none; }
     }
 
+
+    /* Editorial cookbook redesign — Tarelka.by */
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700;800&display=swap');
+    :root {
+      --bg:#F4EFE5; --paper:#FBF8F1; --text:#29291F; --primary:#526044;
+      --primary-light:#E8EBDD; --border:#D8D0C1; --success:#526044;
+      --success-light:#E8EBDD; --muted:#777568; --danger:#A84D3E;
+      --ink:#29291F; --tomato:#B95743; --olive:#526044; --honey:#C69A52;
+    }
+    body { font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--ink); padding-top:22px; }
+    .header { max-width:760px; margin-bottom:34px; text-align:left; border-bottom:1px solid var(--border); padding:0 0 18px; }
+    .logo { display:inline-block; color:var(--ink); font-family:'Playfair Display',Georgia,serif; font-size:32px; font-weight:700; letter-spacing:-1.2px; }
+    .logo:before { content:'КУЛИНАРНЫЙ ЕЖЕНЕДЕЛЬНИК  /  БЕЛАРУСЬ'; display:block; margin-bottom:5px; font:700 9px 'DM Sans',sans-serif; letter-spacing:2.2px; color:var(--tomato); }
+    .progress-bar { gap:3px; margin-top:17px; }
+    .segment { height:3px; border-radius:0; background:#DED8CB; }
+    .segment.active { background:var(--tomato); }
+    .step-info { text-align:left; text-transform:uppercase; letter-spacing:1.4px; font-size:10px; color:var(--muted); }
+    .step,.result-screen { max-width:760px; }
+    h1 { font:600 clamp(30px,5vw,43px)/1.12 'Playfair Display',Georgia,serif; letter-spacing:-.7px; margin:0 0 12px; max-width:720px; }
+    .subtitle { font-size:14px; line-height:1.7; color:var(--muted); max-width:620px; margin-bottom:28px; }
+    .store-grid { gap:0 22px; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--border); }
+    .store-card { background:transparent; border:0; border-bottom:1px solid var(--border); border-radius:0; padding:17px 4px; flex-direction:row; justify-content:flex-start; gap:14px; }
+    .store-card.selected { background:var(--primary-light); box-shadow:inset 3px 0 var(--olive); }
+    .store-circle { width:44px; height:44px; flex-basis:44px; border-radius:50%; font-size:9px; padding:3px; }
+    .store-name { font-family:'Playfair Display',Georgia,serif; font-size:17px; font-weight:600; }
+    .counter-card,.person-card,.menu-day { background:var(--paper); border:1px solid var(--border); border-radius:2px; box-shadow:0 5px 18px rgba(54,45,30,.035); }
+    .counter-card,.person-card { padding:22px; }
+    .person-title { font:600 23px 'Playfair Display',Georgia,serif; }
+    .meal-group { margin:28px 0; }
+    .meal-group-title { font:700 10px 'DM Sans',sans-serif; letter-spacing:1.8px; color:var(--tomato); }
+    .meal-option { background:transparent; border:0; border-bottom:1px solid var(--border); border-radius:0; padding:17px 8px; margin:0; }
+    .meal-option.selected { background:var(--primary-light); border-color:var(--olive); }
+    .meal-text { font:600 18px 'Playfair Display',Georgia,serif; }
+    .meal-checkbox { border-radius:50%; }
+    .budget-amount { color:var(--tomato); font:600 52px 'Playfair Display',Georgia,serif; }
+    .budget-notice { border-radius:2px; }
+    .input-group input,.input-group select,.taste-search { background:var(--paper); border:1px solid var(--border); border-radius:2px; color:var(--ink); }
+    .input-group input:focus,.taste-search:focus { border-color:var(--olive); }
+    .gender-btn,.tab,.goal-btn,.diet-card,.tag-item,.messenger-btn { border-radius:2px; }
+    .gender-btn.active,.goal-btn.active,.diet-card.selected,.tag-item.selected,.messenger-btn.active { border-color:var(--olive); background:var(--primary-light); color:var(--olive); }
+    .tabs { background:#EAE4D8; border-radius:2px; }
+    .tab.active { border-radius:1px; box-shadow:none; }
+    .taste-mode button { border-radius:2px; background:var(--paper); }
+    .taste-mode button.active-love { border-color:var(--olive); background:var(--primary-light); color:var(--olive); }
+    .taste-mode button.active-avoid { border-color:var(--tomato); background:#F3E5DF; color:var(--tomato); }
+    .taste-count,.ingredient-chip { border-radius:2px; background:var(--paper); }
+    .ingredient-chip.loved { border-color:var(--olive); background:var(--primary-light); color:var(--olive); }
+    .ingredient-chip.disliked { border-color:var(--tomato); background:#F3E5DF; color:var(--tomato); }
+    .swipe-card { border-radius:2px; background:var(--paper); box-shadow:0 8px 28px rgba(54,45,30,.10); }
+    .swipe-title { font:600 25px 'Playfair Display',Georgia,serif; }
+    .swipe-btn { border-radius:2px; }
+    .result-tabs { background:transparent; border:0; border-bottom:1px solid var(--border); border-radius:0; padding:0; gap:22px; }
+    .result-tab { flex:initial; padding:13px 2px; border-radius:0; font-size:11px; letter-spacing:1.3px; text-transform:uppercase; }
+    .result-tab.active { color:var(--tomato); background:transparent; border-bottom:2px solid var(--tomato); }
+    .menu-day { position:relative; padding:24px 26px; margin:0 0 22px; overflow:hidden; }
+    .menu-day:before { content:'ТАРЕЛКА  /  НЕДЕЛЬНОЕ МЕНЮ'; display:block; font-size:9px; font-weight:700; letter-spacing:2px; color:var(--tomato); margin-bottom:10px; }
+    .menu-day-title { color:var(--ink); font:600 29px 'Playfair Display',Georgia,serif; border-bottom:1px solid var(--border); padding-bottom:14px; margin-bottom:8px; }
+    .menu-item { border-bottom:1px solid #E7E0D4; padding:13px 0; }
+    .menu-item-name { font:600 16px 'Playfair Display',Georgia,serif; }
+    .menu-item-cal { font-size:10px; letter-spacing:.4px; }
+    .menu-dish-card { background:transparent !important; border:0 !important; border-bottom:1px solid var(--border) !important; border-radius:0 !important; box-shadow:none !important; }
+    .menu-dish-card img { border-radius:1px !important; }
+    .receipt-container { border-radius:2px; background:var(--paper); box-shadow:none; border:1px solid var(--border); }
+    .footer { background:rgba(244,239,229,.96); border-top:1px solid var(--border); backdrop-filter:blur(12px); }
+    .btn-next { background:var(--olive); border-radius:2px; letter-spacing:.4px; font-weight:700; min-height:52px; }
+    .btn-next:hover { background:#414D35; }
+    button,.meal-option,.diet-card,.store-card,.ingredient-chip { transition:background .18s ease,border-color .18s ease,transform .18s ease; }
+    button:focus-visible,.meal-option:focus-visible,.store-card:focus-visible { outline:2px solid var(--tomato); outline-offset:3px; }
+    @media (min-width:760px) {
+      body { padding-top:34px; background:linear-gradient(90deg,#EDE6D9 0,#F4EFE5 13%,#F4EFE5 87%,#EDE6D9 100%); }
+      .header,.step,.result-screen { max-width:1040px; }
+      .header { margin-bottom:42px; }
+      .logo { font-size:38px; }
+      .step { padding:0 8px; }
+      .step h1 { max-width:760px; }
+      .store-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+      .menu-day { padding:30px 38px; }
+      .person-card { padding:28px; }
+      .footer { padding-left:32px; padding-right:32px; }
+      .footer > * { max-width:1040px; }
+    }
+    @media (max-width:420px) {
+      body { padding-left:14px; padding-right:14px; }
+      .logo { font-size:28px; }
+      h1 { font-size:31px; }
+      .store-grid { gap:0 10px; }
+      .store-circle { width:38px; height:38px; flex-basis:38px; }
+      .store-name { font-size:15px; }
+      .menu-day { padding:19px 17px; }
+    }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+
   </style>
 </head>
 <body>
