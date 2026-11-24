@@ -13,7 +13,8 @@
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; min-height: 100dvh; padding: calc(16px + env(safe-area-inset-top)) 16px calc(120px + env(safe-area-inset-bottom)); overscroll-behavior-y: contain; }
     
     .header { text-align: center; margin: 0 auto 20px; max-width: 560px; }
-    .step, .result-screen { width: 100%; max-width: 560px; margin-left: auto; margin-right: auto; }\n    button, .meal-option, .diet-card, .store-card, .ingredient-chip { touch-action: manipulation; }
+    .step, .result-screen { width: 100%; max-width: 560px; margin-left: auto; margin-right: auto; }
+    button, .meal-option, .diet-card, .store-card, .ingredient-chip { touch-action: manipulation; }
     .logo { font-size: 24px; font-weight: 800; color: var(--primary); }
     .progress-bar { display: flex; gap: 6px; margin-top: 15px; }
     .segment { flex: 1; height: 4px; border-radius: 4px; background: var(--border); }
@@ -213,6 +214,174 @@
     .btn-next.active { opacity: 1; pointer-events: auto; }
     .btn-back { background: white; border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--text); font-size: 20px; cursor: pointer; position: absolute; left: 20px; top: 20px; display: none; z-index: 20; }
     .btn-back.show { display: flex; }
+  
+    /* Tarelka.by — warm editorial food design system */
+    :root {
+      color-scheme: light;
+      --bg: #FFF8F0;
+      --surface: #FFFEFC;
+      --surface-soft: #FFF1E7;
+      --text: #302923;
+      --primary: #C85A3F;
+      --primary-strong: #A9432D;
+      --primary-light: #FCE9DF;
+      --secondary: #66764B;
+      --secondary-light: #EDF1E4;
+      --accent: #E7A84B;
+      --border: #EADFD4;
+      --success: #58764B;
+      --success-light: #EEF3E8;
+      --muted: #82766D;
+      --danger: #B94C43;
+      --shadow-soft: 0 12px 34px rgba(91, 58, 38, .075);
+      --shadow-card: 0 5px 18px rgba(91, 58, 38, .055);
+    }
+    html { background: var(--bg); }
+    body {
+      font-family: 'DM Sans', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background:
+        radial-gradient(ellipse at 8% 0%, rgba(231,168,75,.12), transparent 34rem),
+        radial-gradient(ellipse at 100% 22%, rgba(200,90,63,.075), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      letter-spacing: -.012em;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    .header { max-width: 1000px; text-align: left; margin-bottom: 24px; position: relative; }
+    .logo {
+      display: inline-flex; align-items: center; gap: 10px;
+      color: var(--text); font-size: 23px; line-height: 1.15; font-weight: 850;
+      letter-spacing: -.055em;
+    }
+    .logo::before {
+      content: ''; width: 30px; height: 30px; border-radius: 10px 10px 10px 4px;
+      display: inline-block; background: var(--primary);
+      box-shadow: inset 0 -5px 0 rgba(111,35,20,.12);
+      background-image: radial-gradient(circle at 50% 50%, #FFF8F0 0 3px, transparent 3.5px), radial-gradient(circle at 50% 50%, transparent 0 9px, rgba(255,248,240,.85) 9.5px 10.5px, transparent 11px);
+    }
+    .progress-bar { gap: 5px; margin-top: 18px; }
+    .segment { height: 5px; border-radius: 99px; background: #E9DED3; }
+    .segment.active { background: var(--primary); }
+    .step-info { text-align: left; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; }
+    .step, .result-screen {
+      max-width: 1000px; padding: clamp(22px, 4vw, 38px);
+      background: rgba(255,254,252,.92); border: 1px solid rgba(234,223,212,.9);
+      border-radius: 26px; box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(12px);
+    }
+    h1 { font-size: clamp(25px, 3vw, 34px); line-height: 1.13; letter-spacing: -.045em; font-weight: 850; margin-bottom: 11px; }
+    .subtitle { color: var(--muted); font-size: 15px; line-height: 1.6; margin-bottom: 27px; max-width: 680px; }
+    .store-grid { gap: 14px; }
+    .store-card, .counter-card, .person-card, .diet-card, .meal-option, .menu-day {
+      background: var(--surface); border-color: var(--border); box-shadow: var(--shadow-card);
+    }
+    .store-card { border-width: 1px; border-radius: 20px; padding: 22px 14px; gap: 12px; }
+    .store-card:hover, .diet-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+    .store-card.selected, .meal-option.selected, .diet-card.selected {
+      border-color: var(--primary); background: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(200,90,63,.09);
+    }
+    .store-circle { width: 62px; height: 62px; flex-basis: 62px; border-radius: 19px; box-shadow: 0 5px 12px rgba(0,0,0,.09); }
+    .store-name { font-size: 14px; font-weight: 750; letter-spacing: -.02em; }
+    .counter-card, .person-card { border-radius: 22px; padding: 24px; }
+    .counter-row, .kids-row { min-height: 62px; }
+    .counter-value { color: var(--primary); font-size: 30px; font-weight: 850; font-variant-numeric: tabular-nums; }
+    .counter-btn { background: var(--surface-soft); border: 1px solid #EAD5C7; color: var(--primary-strong); font-weight: 700; }
+    .counter-btn:hover { background: var(--primary-light); }
+    .toggle.active { background: var(--secondary); }
+    .summary-box { background: var(--secondary-light); color: #465638; border-radius: 15px; padding: 16px; line-height: 1.5; }
+    .meal-group { margin-bottom: 26px; }
+    .meal-group-title { color: var(--secondary); font-size: 12px; letter-spacing: .09em; }
+    .meal-option { border-radius: 16px; padding: 16px 18px; }
+    .meal-checkbox { border-radius: 7px; }
+    .meal-option.selected .meal-checkbox { background: var(--primary); border-color: var(--primary); }
+    .budget-display { margin: 22px 0 28px; }
+    .budget-amount { color: var(--primary); font-size: clamp(42px, 6vw, 56px); letter-spacing: -.06em; font-weight: 850; }
+    input[type=range]::-webkit-slider-thumb { background: var(--primary); }
+    input[type=range]::-moz-range-thumb { background: var(--primary); border: 3px solid white; }
+    .budget-notice { background: var(--success-light); border: 1px solid #D8E3CF; color: #465B3B; border-radius: 15px; padding: 16px 18px; line-height: 1.5; }
+    .budget-notice.warning { background: #FFF4DF; border-color: #F0D5A6; color: #79551D; }
+    .person-title { font-size: 19px; letter-spacing: -.03em; }
+    .gender-btn, .goal-btn, .tab, .messenger-btn { border-color: var(--border); }
+    .gender-btn.active, .goal-btn.active, .messenger-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary-strong); }
+    .tabs { background: #F5EEE7; }
+    .tab.active { color: var(--primary-strong); box-shadow: 0 2px 8px rgba(75,48,30,.08); }
+    .input-group input, .taste-search { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; color: var(--text); }
+    .input-group input:focus, .taste-search:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(200,90,63,.11); }
+    .result-box { background: var(--secondary-light); color: var(--secondary); border-radius: 14px; }
+    .diet-grid { gap: 14px; }
+    .diet-card { border-radius: 17px; min-height: 112px; }
+    .diet-emoji { font-size: 27px; }
+    .taste-mode button { border-color: var(--border); border-radius: 14px; background: var(--surface); }
+    .taste-mode button.active-love { border-color: var(--secondary); background: var(--secondary-light); color: var(--secondary); }
+    .taste-mode button.active-avoid { border-color: var(--danger); background: #FBECEA; color: var(--danger); }
+    .taste-count { background: var(--surface-soft); border-color: var(--border); }
+    .ingredient-grid { gap: 10px; }
+    .ingredient-chip { border-color: var(--border); border-radius: 13px; background: var(--surface); min-height: 48px; }
+    .ingredient-chip.loved { border-color: var(--secondary); background: var(--secondary-light); color: #465B3B; }
+    .ingredient-chip.disliked { border-color: var(--danger); background: #FBECEA; color: #963B35; }
+    .section-title { color: var(--text); font-size: 17px; letter-spacing: -.025em; margin-top: 28px; }
+    .tag-item { border-color: var(--border); border-radius: 13px; background: var(--surface); min-height: 48px; }
+    .tag-item.selected { border-color: var(--secondary); background: var(--secondary-light); color: var(--secondary); }
+    .loader { border-color: #F0E4D8; border-top-color: var(--primary); }
+    .result-tabs { background: #F5EEE7; border-color: var(--border); border-radius: 15px; }
+    .result-tab { border-radius: 11px; }
+    .result-tab.active { background: var(--primary); box-shadow: 0 4px 12px rgba(200,90,63,.2); }
+    .menu-day { border-radius: 20px; padding: 22px; }
+    .menu-day-title { color: var(--secondary); font-size: 20px; letter-spacing: -.035em; }
+    .menu-item { gap: 16px; line-height: 1.45; padding: 13px 0; border-color: #EFE7DF; }
+    .menu-item-name { font-weight: 700; }
+    .menu-item-cal { color: var(--muted); }
+    .receipt-container { border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-card); }
+    .footer {
+      background: rgba(255,248,240,.9); border-top: 1px solid rgba(234,223,212,.9);
+      box-shadow: 0 -8px 30px rgba(91,58,38,.045); backdrop-filter: blur(16px);
+    }
+    .btn-next {
+      max-width: 1000px; display: block; margin: 0 auto;
+      background: var(--primary); border-radius: 16px; padding: 17px 22px;
+      font-size: 16px; font-weight: 800; letter-spacing: -.015em;
+      box-shadow: 0 7px 18px rgba(200,90,63,.2); transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .btn-next.active:hover { background: var(--primary-strong); transform: translateY(-1px); box-shadow: 0 10px 22px rgba(200,90,63,.24); }
+    .btn-back { background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-card); }
+    .btn-back.show { display: flex; }
+    .kids-age-notice {
+      margin-top: 16px; padding: 14px 16px; border-radius: 14px;
+      display: flex; align-items: flex-start; gap: 10px;
+      background: #FFF4DF; border: 1px solid #F0DDBA; color: #77551E;
+      font-size: 13px; line-height: 1.5;
+    }
+    .kids-age-notice strong { color: #654719; }
+    @media (min-width: 760px) {
+      body { padding: 34px 32px 140px; }
+      .header, .step, .result-screen { max-width: 1000px; }
+      .header { margin-bottom: 28px; }
+      .step-info { margin-bottom: 18px; }
+      .store-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .footer { padding: 14px 32px calc(14px + env(safe-area-inset-bottom)); }
+    }
+    @media (max-width: 600px) {
+      body { padding-left: 13px; padding-right: 13px; }
+      .header { margin-bottom: 18px; }
+      .step, .result-screen { border-radius: 21px; padding: 21px 17px; }
+      .logo { font-size: 21px; }
+      .logo::before { width: 27px; height: 27px; border-radius: 9px 9px 9px 4px; }
+      .store-grid { gap: 10px; }
+      .store-card { padding: 16px 9px; border-radius: 17px; }
+      .store-circle { width: 54px; height: 54px; flex-basis: 54px; border-radius: 16px; }
+      .counter-card, .person-card { padding: 18px; }
+      .menu-day { padding: 17px; }
+      .menu-item { align-items: flex-start; }
+      .menu-item-cal { white-space: nowrap; }
+      .footer { padding-left: 13px; padding-right: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+
   </style>
 </head>
 <body>
@@ -254,6 +423,7 @@
         <div class="toggle" id="kidsToggle" onclick="toggleKids()"></div>
       </div>
       <div class="summary-box" id="summaryText">Готовим на 2 человек</div>
+      <div class="kids-age-notice"><span aria-hidden="true">ℹ️</span><span><strong>Детское меню — от 3 лет.</strong> Если в семье есть дети младше 3 лет, приложение не рассчитывает для них меню и порции.</span></div>
     </div>
   </div>
 
