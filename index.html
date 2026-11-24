@@ -7232,6 +7232,7 @@
       }).filter(meal => mealLabels[meal.type])
         .sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
       const compatible = getPreferenceFilteredDishes(getCompatibleDishes());
+      const familyCompatible = getFamilyCompatibleDishes(compatible);
       const lovedIngredients = getAllFamilyLikedIngredients();
       const rotation = { breakfast: 0, lunch: 0, dinner: 0 };
       const menuContainer = document.getElementById('resultMenu');
@@ -7243,7 +7244,7 @@
       }));
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
-      const soupCandidates = compatible.filter(dish => Number(dish.id) >= 36 && Number(dish.id) <= 55)
+      const soupCandidates = familyCompatible.filter(dish => Number(dish.id) >= 36 && Number(dish.id) <= 55)
         .sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
       const soupSchedule = buildSoupSchedule(soupCandidates);
       const addedSoupBatches = new Set();
@@ -7269,12 +7270,10 @@
           let dayCaloriesTotal = 0;
           selectedMeals.forEach(meal => {
             if (meal.type === 'lunch') {
-              const mains = getMealCandidates(compatible, 'lunch')
-                .sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
-              const main = mains.length ? mains[rotation.lunch++ % mains.length] : null;
-              const soupPlan = soupSchedule[days.indexOf(day)];
+              const lunchPool = meal.group === 'Общий' ? familyCompatible : compatible;
+              const soupPlan = meal.group === 'Общий' ? soupSchedule[days.indexOf(day)] : null;
               const plannedServings = meal.group === 'Общий' ? getHouseholdCount() : 1;
-              const renderLunchDish = (dish, label) => {
+              const renderLunchDish = (dish, label, personLabel = '') => {
                 if (!dish) return '<div class="menu-item"><span class="menu-item-name">' + label + ': подходящих рецептов пока нет</span></div>';
                 const estimate = getDishNutritionEstimate(dish);
                 if (estimate === null) dayCaloriesComplete = false;
@@ -7282,57 +7281,93 @@
                 const image = typeof dish.image === 'string' ? dish.image : '';
                 return '<article class="menu-dish-card">' +
                   (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
-                  '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + meal.group + '</span></div>' +
+                  '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + meal.group + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
                   '<div class="menu-item-name">' + dish.name + '</div><div class="menu-item-cal">' +
-                  formatDishNutrition(estimate, label === 'Второе' ? plannedServings : 1) +
+                  formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) +
                   '</div></div></article>';
               };
-              if (main) {
-                selectedDishes.push({ ...main, plannedServings });
-                dayHtml += renderLunchDish(main, 'Второе');
-              } else {
-                dayCaloriesComplete = false;
-                dayHtml += renderLunchDish(null, 'Второе');
-              }
-              if (soupPlan) {
-                dayHtml += renderLunchDish(soupPlan.soup, 'Первое');
-                const batchKey = String(soupPlan.batch) + '-' + String(soupPlan.soup.id);
-                if (!addedSoupBatches.has(batchKey)) {
-                  const batchServings = soupSchedule.filter(item => item && item.batch === soupPlan.batch).length;
-                  selectedDishes.push({ ...soupPlan.soup, plannedServings: plannedServings * batchServings });
-                  addedSoupBatches.add(batchKey);
+              if (meal.group === 'Общий') {
+                const mains = rankDishesForPerson(getMealCandidates(lunchPool, 'lunch'), state.persons[0], lovedIngredients);
+                const main = mains.length ? mains[rotation.lunch++ % mains.length] : null;
+                if (main) {
+                  selectedDishes.push({ ...main, plannedServings });
+                  dayHtml += renderLunchDish(main, 'Второе');
+                } else {
+                  dayCaloriesComplete = false;
+                  dayHtml += renderLunchDish(null, 'Второе');
+                }
+                if (soupPlan) {
+                  dayHtml += renderLunchDish(soupPlan.soup, 'Первое');
+                  const batchKey = String(soupPlan.batch) + '-' + String(soupPlan.soup.id);
+                  if (!addedSoupBatches.has(batchKey)) {
+                    const batchServings = soupSchedule.filter(item => item && item.batch === soupPlan.batch).length;
+                    selectedDishes.push({ ...soupPlan.soup, plannedServings: plannedServings * batchServings });
+                    addedSoupBatches.add(batchKey);
+                  }
+                } else {
+                  dayHtml += '<p class="hint" style="margin:4px 0 10px;">Сегодня без супа — полноценный обед включает второе блюдо.</p>';
                 }
               } else {
-                dayHtml += '<p class="hint" style="margin:4px 0 10px;">Сегодня без супа — полноценный обед включает второе блюдо.</p>';
+                state.persons.forEach(person => {
+                  const personalMains = rankDishesForPerson(
+                    getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person, lovedIngredients
+                  );
+                  const personalMain = personalMains.length ? personalMains[rotation.lunch++ % personalMains.length] : null;
+                  if (personalMain) {
+                    selectedDishes.push({ ...personalMain, plannedServings: 1 });
+                    dayHtml += renderLunchDish(personalMain, 'Второе', getPersonLabel(person));
+                  } else {
+                    dayCaloriesComplete = false;
+                    dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
+                      escapeHtml(getPersonLabel(person)) + ' — подходящего обеда пока нет</span></div>';
+                  }
+                });
               }
               return;
             }
-            const candidates = getMealCandidates(compatible, meal.type)
-              .sort((a, b) =>
-                getDishPreferenceMatches(b, lovedIngredients).length -
-                getDishPreferenceMatches(a, lovedIngredients).length
-              );
-            if (candidates.length === 0) {
-              dayCaloriesComplete = false;
-              dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
-                meal.group + ' ' + mealLabels[meal.type] +
-                ': рецептов пока нет</span><span class="menu-item-cal">Нужно добавить подходящий рецепт</span></div>';
-              return;
+            const renderMealCard = (dish, personLabel = '') => {
+              if (!dish) return '<div class="menu-item"><span class="menu-item-name">' +
+                (personLabel ? escapeHtml(personLabel) + ' — ' : '') + meal.group + ' ' + mealLabels[meal.type] +
+                ': подходящего рецепта пока нет</span><span class="menu-item-cal">Нужно добавить подходящий рецепт</span></div>';
+              const nutritionEstimate = getDishNutritionEstimate(dish);
+              if (nutritionEstimate === null) dayCaloriesComplete = false;
+              else dayCaloriesTotal += nutritionEstimate.calories;
+              const dishImage = typeof dish.image === 'string' ? dish.image : '';
+              const count = personLabel ? 1 : (meal.group === 'Общий' ? getHouseholdCount() : 1);
+              return '<article class="menu-dish-card">' +
+                (dishImage ? '<img class="menu-dish-image" src="' + dishImage + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
+                '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + mealLabels[meal.type] + '</span><span class="meal-group-label">' + meal.group + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
+                '<div class="menu-item-name">' + dish.name + '</div>' +
+                '<div class="menu-item-cal">' + formatDishNutrition(nutritionEstimate, count) +
+                '</div></div></article>';
+            };
+            if (meal.group === 'Общий') {
+              const candidates = rankDishesForPerson(getMealCandidates(familyCompatible, meal.type), state.persons[0], lovedIngredients);
+              if (!candidates.length) {
+                dayCaloriesComplete = false;
+                dayHtml += renderMealCard(null);
+              } else {
+                const dish = candidates[rotation[meal.type] % candidates.length];
+                rotation[meal.type]++;
+                selectedDishes.push({ ...dish, plannedServings: getHouseholdCount() });
+                dayHtml += renderMealCard(dish);
+              }
+            } else {
+              state.persons.forEach(person => {
+                const candidates = rankDishesForPerson(
+                  getMealCandidates(getDishesForPerson(compatible, person), meal.type), person, lovedIngredients
+                );
+                if (!candidates.length) {
+                  dayCaloriesComplete = false;
+                  dayHtml += renderMealCard(null, getPersonLabel(person));
+                  return;
+                }
+                const dish = candidates[rotation[meal.type] % candidates.length];
+                rotation[meal.type]++;
+                selectedDishes.push({ ...dish, plannedServings: 1 });
+                dayHtml += renderMealCard(dish, getPersonLabel(person));
+              });
             }
-            const dish = candidates[rotation[meal.type] % candidates.length];
-            rotation[meal.type]++;
-            selectedDishes.push({ ...dish, plannedServings: meal.group === 'Общий' ? getHouseholdCount() : 1 });
-            const nutritionEstimate = getDishNutritionEstimate(dish);
-            if (nutritionEstimate === null) dayCaloriesComplete = false;
-            else dayCaloriesTotal += nutritionEstimate.calories;
-            const dishImage = typeof dish.image === 'string' ? dish.image : '';
-            dayHtml += '<article class="menu-dish-card">' +
-              (dishImage ? '<img class="menu-dish-image" src="' + dishImage + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
-              '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + mealLabels[meal.type] + '</span><span class="meal-group-label">' + meal.group + '</span></div>' +
-              '<div class="menu-item-name">' + dish.name + '</div>' +
-              '<div class="menu-item-cal">' +
-              formatDishNutrition(nutritionEstimate, meal.group === 'Общий' ? getHouseholdCount() : 1) +
-              '</div></div></article>';
           });
           const daySummary = dayCaloriesComplete
             ? '<div class="hint" style="margin-top:8px;">Сумма калорийности стандартных порций выбранных блюд: ' + dayCaloriesTotal + ' ккал. Это справочная сумма; фактическая калорийность вашей порции зависит от того, сколько вы положите себе.</div>'
