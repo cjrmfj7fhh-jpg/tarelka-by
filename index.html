@@ -502,6 +502,16 @@
   <div class="step" id="step3">
     <h1>Сколько приёмов пищи в день?</h1>
     <div id="mealGroupsContainer"></div>
+    <div class="person-card" style="margin-top:18px;">
+      <div class="section-title" style="margin-top:0;">⏱️ Как устроена ваша неделя?</div>
+      <p class="hint" style="margin:0 0 14px;">Ориентир — рабочие будни: работа 9:00–18:00, обед 13:00–14:00. Настройки можно поменять под вашу семью.</p>
+      <div class="input-group"><label for="workLunchMode">Где обычно проходит обед в будни?</label><select id="workLunchMode" onchange="updatePlanning('workLunchMode', this.value)"><option value="container">Беру еду с собой, нужен контейнер</option><option value="home">Обедаю дома</option><option value="cafe">Обедаю вне дома</option><option value="varies">По-разному</option></select></div>
+      <div class="input-group"><label for="weekdayCooking">Сколько активного времени готовы тратить на ужин?</label><select id="weekdayCooking" onchange="updatePlanning('weekdayCooking', this.value)"><option value="20">До 20 минут</option><option value="30" selected>Около 30 минут</option><option value="40">До 40 минут</option><option value="60">До часа, если нужно</option></select></div>
+      <div class="input-group"><label for="soupFrequency">Как часто хотите есть суп?</label><select id="soupFrequency" onchange="updatePlanning('soupFrequency', this.value)"><option value="daily">Почти каждый день</option><option value="alternate">Через день</option><option value="2-3" selected>2–3 раза в неделю</option><option value="weekly">Примерно раз в неделю</option><option value="never">Супы не планировать</option></select></div>
+      <div class="input-group"><label for="soupBatch">На сколько обедов варить одну кастрюлю?</label><select id="soupBatch" onchange="updatePlanning('soupBatch', this.value)"><option value="1">На один обед</option><option value="2" selected>На два обеда (например, на два дня)</option><option value="3">На три обеда</option><option value="4">На четыре обеда</option></select></div>
+      <label class="checkbox-row" style="font-size:13px;color:var(--text);"><input id="weekendPrep" type="checkbox" checked onchange="updatePlanning('weekendPrep', this.checked)" style="width:18px;height:18px;flex-shrink:0;">Готовить часть заготовок в выходные, чтобы разгрузить будни</label>
+      <p class="hint" style="margin:12px 0 0;">Важно: это первый шаг настройки режима. Автоматическое распределение кастрюли супа по дням и полноценное сочетание «суп + второе» ещё предстоит реализовать — приложение не будет делать вид, что уже умеет это.</p>
+    </div>
   </div>
 
   <div class="step" id="step4">
@@ -5014,7 +5024,7 @@
 
     let state = {
       step: 1, totalSteps: 10, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
-      persons: [], equipment: ['stove'], cookingMethods: [],
+      persons: [], planning: { workLunchMode: 'container', weekdayCooking: '30', soupFrequency: '2-3', soupBatch: '2', weekendPrep: true }, equipment: ['stove'], cookingMethods: [],
       tasteMode: 'love', tastePersonIndex: 0,
       finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
     };
@@ -5025,7 +5035,7 @@
       for (let i = 1; i <= state.adultsCount; i++) {
         const existing = oldPersons[i-1];
         state.persons.push({
-          id: i, gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'),
+          id: i, name: existing ? (existing.name || '') : '', gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'),
           mode: existing ? existing.mode : 'calc', calories: existing ? existing.calories : 2000, activity: existing ? existing.activity : 1.2,
           age: existing ? existing.age : '', height: existing ? existing.height : '', weight: existing ? existing.weight : '',
           goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : [], intolerances: existing ? (existing.intolerances || []) : [], likedIngredients: existing ? (existing.likedIngredients || []) : [], dislikedIngredients: existing ? (existing.dislikedIngredients || []) : []
@@ -5194,6 +5204,10 @@
       else { noticeBox.className = 'budget-notice'; noticeBox.innerHTML = '<div>ℹ️</div><div><strong>Более свободный ориентир</strong><br><span>Сравнение фактической стоимости появится после подключения цен.</span></div>'; }
     }
 
+    function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
+    function getPersonLabel(person) { return person.name && person.name.trim() ? person.name.trim() : 'Человек ' + person.id; }
+    function updatePlanning(field, value) { state.planning[field] = value; }
+
     function renderPersons() {
       const container = document.getElementById('personsContainer');
       container.innerHTML = '';
@@ -5201,7 +5215,7 @@
         const card = document.createElement('div');
         card.className = 'person-card';
         card.innerHTML = `
-          <div class="person-title">Человек ${person.id}</div>
+          <div class="input-group"><label>Как к вам обращаться?</label><input type="text" maxlength="32" placeholder="Например, Андрей" value="${escapeHtml(person.name || '')}" onchange="updatePerson(${index}, 'name', this.value)"></div><div class="person-title">${escapeHtml(getPersonLabel(person))}</div>
           <div class="gender-btns">
             <div class="gender-btn ${person.gender === 'male' ? 'active' : ''}" onclick="updatePerson(${index}, 'gender', 'male')">👨 Мужской</div>
             <div class="gender-btn ${person.gender === 'female' ? 'active' : ''}" onclick="updatePerson(${index}, 'gender', 'female')">👩 Женский</div>
@@ -5267,7 +5281,7 @@
         let gridHtml = '<div class="diet-grid">';
         diets.forEach(d => { gridHtml += `<div class="diet-card ${person.dietType === d.id ? 'selected' : ''}" onclick="setDiet(${index}, '${d.id}')"><div class="diet-emoji">${d.emoji}</div><div class="diet-name">${d.name}</div></div>`; });
         gridHtml += '</div>';
-        card.innerHTML = `<div class="person-title">Человек ${person.id}</div>${gridHtml}`;
+        card.innerHTML = `<div class="person-title">${escapeHtml(getPersonLabel(person))}</div>${gridHtml}`;
         container.appendChild(card);
       });
     }
@@ -5428,7 +5442,7 @@
       state.persons.forEach((person, index) => {
         const button = document.createElement('button');
         button.type = 'button';
-        button.textContent = 'Человек ' + person.id;
+        button.textContent = getPersonLabel(person);
         button.className = index === state.tastePersonIndex ? 'active-love' : '';
         button.addEventListener('click', () => setTastePerson(index));
         container.appendChild(button);
@@ -5678,7 +5692,7 @@
         '<strong>Справочный ориентир по калориям</strong><br>' +
         'Для блюда будет показана калорийность стандартной порции и её вес, если эти данные известны. Суточный ориентир приведён только для сравнения — приложение не решает за вас, сколько нужно съесть и не подбирает блюда под заданную норму. ' +
         (allDailyTargetsValid
-          ? dailyTargets.map(person => 'Человек ' + person.id + ': ориентир ' + person.target + ' ккал/день').join(' · ')
+          ? dailyTargets.map(person => getPersonLabel(person) + ': ориентир ' + person.target + ' ккал/день').join(' · ')
           : 'Для части участников суточный ориентир не задан или не рассчитан.') +
         '</div>';
 
