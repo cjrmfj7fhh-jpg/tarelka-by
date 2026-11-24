@@ -2988,6 +2988,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -3050,6 +3051,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -3108,6 +3110,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -3160,6 +3163,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -3212,6 +3216,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [
       "vegan",
       "vegetarian"
@@ -3267,6 +3272,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -3319,6 +3325,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -3371,6 +3378,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [
       "vegetarian"
     ],
@@ -3425,6 +3433,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [
       "vegan",
       "vegetarian"
@@ -3480,6 +3489,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [
       "fish"
     ],
@@ -3540,6 +3550,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [
       "vegetarian"
     ],
@@ -3594,6 +3605,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -3646,6 +3658,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [
       "vegan",
       "vegetarian"
@@ -3706,6 +3719,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [
       "vegetarian"
     ],
@@ -3761,6 +3775,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [
       "vegetarian"
     ],
@@ -3821,6 +3836,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -3873,6 +3889,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -3925,6 +3942,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [
       "vegetarian"
     ],
@@ -3979,6 +3997,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [
       "vegan",
       "vegetarian"
@@ -4029,6 +4048,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "soup",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -7716,11 +7736,13 @@
         count + ' стандартных порций: ' + total + ' ккал' + totalMacros + '</div>';
     }
 
+    function isSoupDish(dish) {
+      return dish.type === 'soup' || dish.course === 'soup';
+    }
+
     function getMealCandidates(dishes, mealType) {
-      const candidates = dishes.filter(dish => dish.type === mealType);
-      if (mealType !== 'lunch') return candidates;
-      const substantialLunchIds = new Set([3, 5]);
-      return candidates.filter(dish => substantialLunchIds.has(Number(dish.id)));
+      const candidates = dishes.filter(dish => dish.type === mealType && !isSoupDish(dish));
+      return candidates;
     }
 
     function buildSoupSchedule(soups) {
@@ -7764,7 +7786,7 @@
       }));
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
-      const soupCandidates = familyCompatible.filter(dish => dish.type === 'soup')
+      const soupCandidates = familyCompatible.filter(isSoupDish)
         .sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
       const soupSchedule = buildSoupSchedule(soupCandidates);
       const addedSoupBatches = new Set();
