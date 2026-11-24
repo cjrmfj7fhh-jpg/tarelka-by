@@ -5163,7 +5163,7 @@
     let state = {
       step: 1, totalSteps: 10, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
       persons: [], kids: [], planning: { workLunchMode: 'container', weekdayCooking: '30', soupFrequency: '2-3', soupBatch: '2', weekendPrep: true }, equipment: ['stove'], cookingMethods: [],
-      tasteMode: 'love', tastePersonIndex: 0,
+      tasteMode: 'love', tastePersonIndex: 0, tastePersonType: 'adult',
       finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
     };
 
@@ -5339,7 +5339,7 @@
 
     function addChildProfile(shouldRender = true) {
       if (state.kids.length >= 6) return;
-      state.kids.push({ id: state.kids.length + 1, name: '', age: '', gender: 'male', height: '', weight: '', activity: 'sedentary' });
+      state.kids.push({ id: state.kids.length + 1, name: '', age: '', gender: 'male', height: '', weight: '', activity: 'sedentary', allergies: [], intolerances: [], likedIngredients: [], dislikedIngredients: [] });
       updateFamilySummary();
       if (shouldRender && state.step === 5) renderPersons();
     }
@@ -5615,9 +5615,10 @@
     function getCompatibleDishes() {
       // Повторно проверяем ограничения при генерации: аллергии выбираются
       // после экрана свайпов и должны обязательно учитываться в итоговом меню.
+      const eaters = [...state.persons, ...(state.hasKids ? state.kids : [])];
       return allDishes.filter(dish =>
         isDishCompatibleWithKitchen(dish) &&
-        state.persons.every(person => isDishCompatibleWithPerson(dish, person))
+        eaters.every(person => isDishCompatibleWithPerson(dish, person))
       );
     }
 
@@ -5647,11 +5648,13 @@
       buckwheat: ['Гречка'],
       corn: ['Кукуруза'],
       mushrooms: ['Грибы'],
-      gluten_cereals: ['Пшеничный хлеб','Ржаной хлеб','Лаваш','Макароны','Булгур','Кускус','Перловка']
+      gluten_cereals: ['Пшеничный хлеб','Ржаной хлеб','Лаваш','Макароны','Булгур','Кускус','Перловка'],
+      celery: ['Сельдерей'], mustard: ['Горчица'], sulphites: [], lupin: [], molluscs: ['Кальмары','Мидии']
     };
 
     function getActiveTastePerson() {
-      return state.persons[state.tastePersonIndex] || state.persons[0] || { likedIngredients: [], dislikedIngredients: [], allergies: [] };
+      const group = state.tastePersonType === 'child' ? state.kids : state.persons;
+      return group[state.tastePersonIndex] || state.persons[0] || { likedIngredients: [], dislikedIngredients: [], allergies: [] };
     }
 
     function getPersonAllergyBlockedIngredients(person) {
@@ -5670,14 +5673,15 @@
     }
 
     function getAllFamilyLikedIngredients() {
-      return [...new Set((state.persons || []).flatMap(person => person.likedIngredients || []))];
+      return [...new Set([...state.persons, ...(state.hasKids ? state.kids : [])].flatMap(person => person.likedIngredients || []))];
     }
 
     function getAllFamilyDislikedIngredients() {
-      return [...new Set((state.persons || []).flatMap(person => person.dislikedIngredients || []))];
+      return [...new Set([...state.persons, ...(state.hasKids ? state.kids : [])].flatMap(person => person.dislikedIngredients || []))];
     }
 
-    function setTastePerson(index) {
+    function setTastePerson(type, index) {
+      state.tastePersonType = type;
       state.tastePersonIndex = index;
       renderTastePreferences();
     }
@@ -5686,12 +5690,16 @@
       const container = document.getElementById('tastePersonTabs');
       if (!container) return;
       container.innerHTML = '';
-      state.persons.forEach((person, index) => {
+      const profiles = [
+        ...state.persons.map((person, index) => ({ person, index, type: 'adult', label: getPersonLabel(person) })),
+        ...(state.hasKids ? state.kids.map((person, index) => ({ person, index, type: 'child', label: person.name?.trim() || 'Ребёнок ' + (index + 1) })) : [])
+      ];
+      profiles.forEach(({ person, index, type, label }) => {
         const button = document.createElement('button');
         button.type = 'button';
-        button.textContent = getPersonLabel(person);
-        button.className = index === state.tastePersonIndex ? 'active-love' : '';
-        button.addEventListener('click', () => setTastePerson(index));
+        button.textContent = label;
+        button.className = type === state.tastePersonType && index === state.tastePersonIndex ? 'active-love' : '';
+        button.addEventListener('click', () => setTastePerson(type, index));
         container.appendChild(button);
       });
     }
@@ -5841,14 +5849,31 @@
         const card = document.createElement('div'); card.className = 'person-card';
         let html = '<div class="tag-grid">';
         allergens.forEach(a => { html += `<div class="tag-item ${person.allergies.includes(a.id) ? 'selected' : ''}" onclick="toggleAllergy(${index}, '${a.id}')">${a.label}</div>`; });
-        html += '</div>'; card.innerHTML = `<div class="person-title">Человек ${person.id}</div>${html}`;
+        html += '</div>'; card.innerHTML = `<div class="person-title">${escapeHtml(getPersonLabel(person))}</div>${html}`;
         allergyContainer.appendChild(card);
 
         const intoleranceCard = document.createElement('div'); intoleranceCard.className = 'person-card';
         let intoleranceHtml = '<div class="tag-grid">';
         intolerances.forEach(item => { intoleranceHtml += `<div class="tag-item ${person.intolerances.includes(item.id) ? 'selected' : ''}" onclick="toggleIntolerance(${index}, '${item.id}')">${item.label}</div>`; });
         intoleranceHtml += '</div>';
-        intoleranceCard.innerHTML = `<div class="person-title">Человек ${person.id}</div>${intoleranceHtml}`;
+        intoleranceCard.innerHTML = `<div class="person-title">${escapeHtml(getPersonLabel(person))}</div>${intoleranceHtml}`;
+        intoleranceContainer.appendChild(intoleranceCard);
+      });
+
+      if (state.hasKids) state.kids.forEach((child, index) => {
+        child.allergies = child.allergies || [];
+        child.intolerances = child.intolerances || [];
+        const card = document.createElement('div'); card.className = 'person-card';
+        let html = '<div class="tag-grid">';
+        allergens.forEach(a => { html += `<div class="tag-item ${child.allergies.includes(a.id) ? 'selected' : ''}" onclick="toggleChildAllergy(${index}, '${a.id}')">${a.label}</div>`; });
+        html += '</div>'; card.innerHTML = `<div class="person-title">${escapeHtml(child.name?.trim() || 'Ребёнок ' + (index + 1))}</div><p class="hint">Отметь все подтверждённые аллергены ребёнка.</p>${html}`;
+        allergyContainer.appendChild(card);
+
+        const intoleranceCard = document.createElement('div'); intoleranceCard.className = 'person-card';
+        let intoleranceHtml = '<div class="tag-grid">';
+        intolerances.forEach(item => { intoleranceHtml += `<div class="tag-item ${child.intolerances.includes(item.id) ? 'selected' : ''}" onclick="toggleChildIntolerance(${index}, '${item.id}')">${item.label}</div>`; });
+        intoleranceHtml += '</div>';
+        intoleranceCard.innerHTML = `<div class="person-title">${escapeHtml(child.name?.trim() || 'Ребёнок ' + (index + 1))}</div>${intoleranceHtml}`;
         intoleranceContainer.appendChild(intoleranceCard);
       });
     }
@@ -5869,6 +5894,25 @@
     function toggleIntolerance(index, id) {
       const p = state.persons[index];
       p.intolerances.includes(id) ? p.intolerances = p.intolerances.filter(a => a !== id) : p.intolerances.push(id);
+      renderAllergiesAndEquipment();
+    }
+    function toggleChildAllergy(index, id) {
+      const child = state.kids[index]; if (!child) return;
+      child.allergies = child.allergies || [];
+      const removing = child.allergies.includes(id);
+      child.allergies = removing ? child.allergies.filter(a => a !== id) : [...child.allergies, id];
+      if (!removing) {
+        const blocked = getPersonAllergyBlockedIngredients(child);
+        child.likedIngredients = (child.likedIngredients || []).filter(item =>
+          ![...blocked].some(name => normalizeIngredientText(name) === normalizeIngredientText(item))
+        );
+      }
+      renderAllergiesAndEquipment(); renderTastePreferences();
+    }
+    function toggleChildIntolerance(index, id) {
+      const child = state.kids[index]; if (!child) return;
+      child.intolerances = child.intolerances || [];
+      child.intolerances.includes(id) ? child.intolerances = child.intolerances.filter(a => a !== id) : child.intolerances.push(id);
       renderAllergiesAndEquipment();
     }
     function toggleEquipment(id) {
