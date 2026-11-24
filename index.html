@@ -751,7 +751,7 @@
     <h1>Детали готовки</h1>
     <p class="subtitle">Учтём ограничения и кухонную технику. Важно: пока рецепты демонстрационные, поэтому проверка аллергенов не заменяет чтение состава продуктов.</p>
     <div class="section-title">🍳 Какая техника есть на кухне?</div>
-    <p class="hint" style="margin:0 0 10px;">Отметь доступную технику. Для демонстрационных блюд совместимость пока не подтверждена.</p>
+    <p class="hint" style="margin:0 0 10px;">Отметь технику, которая у тебя есть. Рецепт попадёт в меню, только если хотя бы один его способ приготовления совпадает с выбранным тобой способом и для него хватает нужных приборов. Рецепты без заполненной связки пока не предлагаются.</p>
     <div id="equipmentContainer"></div>
     <div class="section-title">🥘 Какие способы приготовления предпочитаешь?</div>
     <div id="cookingMethodsContainer"></div>
@@ -844,6 +844,7 @@
     "methodCandidates": [
       "boiling"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["boiling"]}],
     "source": "https://piknifood.ru/recipe/ovsyanka-s-yagodami-breakfast/",
     "reviewNotes": "Овёс сам по себе не равен пшенице/ржи/ячменю; проверить маркировку безглютеновости и перекрёстный контакт. Варианты с орехами/йогуртом не смешивать с этой версией.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -907,6 +908,7 @@
       "frying",
       "baking"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["frying"]},{"equipment":["oven"],"methods":["baking"]}],
     "source": "https://www.maggi.ru/recipes/prostoy-omlet-s-syrom",
     "reviewNotes": "Источник даёт 1 порцию, но способ приготовления и время проверить: на странице приведены 10 минут и отдельный вариант запекания.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -986,6 +988,7 @@
       "boiling",
       "stewing"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["boiling","stewing"]}],
     "source": "https://wayeat.ru/recipes/kurinaya-grudka-s-grechkoy-8ad4ab8c-ed4e-48a8-b86f-10e2a49148f7",
     "reviewNotes": "Гречка не содержит глютен по природе, но проверить примеси/маркировку.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1066,6 +1069,7 @@
     "methodCandidates": [
       "baking"
     ],
+    "preparationOptions": [{"equipment":["oven"],"methods":["baking"]}],
     "source": "https://piknifood.ru/recipe/losos-zapechyonnyy-s-ovoschami-dinner/",
     "reviewNotes": "Источник указывает одну порцию; проверить время и фактический вес после приготовления.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1138,6 +1142,7 @@
       "boiling",
       "stewing"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["frying","boiling","stewing"]}],
     "source": "https://www.sportmaster.ru/media/nutrition/tofu-s-risom/",
     "reviewNotes": "Найден вариант с кукурузой, а не брокколи; не подменять ингредиент молча. Соевый соус может содержать пшеницу — сверять этикетку.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1214,6 +1219,7 @@
       "frying",
       "stewing"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["frying","stewing"]}],
     "source": "https://www.gastronom.ru/recipe/67309/indejka-v-slivochnom-souse-na-skovorode",
     "reviewNotes": "Источник включает грибы; проверить, соответствует ли это целевой карточке.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1292,6 +1298,7 @@
     "methodCandidates": [
       "no_cook"
     ],
+    "preparationOptions": [{"equipment":[],"methods":["no_cook"]}],
     "source": "https://calorizator.ru/recipe/49295",
     "reviewNotes": "Состав и КБЖУ приведены для 3 порций по данным источника; проверить выход.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1384,7 +1391,7 @@
     "methodCandidates": [
       "boiling"
     ],
-    "preparationOptions": [{"equipment":["stove","blender"],"methods":["boiling"]}],
+    "preparationOptions": [{"equipment":["stove","blender"],"methods":["boiling"]}],"methods":["boiling"]}],
     "source": "https://www.maggi.ru/recipes/sup-pyure-iz-tykvy",
     "reviewNotes": "В составе есть готовая приправа неизвестного состава; нельзя считать список аллергенов исчерпывающим без состава приправы.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1451,6 +1458,7 @@
       "frying",
       "grilling"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["frying"]}],
     "source": "https://lefood.menu/recipes/govyazhiy-steyk-na-skovorode/",
     "reviewNotes": "Пищевая ценность дана на 100 г, не на порцию. Уточнить вид и массу каждого стейка.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1528,6 +1536,7 @@
     "methodCandidates": [
       "frying"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["frying"]}],
     "source": "https://norma-fitness.com/recipes/syrniki-klassicheskie-so-smetanoy",
     "reviewNotes": "Источник указывает одну порцию 277 г; проверить, что подача со сметаной включена в нутриенты.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1608,6 +1617,7 @@
       "frying",
       "stewing"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["boiling","frying","stewing"]}],
     "source": "https://piknifood.ru/recipe/krevetki-s-risom-i-ovoschami-lunch/",
     "reviewNotes": "В источнике заявлены глютен и моллюски; по составу креветки относятся к ракообразным. Проверить состав соевого соуса и смесь овощей.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1699,6 +1709,7 @@
     "methodCandidates": [
       "frying"
     ],
+    "preparationOptions": [{"equipment":["stove","blender"],"methods":["frying"]}],
     "source": "https://m.povar.ru/recipes/falafel_s_humusom-68403.html",
     "reviewNotes": "В рецепте хумус готовится из части нута; нужно редакторски сверить количества и наличие тахини/кунжута в выбранной версии.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1771,6 +1782,7 @@
       "frying",
       "baking"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["frying"]},{"equipment":["oven"],"methods":["baking"]}],
     "source": "https://online.daily-menu.ru/dailymenu/recipes/view/107444",
     "reviewNotes": "Источник включает краткое обжаривание и затем запекание; время 20+15 минут. Проверить, что это совпадает с изображением и названием.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1825,6 +1837,7 @@
     "methodCandidates": [
       "no_cook"
     ],
+    "preparationOptions": [{"equipment":[],"methods":["no_cook"]}],
     "source": "https://health-diet.ru/people/user/813527/",
     "reviewNotes": "В источнике общая масса ингредиентов 300 г и масса готового блюда 290 г; КБЖУ указаны на 100 г.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -1893,7 +1906,7 @@
     "methodCandidates": [
       "no_cook"
     ],
-    "preparationOptions": [{"equipment":["blender"],"methods":["no_cook"]}],
+    "preparationOptions": [{"equipment":["blender"],"methods":["no_cook"]}],"methods":["no_cook"]}],
     "source": "https://health-diet.ru/table_calorie_users/2437654/",
     "reviewNotes": "Источник даёт один вариант с кешью, овсяными отрубями и молоком. Отруби требуют проверки маркировки на глютен/перекрёстный контакт.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -6440,6 +6453,7 @@
     "methodCandidates": [
       "no_cook"
     ],
+    "preparationOptions": [{"equipment":[],"methods":["no_cook"]}],
     "source": "https://calorizator.ru/recipe/56883",
     "reviewNotes": "Отдельный вариант греческого салата: фетакса вместо феты, иные пропорции овощей и масла. Источник пользовательский; проверить состав продукта «Фетакса» и фактический выход.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -6521,6 +6535,7 @@
     "methodCandidates": [
       "stewing"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["stewing"]}],
     "source": "https://calorizator.ru/recipe/31378",
     "reviewNotes": "Самостоятельная версия блюда: отварные креветки, варёный рис, томат, перец и зелёный горошек; отличается от варианта с сухим рисом, овощной смесью и соевым соусом. Источник пользовательский; проверить технологию и выход.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -6589,6 +6604,7 @@
     "methodCandidates": [
       "frying"
     ],
+    "preparationOptions": [{"equipment":["stove"],"methods":["frying"]}],
     "source": "https://calorizator.ru/recipe/31814",
     "reviewNotes": "Отдельная версия сырников на твороге 1,8% с большим количеством муки и сахара; не объединять с сырниками из творога 9% со сметаной. Пользовательский источник считает КБЖУ без учёта ужарки/уварки; выход и фактический вес порции требуют проверки.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -6631,7 +6647,7 @@
     "allergenCandidates": ["milk"],
     "equipmentCandidates": ["stove", "blender"],
     "methodCandidates": ["boiling"],
-    "preparationOptions": [{"equipment":["stove","blender"],"methods":["boiling"]}],
+    "preparationOptions": [{"equipment":["stove","blender"],"methods":["boiling"]}],"methods":["boiling"]}],
     "source": "https://calorizator.ru/recipe/51679",
     "reviewNotes": "Отдельная рецептура: тыква, картофель, курица и молоко вместо сливочной основы с перцем и семечками. Источник пользовательский; для текстуры пюре требуется блендер. Выход 1300 г указан как сумма ингредиентов; фактический вес после приготовления проверить.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -7054,14 +7070,15 @@
     }
 
     function isDishCompatibleWithKitchen(dish) {
-      // Фильтруем только по способам приготовления, подтверждённым для конкретной карточки.
-      // preparationOptions связывает метод с нужной техникой: например, запекание требует духовку,
-      // а вариант того же блюда на сковороде — плиту.
+      // Каждый вариант приготовления хранит связанную пару: способ + необходимая техника.
+      // Если связь для рецепта ещё не описана, не рекомендуем его автоматически:
+      // сначала карточка должна пройти классификацию, иначе нельзя обещать совместимость.
       const options = Array.isArray(dish.preparationOptions) ? dish.preparationOptions : [];
-      if (!options.length) return true; // Нет проверенных данных — не исключаем блюдо наугад.
+      if (!options.length) return false;
       return options.some(option => {
-        const requiredEquipment = option.equipment || [];
-        const methods = option.methods || [];
+        const requiredEquipment = Array.isArray(option.equipment) ? option.equipment : [];
+        const methods = Array.isArray(option.methods) ? option.methods : [];
+        if (!methods.length) return false;
         const hasRequiredEquipment = requiredEquipment.every(item => state.equipment.includes(item));
         const matchesMethod = state.cookingMethods.length === 0 ||
           state.cookingMethods.some(method => methods.includes(method));
