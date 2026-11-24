@@ -6811,6 +6811,17 @@
       });
     }
 
+    function rankDishesForFamily(dishes) {
+      const liked = getAllFamilyLikedIngredients();
+      const disliked = getAllFamilyDislikedIngredients();
+      return [...dishes].sort((a, b) => {
+        const score = dish =>
+          getDishPreferenceMatches(dish, liked).length * 2 -
+          getDishPreferenceMatches(dish, disliked).length;
+        return score(b) - score(a);
+      });
+    }
+
     const ingredientGroups = [
       { name: 'Мясо и птица', items: ['Курица','Индейка','Говядина','Свинина','Баранина','Кролик','Утка'] },
       { name: 'Рыба и морепродукты', items: ['Лосось','Форель','Треска','Судак','Скумбрия','Сельдь','Тунец','Креветки','Кальмары','Мидии'] },
@@ -7287,7 +7298,7 @@
                   '</div></div></article>';
               };
               if (meal.group === 'Общий') {
-                const mains = rankDishesForPerson(getMealCandidates(lunchPool, 'lunch'), state.persons[0], lovedIngredients);
+                const mains = rankDishesForFamily(getMealCandidates(lunchPool, 'lunch'));
                 const main = mains.length ? mains[rotation.lunch++ % mains.length] : null;
                 if (main) {
                   selectedDishes.push({ ...main, plannedServings });
@@ -7342,7 +7353,7 @@
                 '</div></div></article>';
             };
             if (meal.group === 'Общий') {
-              const candidates = rankDishesForPerson(getMealCandidates(familyCompatible, meal.type), state.persons[0], lovedIngredients);
+              const candidates = rankDishesForFamily(getMealCandidates(familyCompatible, meal.type));
               if (!candidates.length) {
                 dayCaloriesComplete = false;
                 dayHtml += renderMealCard(null);
@@ -7375,7 +7386,7 @@
           menuHtml += '<div class="menu-day"><div class="menu-day-title">' + day + '</div>' + dayHtml + daySummary + '</div>';
         });
         const preferenceNote = (getAllFamilyLikedIngredients().length || getAllFamilyDislikedIngredients().length)
-          ? '<p class="hint" style="margin:0 0 14px;">Подбор учитывает выбранные любимые и нелюбимые продукты по предварительным составам. Аллергии и непереносимости остаются отдельными обязательными ограничениями.</p>'
+          ? '<p class="hint" style="margin:0 0 14px;">Любимые продукты повышают приоритет блюд, а нелюбимые понижают его, но не исключают блюдо автоматически. Диетические ограничения и аллергии проверяются отдельно для каждого участника; при непроверенном составе блюдо не предлагается человеку с указанной аллергией или непереносимостью.</p>'
           : '';
         const calorieStatusNote = hasAnyDailyTarget
           ? '<p class="hint" style="margin:0 0 14px;">Суточный ориентир показан исключительно как справочная информация. Вы сами определяете размер своей порции и решаете, подходит ли вам предложенное блюдо.</p>'
