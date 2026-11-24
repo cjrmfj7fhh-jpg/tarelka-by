@@ -7124,13 +7124,37 @@
     }
 
     function getDishNutritionEstimate(dish) {
-      const calories = Number(dish.caloriesPerServing);
-      const weight = Number(dish.servingWeightGrams);
-      const hasCalories = Number.isFinite(calories) && calories > 0;
-      const hasWeight = Number.isFinite(weight) && weight > 0;
+      const fields = {
+        calories: Number(dish.caloriesPerServing),
+        weight: Number(dish.servingWeightGrams),
+        protein: Number(dish.proteinPerServing),
+        fat: Number(dish.fatPerServing),
+        carbs: Number(dish.carbsPerServing)
+      };
+      const hasCalories = Number.isFinite(fields.calories) && fields.calories > 0;
+      const hasWeight = Number.isFinite(fields.weight) && fields.weight > 0;
+      const hasMacros = ['protein', 'fat', 'carbs'].every(key =>
+        Number.isFinite(fields[key]) && fields[key] >= 0
+      );
       return hasCalories && hasWeight
-        ? { calories: Math.round(calories), weight: Math.round(weight) }
+        ? {
+            calories: Math.round(fields.calories),
+            weight: Math.round(fields.weight),
+            protein: hasMacros ? Math.round(fields.protein * 10) / 10 : null,
+            fat: hasMacros ? Math.round(fields.fat * 10) / 10 : null,
+            carbs: hasMacros ? Math.round(fields.carbs * 10) / 10 : null,
+            nutritionStatus: dish.nutritionStatus || 'estimated'
+          }
         : null;
+    }
+
+    function formatDishNutrition(estimate) {
+      if (!estimate) return 'Калорийность и вес порции уточняются';
+      const macros = estimate.protein !== null
+        ? ' · Б ' + estimate.protein + ' г · Ж ' + estimate.fat + ' г · У ' + estimate.carbs + ' г'
+        : '';
+      const status = estimate.nutritionStatus === 'verified' ? '' : ' · оценка';
+      return estimate.calories + ' ккал · ' + estimate.weight + ' г' + macros + status;
     }
 
     function getMealCandidates(dishes, mealType) {
@@ -7221,7 +7245,7 @@
                   (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
                   '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + meal.group + '</span></div>' +
                   '<div class="menu-item-name">' + dish.name + '</div><div class="menu-item-cal">' +
-                  (estimate !== null ? estimate.calories + ' ккал · ' + estimate.weight + ' г · справочно' : 'Калорийность и вес порции уточняются') +
+                  formatDishNutrition(estimate) +
                   '</div></div></article>';
               };
               if (main) {
@@ -7268,9 +7292,7 @@
               '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + mealLabels[meal.type] + '</span><span class="meal-group-label">' + meal.group + '</span></div>' +
               '<div class="menu-item-name">' + dish.name + '</div>' +
               '<div class="menu-item-cal">' +
-              (nutritionEstimate !== null
-                ? nutritionEstimate.calories + ' ккал · ' + nutritionEstimate.weight + ' г · справочно'
-                : 'Калорийность и вес порции уточняются') +
+              formatDishNutrition(nutritionEstimate) +
               '</div></div></article>';
           });
           const daySummary = dayCaloriesComplete
