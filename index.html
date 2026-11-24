@@ -7148,13 +7148,22 @@
         : null;
     }
 
-    function formatDishNutrition(estimate) {
+    function formatDishNutrition(estimate, plannedServings = 1) {
       if (!estimate) return 'Калорийность и вес порции уточняются';
       const macros = estimate.protein !== null
         ? ' · Б ' + estimate.protein + ' г · Ж ' + estimate.fat + ' г · У ' + estimate.carbs + ' г'
         : '';
       const status = estimate.nutritionStatus === 'verified' ? '' : ' · оценка';
-      return estimate.calories + ' ккал · ' + estimate.weight + ' г' + macros + status;
+      const portion = estimate.calories + ' ккал · ' + estimate.weight + ' г' + macros + status;
+      const count = Number(plannedServings);
+      if (!Number.isFinite(count) || count <= 1) return portion;
+      const total = Math.round(estimate.calories * count);
+      const totalMacros = estimate.protein !== null
+        ? ' · Б ' + Math.round(estimate.protein * count) + ' г · Ж ' +
+          Math.round(estimate.fat * count) + ' г · У ' + Math.round(estimate.carbs * count) + ' г'
+        : '';
+      return portion + '<div class="hint" style="margin-top:4px;">На ' +
+        count + ' стандартных порций: ' + total + ' ккал' + totalMacros + '</div>';
     }
 
     function getMealCandidates(dishes, mealType) {
@@ -7214,7 +7223,7 @@
         : '';
       const calorieIntro = '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;">' +
         '<strong>Справочный ориентир по калориям</strong><br>' +
-        'Для блюда будет показана калорийность стандартной порции и её вес, если эти данные известны. Суточный ориентир приведён только для сравнения — приложение не решает за вас, сколько нужно съесть и не подбирает блюда под заданную норму. ' +
+        'Для блюда будут показаны калорийность, белки, жиры и углеводы стандартной порции, если эти данные известны. Для общих блюд дополнительно показывается справочная сумма на запланированное число порций. Суточный ориентир приведён только для сравнения — приложение не решает за вас, сколько нужно съесть и не подбирает блюда под заданную норму. ' +
         (allDailyTargetsValid
           ? dailyTargets.map(person => getPersonLabel(person) + ': ориентир ' + person.target + ' ккал/день').join(' · ')
           : 'Для части участников суточный ориентир не задан или не рассчитан.') +
@@ -7245,7 +7254,7 @@
                   (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
                   '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + meal.group + '</span></div>' +
                   '<div class="menu-item-name">' + dish.name + '</div><div class="menu-item-cal">' +
-                  formatDishNutrition(estimate) +
+                  formatDishNutrition(estimate, label === 'Второе' ? plannedServings : 1) +
                   '</div></div></article>';
               };
               if (main) {
@@ -7292,7 +7301,7 @@
               '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + mealLabels[meal.type] + '</span><span class="meal-group-label">' + meal.group + '</span></div>' +
               '<div class="menu-item-name">' + dish.name + '</div>' +
               '<div class="menu-item-cal">' +
-              formatDishNutrition(nutritionEstimate) +
+              formatDishNutrition(nutritionEstimate, meal.group === 'Общий' ? getHouseholdCount() : 1) +
               '</div></div></article>';
           });
           const daySummary = dayCaloriesComplete
