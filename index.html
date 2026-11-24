@@ -546,7 +546,39 @@
     }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
 
-  </style>
+  
+    /* Header collision fix: replace the legacy icon pseudo-element completely. */
+    .logo::before {
+      content: 'КУЛИНАРНЫЙ ЕЖЕНЕДЕЛЬНИК  /  БЕЛАРУСЬ';
+      display: block;
+      width: auto;
+      height: auto;
+      flex: none;
+      margin: 0 0 5px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: none;
+      background-image: none;
+      box-shadow: none;
+      font: 700 9px/1.4 'DM Sans', sans-serif;
+      letter-spacing: 2.2px;
+      color: var(--tomato);
+      white-space: normal;
+    }
+    .logo { vertical-align: top; }
+    .btn-back.show {
+      position: fixed;
+      top: max(12px, env(safe-area-inset-top));
+      left: 12px;
+      z-index: 30;
+    }
+    body:has(.btn-back.show) .header { padding-left: 54px; }
+    @media (min-width: 760px) {
+      body:has(.btn-back.show) .header { padding-left: 54px; }
+    }
+
+</style>
 </head>
 <body>
 
