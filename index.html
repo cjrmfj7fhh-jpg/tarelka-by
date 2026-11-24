@@ -720,9 +720,9 @@
 
   <div class="step" id="step5">
     <h1>Настройка питания</h1>
-    <p class="subtitle">Рассчитаем норму калорий для каждого.</p>
+    <p class="subtitle">Настроим индивидуальные данные взрослых и детей.</p>
     <div id="personsContainer"></div>
-    
+    <div id="childrenProfilesContainer"></div>
   </div>
 
   <div class="step" id="step6">
@@ -9172,7 +9172,13 @@
       if (state.step === 2) isValid = true;
       if (state.step === 3) isValid = state.meals.length > 0;
       if (state.step === 4) isValid = true;
-      if (state.step === 5) isValid = true; 
+      if (state.step === 5) {
+        const childrenHaveValidAges = !state.hasKids || state.kids.every(child => {
+          const age = Number(child.age);
+          return child.age !== '' && Number.isInteger(age) && age >= 3 && age <= 17;
+        });
+        isValid = childrenHaveValidAges;
+      } 
       if (state.step === 6) isValid = state.persons.every(p => p.dietType !== '');
       if (state.step === 7) isValid = true; 
       if (state.step === 8) isValid = true; 
@@ -9255,6 +9261,7 @@
       if (!child) return;
       child[field] = value;
       renderPersons();
+      validateNextBtn();
     }
 
     function calculateChildCalories(child) {
@@ -9361,6 +9368,7 @@
         `;
         container.appendChild(card);
       });
+      renderChildrenProfiles();
     }
 
     function renderChildrenProfiles() {
