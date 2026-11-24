@@ -683,7 +683,7 @@
 
   <div class="step" id="step7">
     <h1>Мои вкусовые предпочтения</h1>
-    <p class="subtitle">Выбери продукты и ингредиенты, которые любишь, а затем отметь те, которые не хочешь видеть в меню.</p>
+    <p class="subtitle">Настрой вкусы отдельно для каждого взрослого и ребёнка: выбери профиль выше, затем отметь любимые продукты и те, которые нужно исключить. Нелюбимый продукт любого участника исключается из общего семейного меню.</p>
     <div id="tastePersonTabs" class="taste-mode" style="margin-bottom:12px;"></div>
     <div class="taste-mode">
       <button type="button" id="tasteLoveTab" class="active-love" onclick="setTasteMode('love')">♥ Люблю</button>
@@ -707,7 +707,7 @@
     <div class="section-title">🥘 Какие способы приготовления предпочитаешь?</div>
     <div id="cookingMethodsContainer"></div>
     <div class="section-title">🚫 Аллергены</div>
-    <p class="hint" style="margin:0 0 10px;">Выбирай подтверждённые аллергии. Если ограничения указаны, блюда без проверенного состава не попадут в подборку.</p>
+    <p class="hint" style="margin:0 0 10px;">Аллергены и непереносимости настраиваются отдельно для каждого взрослого и каждого ребёнка. Если у участника есть хотя бы одно ограничение, блюдо без проверенного состава и подтверждённых данных об аллергенах не попадёт в общий подбор.</p>
     <div id="allergyContainer"></div>
     <div class="section-title">ℹ️ Непереносимости</div>
     <div id="intoleranceContainer"></div>
@@ -5471,7 +5471,7 @@
       const container = document.getElementById('childrenProfilesContainer');
       if (!container) return;
       if (!state.hasKids || state.kids.length === 0) { container.innerHTML = ''; return; }
-      let html = '<div class="section-title" style="margin-top:24px;">👧 Данные детей</div><p class="hint">Для каждого ребёнка отдельно укажи возраст, рост, вес и активность. Ориентир рассчитывается по детской формуле, без целей «похудеть» или «набрать».</p>';
+      let html = '<div class="section-title" style="margin-top:24px;">👧 Данные детей</div><p class="hint">Для каждого ребёнка отдельно укажи возраст, рост, вес и активность. Ориентир рассчитывается по детской формуле, без целей «похудеть» или «набрать».</p><div class="budget-notice" style="margin:10px 0 14px;"><div>🛡️</div><div><strong>Отдельные настройки питания для каждого ребёнка</strong><br><span>На шаге 7 отметь его любимые и нелюбимые продукты. На шаге 8 укажи аллергены и непереносимости отдельно для каждого ребёнка. Эти ограничения учитываются при подборе общего меню.</span></div></div>';
       state.kids.forEach((child, index) => {
         const estimate = calculateChildCalories(child);
         const age = Number(child.age);
@@ -5479,7 +5479,12 @@
         if (child.age !== '' && age < 3) result = '<div class="result-box">Детям младше 3 лет приложение не рассчитывает калорийность и порции. Обсудите питание с педиатром.</div>';
         else if (estimate !== null) result = '<div class="result-box">Ориентировочная потребность: ' + estimate + ' ккал/день</div>';
         else result = '<div class="result-box">Заполни возраст, рост и вес — рассчитаем ориентир автоматически</div>';
-        html += '<div class="person-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div class="person-title">Ребёнок ' + (index + 1) + '</div><button type="button" style="width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:transparent;" onclick="removeChildProfile(' + index + ')" aria-label="Удалить профиль ребёнка">×</button></div>' +
+        child.allergies = child.allergies || [];
+        child.intolerances = child.intolerances || [];
+        child.likedIngredients = child.likedIngredients || [];
+        child.dislikedIngredients = child.dislikedIngredients || [];
+        const foodSettingsSummary = 'Аллергены: ' + child.allergies.length + ' · Непереносимости: ' + child.intolerances.length + ' · Любимые продукты: ' + child.likedIngredients.length + ' · Исключить по вкусу: ' + child.dislikedIngredients.length;
+        html += '<div class="person-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div class="person-title">Ребёнок ' + (index + 1) + '</div><button type="button" style="width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:transparent;" onclick="removeChildProfile(' + index + ')" aria-label="Удалить профиль ребёнка">×</button></div><p class="hint" style="margin:0 0 12px;">' + foodSettingsSummary + '</p>' +
           '<div class="input-group"><label>Имя ребёнка</label><input type="text" maxlength="32" placeholder="Например, Маша" value="' + escapeHtml(child.name) + '" onchange="updateChild(' + index + ', \'name\', this.value)"></div>' +
           '<div class="input-group"><label>Возраст (полных лет, от 3 до 17)</label><input type="number" min="3" max="17" step="1" value="' + escapeHtml(child.age) + '" placeholder="Например, 8" onchange="updateChild(' + index + ', \'age\', this.value)"></div>' +
           '<div class="gender-btns"><div class="gender-btn ' + (child.gender === 'male' ? 'active' : '') + '" onclick="updateChild(' + index + ', \'gender\', \'male\')">👦 Мальчик</div><div class="gender-btn ' + (child.gender === 'female' ? 'active' : '') + '" onclick="updateChild(' + index + ', \'gender\', \'female\')">👧 Девочка</div></div>' +
