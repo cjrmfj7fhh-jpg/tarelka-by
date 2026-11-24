@@ -73,7 +73,15 @@
         "allergenReview": "Источник отмечает молочное и глютен; овёс и возможные следы глютена требуют проверки маркировки конкретных хлопьев.",
         "reliability": "recipe_publisher"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 416,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 2,
@@ -138,7 +146,15 @@
         "allergenReview": "Яйцо и молоко подтверждаются ингредиентами; сыр требует проверки маркировки на молочные компоненты.",
         "reliability": "brand_recipe_publisher"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 324.2,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 3,
@@ -219,7 +235,15 @@
         "allergenReview": "В составе гречка, курица и овощи; проверять маркировку крупы на возможные примеси.",
         "reliability": "recipe_publisher"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 549.9,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 4,
@@ -301,7 +325,15 @@
         "allergenReview": "Рыба подтверждается ингредиентами; источник также прямо указывает рыбу.",
         "reliability": "recipe_publisher"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 577,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 5,
@@ -377,7 +409,15 @@
         "allergenReview": "Соя подтверждается тофу и соевым соусом; соус может содержать пшеницу — нужна проверка этикетки.",
         "reliability": "fitness_media"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "yield_not_reported",
+        "caloriesKcal": null,
+        "caloriesBasis": "source_per_100g_only",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 6,
@@ -455,7 +495,15 @@
         "allergenReview": "Молочные компоненты и грибы присутствуют; полный профиль аллергенов не подтверждён.",
         "reliability": "recipe_publisher"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 419.82,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 7,
@@ -535,7 +583,15 @@
         "allergenReview": "Фета — молочный продукт; проверять состав конкретной феты.",
         "reliability": "user_recipe_database"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": 174,
+        "weightBasis": "source_reported_ready_portion",
+        "caloriesKcal": 105.5,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": "106 ккал (174 г)",
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 8,
@@ -628,7 +684,15 @@
         "allergenReview": "Состав приправы не раскрыт в рецепте; до проверки этикетки аллергенный профиль неполный.",
         "reliability": "brand_recipe_publisher"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 386.8,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 9,
@@ -698,7 +762,15 @@
         "allergenReview": "Основные ингредиенты понятны, но точная масса и вид отруба не заданы.",
         "reliability": "recipe_publisher"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "steak_weight_not_reported",
+        "caloriesKcal": null,
+        "caloriesBasis": "source_per_100g_only",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 10,
@@ -777,7 +849,15 @@
         "allergenReview": "Яйцо, пшеница и молочные продукты подтверждаются ингредиентами.",
         "reliability": "nutrition_recipe_publisher"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": 277,
+        "weightBasis": "source_reported_ready_portion",
+        "caloriesKcal": 613.7,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": "614 ккал (277 г)",
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 11,
@@ -858,7 +938,15 @@
         "allergenReview": "Креветки — ракообразные; нельзя переносить категорию моллюсков из упрощённой подписи источника. Соевый соус и готовая овощная смесь требуют проверки состава.",
         "reliability": "recipe_publisher"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 630,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 12,
@@ -953,7 +1041,15 @@
         "allergenReview": "Нут и пшеничная мука подтверждаются; проверить разрыхлитель и возможные следы кунжута в фактической версии хумуса.",
         "reliability": "recipe_publisher"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "yield_not_reported",
+        "caloriesKcal": null,
+        "caloriesBasis": "source_per_100g_only",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 13,
@@ -1027,7 +1123,15 @@
         "allergenReview": "Сыр — молочный продукт; точный состав маркированного сыра нужно сверить. Источник пользовательский, не редакционная проверка.",
         "reliability": "user_submitted_recipe"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": 228,
+        "weightBasis": "source_reported_ready_portion",
+        "caloriesKcal": 174,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": "174 ккал (228 г)",
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 14,
@@ -1091,7 +1195,15 @@
         "allergenReview": "Творог — молочный продукт; фрукты и их возможные замены не должны автоматически считаться тем же составом.",
         "reliability": "user_submitted_recipe"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": 290,
+        "weightBasis": "source_reported_ready_portion",
+        "caloriesKcal": 287.1,
+        "caloriesBasis": "calculated_from_source_per_100g",
+        "displayFormat": "287 ккал (290 г)",
+        "status": "source_estimate_needs_review"
+      }
     },
     {
       "id": 15,
@@ -1162,7 +1274,15 @@
         "allergenReview": "Кешью — древесный орех; овсяные отруби требуют проверки маркировки на глютен и перекрёстный контакт.",
         "reliability": "user_submitted_recipe"
       },
-      "useInPlanner": false
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "yield_not_reported",
+        "caloriesKcal": null,
+        "caloriesBasis": "source_per_100g_only",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
+      }
     }
   ],
   "auditMeta": {
@@ -1178,5 +1298,6 @@
     "result": "Все 15 карточек остаются исследовательскими кандидатами. Источники подтверждают часть состава и нутриентных значений, но качество источников неоднородно; у отдельных записей не хватает выхода или веса ключевого ингредиента, а у одной найдена внутренняя несогласованность количества масла.",
     "plannerPolicy": "useInPlanner=false для всех записей; данные не подключать к runtime до независимой проверки рецепта, аллергенов, выхода порций и пищевой ценности.",
     "sourceQualityNote": "Публикации брендов и редакционные рецептурные сайты отличаются по надёжности; пользовательские записи и расчёты на 100 г не трактовать как проверенные КБЖУ на порцию."
-  }
+  },
+  "standardServingPolicy": "Показывать пользователю формат «N ккал (M г)» только если источник даёт и калорийность на порцию, и вес готовой порции. Не выводить вес из суммы сырых ингредиентов без подтверждённого выхода. Значения справочные, не медицинская рекомендация; отсутствие веса или выхода не заполнять догадкой."
 }
