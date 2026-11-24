@@ -434,7 +434,16 @@
       color: #302923; font-size: 15px; line-height: 1.3;
       font-weight: 800; letter-spacing: -.025em; overflow-wrap: anywhere;
     }
-    .menu-item-cal { margin-top: 7px; color: #82766D; font-size: 11px; line-height: 1.4; }
+    .menu-item-cal { margin-top: 9px; color: #82766D; font-size: 11px; line-height: 1.4; }
+    .nutrition-main { display:flex; align-items:baseline; flex-wrap:wrap; gap:5px 9px; color:#51483F; }
+    .nutrition-calories { color:#A9432D; font-size:14px; font-weight:800; letter-spacing:-.02em; }
+    .nutrition-weight { color:#82766D; font-size:11px; font-weight:600; }
+    .nutrition-estimate { color:#9A8D82; font-size:9px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+    .nutrition-macros { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; margin-top:7px; max-width:310px; }
+    .nutrition-macro { min-width:0; padding:5px 6px; border-radius:7px; background:#F5F0E9; color:#62584E; text-align:center; white-space:nowrap; font-size:10px; line-height:1.25; }
+    .nutrition-macro b { color:#302923; font-size:11px; font-weight:800; }
+    .nutrition-detail { margin-top:6px; color:#928579; font-size:10px; line-height:1.4; }
+    .nutrition-batch { margin-top:6px; color:#66764B; font-size:10px; line-height:1.4; font-weight:650; }
     .menu-day .hint { background: #F4F2E9; border-radius: 13px; padding: 12px 14px; color: #6E715B; font-size: 12px; line-height: 1.5; }
     .result-screen { background: transparent; border: 0; box-shadow: none; padding-left: 0; padding-right: 0; }
     .result-tabs { padding: 5px; background: #F2EAE1; border: 1px solid #E9DED3; }
@@ -7185,17 +7194,23 @@
     }
 
     function formatDishNutrition(estimate, plannedServings = 1) {
-      if (!estimate) return 'Калорийность и вес порции уточняются';
+      if (!estimate) return '<div class="nutrition-detail">Калорийность и вес порции уточняются</div>';
+      const status = estimate.nutritionStatus === 'verified' ? '' : '<span class="nutrition-estimate">оценка</span>';
       const macros = estimate.protein !== null
-        ? ' · Б ' + estimate.protein + ' г · Ж ' + estimate.fat + ' г · У ' + estimate.carbs + ' г'
+        ? '<div class="nutrition-macros">' +
+          '<span class="nutrition-macro">Б <b>' + estimate.protein + '</b> г</span>' +
+          '<span class="nutrition-macro">Ж <b>' + estimate.fat + '</b> г</span>' +
+          '<span class="nutrition-macro">У <b>' + estimate.carbs + '</b> г</span>' +
+          '</div>'
         : '';
-      const status = estimate.nutritionStatus === 'verified' ? '' : ' · оценка';
       const per100g = estimate.per100g
-        ? '<div class="hint" style="margin-top:3px;">На 100 г: ' + estimate.per100g.calories +
+        ? '<div class="nutrition-detail">На 100 г: ' + estimate.per100g.calories +
           ' ккал · Б ' + estimate.per100g.protein + ' г · Ж ' + estimate.per100g.fat +
           ' г · У ' + estimate.per100g.carbs + ' г</div>'
         : '';
-      const portion = estimate.calories + ' ккал · ' + estimate.weight + ' г' + macros + status + per100g;
+      const portion = '<div class="nutrition-main"><span class="nutrition-calories">' +
+        estimate.calories + ' ккал</span><span class="nutrition-weight">' +
+        estimate.weight + ' г / порция</span>' + status + '</div>' + macros + per100g;
       const count = Number(plannedServings);
       if (!Number.isFinite(count) || count <= 1) return portion;
       const total = Math.round(estimate.calories * count);
@@ -7203,7 +7218,7 @@
         ? ' · Б ' + Math.round(estimate.protein * count) + ' г · Ж ' +
           Math.round(estimate.fat * count) + ' г · У ' + Math.round(estimate.carbs * count) + ' г'
         : '';
-      return portion + '<div class="hint" style="margin-top:4px;">На ' +
+      return portion + '<div class="nutrition-batch">На ' +
         count + ' стандартных порций: ' + total + ' ккал' + totalMacros + '</div>';
     }
 
