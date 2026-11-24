@@ -7282,37 +7282,47 @@
       return allDishes.filter(dish => isDishCompatibleWithKitchen(dish));
     }
 
+    function dishContainsDislikedIngredient(dish, person) {
+      const disliked = person?.dislikedIngredients || [];
+      return getDishPreferenceMatches(dish, disliked).length > 0;
+    }
+
     function getDishesForPerson(dishes, person) {
-      return dishes.filter(dish => isDishCompatibleWithPerson(dish, person));
+      // Нелюбимый ингредиент исключает блюдо из личной рекомендации,
+      // а не просто немного понижает его рейтинг.
+      return dishes.filter(dish =>
+        isDishCompatibleWithPerson(dish, person) &&
+        !dishContainsDislikedIngredient(dish, person)
+      );
     }
 
     function getFamilyCompatibleDishes(dishes) {
-      const eaters = [...state.persons];
+      const eaters = [...state.persons, ...(state.hasKids ? state.kids : [])];
+      // Общее блюдо не предлагаем, если в нём есть продукт, который не любит
+      // хотя бы один участник. Персональная адаптация будет отдельной функцией.
       return dishes.filter(dish =>
-        eaters.length > 0 && eaters.every(person => isDishCompatibleWithPerson(dish, person))
+        eaters.length > 0 &&
+        eaters.every(person =>
+          isDishCompatibleWithPerson(dish, person) &&
+          !dishContainsDislikedIngredient(dish, person)
+        )
       );
     }
 
     function rankDishesForPerson(dishes, person) {
       const liked = person.likedIngredients || [];
-      const disliked = person.dislikedIngredients || [];
-      return [...dishes].sort((a, b) => {
-        const score = dish =>
-          getDishPreferenceMatches(dish, liked).length * 2 -
-          getDishPreferenceMatches(dish, disliked).length;
-        return score(b) - score(a);
-      });
+      return [...dishes].sort((a, b) =>
+        getDishPreferenceMatches(b, liked).length -
+        getDishPreferenceMatches(a, liked).length
+      );
     }
 
     function rankDishesForFamily(dishes) {
       const liked = getAllFamilyLikedIngredients();
-      const disliked = getAllFamilyDislikedIngredients();
-      return [...dishes].sort((a, b) => {
-        const score = dish =>
-          getDishPreferenceMatches(dish, liked).length * 2 -
-          getDishPreferenceMatches(dish, disliked).length;
-        return score(b) - score(a);
-      });
+      return [...dishes].sort((a, b) =>
+        getDishPreferenceMatches(b, liked).length -
+        getDishPreferenceMatches(a, liked).length
+      );
     }
 
     const ingredientGroups = [
