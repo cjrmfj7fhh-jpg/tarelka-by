@@ -6134,15 +6134,31 @@
           const key = normalized.key;
           if (!shoppingItems.has(key)) {
             shoppingItems.set(key, { name: normalized.displayName, unit: knownQuantity ? unit : '',
-              quantity: 0, complete: true });
+              quantity: 0, complete: true, unitKey: '' });
           }
           const entry = shoppingItems.get(key);
+          const normalizeUnit = raw => {
+            const value = String(raw || '').toLocaleLowerCase('ru').trim().replace(/ё/g, 'е');
+            const units = {
+              'г':'mass_g','гр':'mass_g','грамм':'mass_g','грамма':'mass_g','граммов':'mass_g',
+              'кг':'mass_kg','килограмм':'mass_kg','килограмма':'mass_kg',
+              'мл':'volume_ml','миллилитр':'volume_ml','миллилитра':'volume_ml',
+              'л':'volume_l','литр':'volume_l','литра':'volume_l',
+              'шт.':'piece','шт':'piece','штука':'piece','штуки':'piece','штук':'piece'
+            };
+            const key = units[value] || value;
+            const factors = { mass_g:1, mass_kg:1000, volume_ml:1, volume_l:1000, piece:1 };
+            const display = { mass_g:'г', mass_kg:'кг', volume_ml:'мл', volume_l:'л', piece:'шт.' };
+            return { key, factor:factors[key] || 1, display:display[key] || raw };
+          };
           if (knownQuantity) {
-            if (entry.unit && entry.unit.toLocaleLowerCase('ru') !== unit.toLocaleLowerCase('ru')) {
+            const normalizedUnit = normalizeUnit(unit);
+            if (entry.unitKey && entry.unitKey !== normalizedUnit.key) {
               entry.complete = false;
             } else {
-              entry.unit = unit;
-              entry.quantity += quantity * factor;
+              entry.unitKey = normalizedUnit.key;
+              entry.unit = normalizedUnit.display;
+              entry.quantity += quantity * factor * normalizedUnit.factor;
             }
           } else {
             entry.complete = false;
@@ -6163,12 +6179,8 @@
             return '<li style="margin:8px 0;line-height:1.45;"><strong>' + item.name + '</strong> — ' + amount + '</li>';
           }).join('') + '</ul>'
         : '<p style="font-size:14px;line-height:1.5;">Пока нет продуктов для списка: для выбранных приёмов пищи не нашлось рецептов с известным составом.</p>';
-      const childNotice = state.hasKids
-        ? '<p style="margin-top:10px;color:#92400E;">В профиле отмечены дети, но их количество и порции пока не заданы. Черновые количества рассчитаны по числу взрослых и могут быть меньше необходимого.</p>'
-        : '';
       const shoppingQualityNote = '<div style="margin-top:12px;padding:12px;border-radius:10px;background:#FFF7E6;color:#854D0E;font-size:12px;line-height:1.5;">' +
-        '<strong>Важно:</strong> количества рассчитаны ориентировочно по черновым карточкам рецептов и масштабу порций. Это не подтверждённая норма закупки; состав и граммовки ещё требуют проверки. Цены и стоимость корзины не рассчитываются.' +
-        childNotice + '</div>';
+        '<strong>Важно:</strong> количества рассчитаны ориентировочно по черновым карточкам рецептов и масштабу порций. Это не подтверждённая норма закупки; состав и граммовки ещё требуют проверки. Цены и стоимость корзины не рассчитываются.</div>';
 
       shoppingContainer.innerHTML = `
         <div class="receipt-container">
