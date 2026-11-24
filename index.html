@@ -592,7 +592,59 @@
     #childrenProfilesContainer .result-box { margin-top: 14px; }
     #childrenProfilesContainer .gender-btns { margin: 12px 0; }
     #childrenProfilesContainer .hint { line-height: 1.55; }
-</style>
+
+    /* Mobile nutrition layout: keep every value inside the dish card. */
+    @media (max-width: 480px) {
+      .menu-dish-card {
+        grid-template-columns: 72px minmax(0, 1fr);
+        gap: 10px;
+        padding: 9px;
+        align-items: start;
+      }
+      .menu-dish-image {
+        width: 72px;
+        height: 76px;
+      }
+      .menu-dish-content {
+        min-width: 0;
+        width: 100%;
+        padding: 1px 0;
+      }
+      .menu-item-cal {
+        min-width: 0;
+        width: 100%;
+        text-align: left;
+        overflow-wrap: anywhere;
+        word-break: normal;
+      }
+      .nutrition-main {
+        min-width: 0;
+        flex-wrap: wrap;
+        gap: 4px 7px;
+      }
+      .nutrition-macros {
+        width: 100%;
+        max-width: none;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+      }
+      .nutrition-macro {
+        min-width: 0;
+        padding: 5px 3px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        font-size: 9px;
+      }
+      .nutrition-macro b { font-size: 10px; }
+      .nutrition-detail,
+      .nutrition-batch {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: normal;
+      }
+    }
+
+  </style>
 </head>
 <body>
 
