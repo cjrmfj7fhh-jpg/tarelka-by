@@ -422,6 +422,7 @@
       color: #887765; background: linear-gradient(135deg,#F8EBDD,#EDE5D7);
     }
     .menu-dish-content { min-width: 0; padding: 3px 5px 3px 0; }
+    .dish-preparation { margin: 4px 0 7px; color: #777568; font-size: 11px; line-height: 1.4; }
     .menu-dish-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 7px; }
     .meal-type-pill {
       display: inline-flex; align-items: center; border-radius: 99px;
@@ -7125,6 +7126,37 @@
       });
     }
 
+    function formatDishPreparation(dish) {
+      const options = Array.isArray(dish.preparationOptions) ? dish.preparationOptions : [];
+      const option = options.find(item => {
+        const requiredEquipment = Array.isArray(item.equipment) ? item.equipment : [];
+        const methods = Array.isArray(item.methods) ? item.methods : [];
+        return methods.length &&
+          requiredEquipment.every(id => state.equipment.includes(id)) &&
+          (state.cookingMethods.length === 0 || state.cookingMethods.some(id => methods.includes(id)));
+      });
+      if (!option) return '';
+      const methodLabels = {
+        boiling: 'варка', stewing: 'тушение', frying: 'жарка',
+        baking: 'запекание', steaming: 'на пару', grilling: 'гриль',
+        no_cook: 'без термообработки'
+      };
+      const equipmentLabels = {
+        stove: 'плита', air_fryer: 'аэрогриль', oven: 'духовка',
+        multicooker: 'мультиварка', steamer: 'пароварка',
+        microwave: 'микроволновка', electric_grill: 'электрогриль',
+        charcoal_grill: 'мангал', blender: 'блендер'
+      };
+      const methods = option.methods
+        .filter(id => state.cookingMethods.length === 0 || state.cookingMethods.includes(id))
+        .map(id => methodLabels[id] || id);
+      const equipment = option.equipment.map(id => equipmentLabels[id] || id);
+      return '<div class="dish-preparation">Приготовление: ' +
+        methods.join(' / ') +
+        (equipment.length ? ' · ' + equipment.join(', ') : '') +
+        '</div>';
+    }
+
     // Сопоставление пользовательских предпочтений с кандидатными названиями ингредиентов.
     // Расширяем словарь по мере редакторского утверждения каталога.
     const ingredientPreferenceAliases = {
@@ -7689,7 +7721,7 @@
                 return '<article class="menu-dish-card">' +
                   (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
                   '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + meal.group + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
-                  '<div class="menu-item-name">' + dish.name + '</div><div class="menu-item-cal">' +
+                  '<div class="menu-item-name">' + dish.name + '</div>' + formatDishPreparation(dish) + '<div class="menu-item-cal">' +
                   formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) +
                   '</div></div></article>';
               };
@@ -7744,7 +7776,7 @@
               return '<article class="menu-dish-card">' +
                 (dishImage ? '<img class="menu-dish-image" src="' + dishImage + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
                 '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + mealLabels[meal.type] + '</span><span class="meal-group-label">' + meal.group + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
-                '<div class="menu-item-name">' + dish.name + '</div>' +
+                '<div class="menu-item-name">' + dish.name + '</div>' + formatDishPreparation(dish) +
                 '<div class="menu-item-cal">' + formatDishNutrition(nutritionEstimate, count) +
                 '</div></div></article>';
             };
