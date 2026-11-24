@@ -58,13 +58,29 @@
         "sourceStatus": "nutrition_source_only"
       },
       "source": "https://piknifood.ru/recipe/ovsyanka-s-yagodami-breakfast/",
-      "reviewNotes": "Овёс сам по себе не равен пшенице/ржи/ячменю; проверить маркировку безглютеновости и перекрёстный контакт. Варианты с орехами/йогуртом не смешивать с этой версией.",
+      "reviewNotes": "Овёс сам по себе не равен пшенице/ржи/ячменю; проверить маркировку безглютеновости и перекрёстный контакт. Варианты с орехами/йогуртом не смешивать с этой версией. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "audit": {
         "recipeMatch": "matched_to_source",
         "nutritionBasis": "per_serving",
         "nutritionStatus": "source_reported_per_serving",
         "notes": "Состав и КБЖУ совпадают с источником. Вода для варки добавляется по необходимости и не имеет точного количества.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate",
+        "finding": "Источник совпадает с названием, граммовками и 1 порцией; источник указывает 416 ккал и КБЖУ на порцию. В шаге варки используется вода, но её количество не задано в ингредиентах.",
+        "nutritionBasis": "per_serving",
+        "allergenReview": "Источник отмечает молочное и глютен; овёс и возможные следы глютена требуют проверки маркировки конкретных хлопьев.",
+        "reliability": "recipe_publisher"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 416,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -115,13 +131,29 @@
         "sourceStatus": "nutrition_source_only"
       },
       "source": "https://www.maggi.ru/recipes/prostoy-omlet-s-syrom",
-      "reviewNotes": "Источник даёт 1 порцию, но способ приготовления и время проверить: на странице приведены 10 минут и отдельный вариант запекания.",
+      "reviewNotes": "Источник даёт 1 порцию, но способ приготовления и время проверить: на странице приведены 10 минут и отдельный вариант запекания. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "audit": {
         "recipeMatch": "matched_to_source",
         "nutritionBasis": "per_serving",
         "nutritionStatus": "source_reported_per_serving",
         "notes": "Источник подтверждает 1 порцию и 324.2 ккал. Время исправлено с 20 на 10 минут по странице рецепта.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate",
+        "finding": "Совпадают 2 яйца, 3 ст. л. молока, 30 г сыра, 1 порция и 10 минут; КБЖУ 324.2 ккал на порцию.",
+        "nutritionBasis": "per_serving",
+        "allergenReview": "Яйцо и молоко подтверждаются ингредиентами; сыр требует проверки маркировки на молочные компоненты.",
+        "reliability": "brand_recipe_publisher"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 324.2,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -188,13 +220,29 @@
         "sourceStatus": "nutrition_source_only"
       },
       "source": "https://wayeat.ru/recipes/kurinaya-grudka-s-grechkoy-8ad4ab8c-ed4e-48a8-b86f-10e2a49148f7",
-      "reviewNotes": "Гречка не содержит глютен по природе, но проверить примеси/маркировку.",
+      "reviewNotes": "Гречка не содержит глютен по природе, но проверить примеси/маркировку. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "audit": {
         "recipeMatch": "matched_to_source",
         "nutritionBasis": "per_serving",
         "nutritionStatus": "source_calculated_per_serving",
         "notes": "Источник подтверждает 3 порции, граммовки и 549.9 ккал на порцию; выход готового блюда может отличаться.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate",
+        "finding": "Совпадают ингредиенты и граммовки; источник указывает 3 порции, около 40 минут и 549.9 ккал на порцию. Расчётная порция около 435 г.",
+        "nutritionBasis": "per_serving",
+        "allergenReview": "В составе гречка, курица и овощи; проверять маркировку крупы на возможные примеси.",
+        "reliability": "recipe_publisher"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 549.9,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -262,13 +310,29 @@
         "sourceStatus": "nutrition_source_only"
       },
       "source": "https://piknifood.ru/recipe/losos-zapechyonnyy-s-ovoschami-dinner/",
-      "reviewNotes": "Источник указывает одну порцию; проверить время и фактический вес после приготовления.",
+      "reviewNotes": "Источник указывает одну порцию; проверить время и фактический вес после приготовления. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "audit": {
         "recipeMatch": "matched_to_source",
         "nutritionBasis": "per_serving",
         "nutritionStatus": "source_reported_per_serving",
         "notes": "По карточке источника совпадают ингредиенты и КБЖУ на 1 порцию. Требуется дополнительная проверка состава аллергенов и термообработки.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate",
+        "finding": "Совпадают 8 ингредиентов и количества; источник указывает 1 порцию и 577 ккал на порцию. Время зависит от фактической готовности рыбы и овощей.",
+        "nutritionBasis": "per_serving",
+        "allergenReview": "Рыба подтверждается ингредиентами; источник также прямо указывает рыбу.",
+        "reliability": "recipe_publisher"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 577,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -322,7 +386,7 @@
       ],
       "nutritionPerServing": null,
       "source": "https://www.sportmaster.ru/media/nutrition/tofu-s-risom/",
-      "reviewNotes": "Найден вариант с кукурузой, а не брокколи; не подменять ингредиент молча. Соевый соус может содержать пшеницу — сверять этикетку.",
+      "reviewNotes": "Найден вариант с кукурузой, а не брокколи; не подменять ингредиент молча. Соевый соус может содержать пшеницу — сверять этикетку. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "nutritionPer100g": {
         "kcal": 364,
         "protein_g": 15,
@@ -337,6 +401,22 @@
         "nutritionStatus": "source_reported_per_100g",
         "notes": "Источник содержит кукурузу, а не брокколи; название исправлено. Значение 364 ккал — на 100 г, не на порцию. Неизвестны выход и число порций.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate_incomplete_yield",
+        "finding": "Ингредиенты совпадают с источником; пищевая ценность 364 ккал/100 г. Источник не задаёт выход готового блюда и число порций, поэтому нельзя рассчитать КБЖУ на порцию.",
+        "nutritionBasis": "per_100g",
+        "allergenReview": "Соя подтверждается тофу и соевым соусом; соус может содержать пшеницу — нужна проверка этикетки.",
+        "reliability": "fitness_media"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "yield_not_reported",
+        "caloriesKcal": null,
+        "caloriesBasis": "source_per_100g_only",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -400,13 +480,29 @@
         "sourceStatus": "nutrition_source_only"
       },
       "source": "https://www.gastronom.ru/recipe/67309/indejka-v-slivochnom-souse-na-skovorode",
-      "reviewNotes": "Источник включает грибы; проверить, соответствует ли это целевой карточке.",
+      "reviewNotes": "Источник включает грибы; проверить, соответствует ли это целевой карточке. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "audit": {
         "recipeMatch": "matched_to_source",
         "nutritionBasis": "per_serving",
         "nutritionStatus": "source_reported_per_serving",
         "notes": "Источник подтверждает 4 порции, 419.82 ккал и указанный состав. Время 35 минут.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate",
+        "finding": "Название и ингредиенты соответствуют версии с филе бедра индейки, лисичками, сливками и луком; источник описывает именно вариант с грибами. Не переименовывать в рецепт без грибов.",
+        "nutritionBasis": "per_serving_source_value",
+        "allergenReview": "Молочные компоненты и грибы присутствуют; полный профиль аллергенов не подтверждён.",
+        "reliability": "recipe_publisher"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 419.82,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -472,13 +568,29 @@
         "sourceStatus": "nutrition_source_only"
       },
       "source": "https://calorizator.ru/recipe/49295",
-      "reviewNotes": "Состав и КБЖУ приведены для 3 порций по данным источника; проверить выход.",
+      "reviewNotes": "Состав и КБЖУ приведены для 3 порций по данным источника; проверить выход. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "audit": {
         "recipeMatch": "matched_to_source",
         "nutritionBasis": "per_serving",
         "nutritionStatus": "source_calculated_per_serving",
         "notes": "Источник подтверждает 3 порции: 105.5 ккал на порцию 174 г; на 100 г — 60.6 ккал. Состав и макросы на порцию совпадают.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate",
+        "finding": "Ингредиенты совпадают; источник указывает 3 порции, общую массу 522 г и 105.5 ккал на порцию (174 г), отдельно 60.6 ккал/100 г.",
+        "nutritionBasis": "per_serving",
+        "allergenReview": "Фета — молочный продукт; проверять состав конкретной феты.",
+        "reliability": "user_recipe_database"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": 174,
+        "weightBasis": "source_reported_ready_portion",
+        "caloriesKcal": 105.5,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": "106 ккал (174 г)",
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -557,13 +669,29 @@
         "sourceStatus": "nutrition_source_only"
       },
       "source": "https://www.maggi.ru/recipes/sup-pyure-iz-tykvy",
-      "reviewNotes": "В составе есть готовая приправа неизвестного состава; нельзя считать список аллергенов исчерпывающим без состава приправы.",
+      "reviewNotes": "В составе есть готовая приправа неизвестного состава; нельзя считать список аллергенов исчерпывающим без состава приправы. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "audit": {
         "recipeMatch": "matched_with_ingredient_detail",
         "nutritionBasis": "per_serving",
         "nutritionStatus": "source_reported_per_serving",
         "notes": "Источник подтверждает 4 порции и 386.8 ккал на порцию. Универсальная приправа MAGGI имеет собственный состав: его нужно раскрыть для аллергенного аудита; чеснок указан как 1 зубчик, а не 1 г.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate_with_compound_ingredient",
+        "finding": "Граммовки и КБЖУ совпадают с источником: 4 порции, 35 минут, 386.8 ккал на порцию. В рецепте используется готовая универсальная приправа.",
+        "nutritionBasis": "per_serving",
+        "allergenReview": "Состав приправы не раскрыт в рецепте; до проверки этикетки аллергенный профиль неполный.",
+        "reliability": "brand_recipe_publisher"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 386.8,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -611,7 +739,7 @@
       ],
       "nutritionPerServing": null,
       "source": "https://lefood.menu/recipes/govyazhiy-steyk-na-skovorode/",
-      "reviewNotes": "Пищевая ценность дана на 100 г, не на порцию. Уточнить вид и массу каждого стейка.",
+      "reviewNotes": "Пищевая ценность дана на 100 г, не на порцию. Уточнить вид и массу каждого стейка. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "nutritionSourceReported": {
         "kcal": 247,
         "protein_g": 28,
@@ -626,6 +754,22 @@
         "nutritionStatus": "not_usable_until_recalculated",
         "notes": "Источник подтверждает 2 порции и 2 стейка, но не указывает массу стейков. Значение 247 ккал встречается в карточке/каталоге, но база расчёта и макросы не подтверждены страницей рецепта; не использовать как КБЖУ порции.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate_incomplete_ingredient_weight",
+        "finding": "Совпадают ингредиенты и 2 порции; источник сообщает 247 ккал/100 г, но не указывает массу двух стейков. КБЖУ на порцию рассчитать нельзя.",
+        "nutritionBasis": "per_100g",
+        "allergenReview": "Основные ингредиенты понятны, но точная масса и вид отруба не заданы.",
+        "reliability": "recipe_publisher"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "steak_weight_not_reported",
+        "caloriesKcal": null,
+        "caloriesBasis": "source_per_100g_only",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -690,13 +834,29 @@
         "sourceStatus": "nutrition_source_only"
       },
       "source": "https://norma-fitness.com/recipes/syrniki-klassicheskie-so-smetanoy",
-      "reviewNotes": "Источник указывает одну порцию 277 г; проверить, что подача со сметаной включена в нутриенты.",
+      "reviewNotes": "Источник указывает одну порцию 277 г; проверить, что подача со сметаной включена в нутриенты. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "audit": {
         "recipeMatch": "matched_to_source",
         "nutritionBasis": "per_serving",
         "nutritionStatus": "source_calculated_per_serving",
         "notes": "Источник подтверждает одну порцию 277 г, 613.7 ккал и КБЖУ. Ингредиенты указаны в сыром весе; подача со сметаной включена.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate",
+        "finding": "Совпадают все ингредиенты и массы на 1 порцию; источник указывает готовую порцию 277 г, 613.7 ккал и 25 минут.",
+        "nutritionBasis": "per_serving",
+        "allergenReview": "Яйцо, пшеница и молочные продукты подтверждаются ингредиентами.",
+        "reliability": "nutrition_recipe_publisher"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": 277,
+        "weightBasis": "source_reported_ready_portion",
+        "caloriesKcal": 613.7,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": "614 ккал (277 г)",
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -763,13 +923,29 @@
         "sourceStatus": "nutrition_source_only"
       },
       "source": "https://piknifood.ru/recipe/krevetki-s-risom-i-ovoschami-lunch/",
-      "reviewNotes": "В источнике заявлены глютен и моллюски; по составу креветки относятся к ракообразным. Проверить состав соевого соуса и смесь овощей.",
+      "reviewNotes": "В источнике заявлены глютен и моллюски; по составу креветки относятся к ракообразным. Проверить состав соевого соуса и смесь овощей. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "audit": {
         "recipeMatch": "matched_with_instruction_discrepancy",
         "nutritionBasis": "per_serving",
         "nutritionStatus": "source_reported_per_serving",
         "notes": "Источник подтверждает 630 ккал на порцию. В ингредиентах указано 10 г масла и 5 г чеснока, в шагах — около 15 г масла и 6 г чеснока; количества требуют редакторского согласования. Аллергенную классификацию креветок уточнить как ракообразные.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate_with_source_inconsistency",
+        "finding": "Ингредиенты в целом совпадают; источник указывает 1 порцию, 630 ккал на порцию и 20 минут. Есть расхождение: в списке масла 10 г, а в шаге приготовления указано 15 г.",
+        "nutritionBasis": "per_serving",
+        "allergenReview": "Креветки — ракообразные; нельзя переносить категорию моллюсков из упрощённой подписи источника. Соевый соус и готовая овощная смесь требуют проверки состава.",
+        "reliability": "recipe_publisher"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "not_reported",
+        "caloriesKcal": 630,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -842,7 +1018,7 @@
       ],
       "nutritionPerServing": null,
       "source": "https://m.povar.ru/recipes/falafel_s_humusom-68403.html",
-      "reviewNotes": "В рецепте хумус готовится из части нута; нужно редакторски сверить количества и наличие тахини/кунжута в выбранной версии.",
+      "reviewNotes": "В рецепте хумус готовится из части нута; нужно редакторски сверить количества и наличие тахини/кунжута в выбранной версии. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "nutritionPer100g": {
         "kcal": 226,
         "protein_g": 3,
@@ -857,6 +1033,22 @@
         "nutritionStatus": "source_reported_per_100g",
         "notes": "Источник подтверждает 4 порции, но 226 ккал и БЖУ указаны на 100 г. Нельзя считать 226 ккал значением порции. В рецепте нут распределяется между фалафелем и хумусом; требуется проверить фактический выход и порционирование.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate_complex_recipe",
+        "finding": "Источник описывает приготовление фалафеля и хумуса из разделённого нута; пищевая ценность 226 ккал/100 г, не на порцию. В источнике очень большая закладка ингредиентов и сложное распределение по компонентам.",
+        "nutritionBasis": "per_100g",
+        "allergenReview": "Нут и пшеничная мука подтверждаются; проверить разрыхлитель и возможные следы кунжута в фактической версии хумуса.",
+        "reliability": "recipe_publisher"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "yield_not_reported",
+        "caloriesKcal": null,
+        "caloriesBasis": "source_per_100g_only",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -916,13 +1108,29 @@
         "sourceStatus": "nutrition_source_only"
       },
       "source": "https://online.daily-menu.ru/dailymenu/recipes/view/107444",
-      "reviewNotes": "Источник включает краткое обжаривание и затем запекание; время 20+15 минут. Проверить, что это совпадает с изображением и названием.",
+      "reviewNotes": "Источник включает краткое обжаривание и затем запекание; время 20+15 минут. Проверить, что это совпадает с изображением и названием. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "audit": {
         "recipeMatch": "matched_to_source",
         "nutritionBasis": "per_serving",
         "nutritionStatus": "source_calculated_per_serving",
         "notes": "Источник подтверждает 4 порции, 174 ккал на порцию, 35 минут суммарно (20 минут подготовка/обжаривание + 15 минут духовка).",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate_user_submitted",
+        "finding": "Ингредиенты и итоговые значения совпадают с пользовательской записью: общий вес 910 г, 4 порции по 228 г, 174 ккал на порцию; время 20 минут подготовки плюс 15 минут в духовке.",
+        "nutritionBasis": "per_serving",
+        "allergenReview": "Сыр — молочный продукт; точный состав маркированного сыра нужно сверить. Источник пользовательский, не редакционная проверка.",
+        "reliability": "user_submitted_recipe"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": 228,
+        "weightBasis": "source_reported_ready_portion",
+        "caloriesKcal": 174,
+        "caloriesBasis": "source_per_serving",
+        "displayFormat": "174 ккал (228 г)",
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -963,7 +1171,7 @@
         "sourceStatus": "calculated_from_per_100g"
       },
       "source": "https://health-diet.ru/table_calorie_users/4147403/",
-      "reviewNotes": "В источнике общая масса ингредиентов 300 г и масса готового блюда 290 г; КБЖУ указаны на 100 г.",
+      "reviewNotes": "В источнике общая масса ингредиентов 300 г и масса готового блюда 290 г; КБЖУ указаны на 100 г. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "nutritionPer100g": {
         "kcal": 99,
         "protein_g": 11.4,
@@ -979,6 +1187,22 @@
         "nutritionStatus": "derived_per_serving_from_reported_yield",
         "notes": "Источник сообщает 99 ккал/100 г готового блюда, масса готового блюда 290 г, 1 порция. Значения на порцию рассчитаны умножением показателей на 2.9; это расчёт по пользовательскому рецепту, не независимая лабораторная проверка.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate_user_submitted",
+        "finding": "Источник даёт 99 ккал/100 г и порцию 290 г (287.1 ккал); состав совпадает. Значение на порцию вычислено из значения на 100 г и массы порции.",
+        "nutritionBasis": "calculated_from_per_100g",
+        "allergenReview": "Творог — молочный продукт; фрукты и их возможные замены не должны автоматически считаться тем же составом.",
+        "reliability": "user_submitted_recipe"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": 290,
+        "weightBasis": "source_reported_ready_portion",
+        "caloriesKcal": 287.1,
+        "caloriesBasis": "calculated_from_source_per_100g",
+        "displayFormat": "287 ккал (290 г)",
+        "status": "source_estimate_needs_review"
       }
     },
     {
@@ -1027,7 +1251,7 @@
       ],
       "nutritionPerServing": null,
       "source": "https://health-diet.ru/table_calorie_users/2437654/",
-      "reviewNotes": "Источник даёт один вариант с кешью, овсяными отрубями и молоком. Отруби требуют проверки маркировки на глютен/перекрёстный контакт.",
+      "reviewNotes": "Источник даёт один вариант с кешью, овсяными отрубями и молоком. Отруби требуют проверки маркировки на глютен/перекрёстный контакт. Источник не является подтверждением аллергенной безопасности; до полной редакторской проверки рецепт не использовать для медицинской фильтрации или production-планирования.",
       "nutritionPer100g": {
         "kcal": 161.8,
         "protein_g": 6.4,
@@ -1042,6 +1266,22 @@
         "nutritionStatus": "source_reported_per_100g",
         "notes": "Источник сообщает 161.8 ккал и БЖУ на 100 г. Указанные ингредиенты дают около 280 г до обработки, но источник не подтверждает выход/размер порции; пересчитывать в КБЖУ на порцию нельзя.",
         "useInPlanner": false
+      },
+      "sourceAudit": {
+        "status": "source_match_candidate_user_submitted_incomplete_yield",
+        "finding": "Состав совпадает; источник сообщает 161.8 ккал/100 г. Выход и число порций не заданы, поэтому нельзя получить КБЖУ на порцию.",
+        "nutritionBasis": "per_100g",
+        "allergenReview": "Кешью — древесный орех; овсяные отруби требуют проверки маркировки на глютен и перекрёстный контакт.",
+        "reliability": "user_submitted_recipe"
+      },
+      "useInPlanner": false,
+      "standardServing": {
+        "weightGrams": null,
+        "weightBasis": "yield_not_reported",
+        "caloriesKcal": null,
+        "caloriesBasis": "source_per_100g_only",
+        "displayFormat": null,
+        "status": "source_estimate_needs_review"
       }
     }
   ],
@@ -1051,5 +1291,13 @@
     "runtimeConnected": false,
     "plannerEligibleRecipes": 0,
     "policy": "КБЖУ не переводится в значения на порцию без подтверждённого веса порции или выхода готового блюда. Источники пользовательских рецептов и каталоги с неполным составом остаются кандидатами."
-  }
+  },
+  "auditSnapshot": {
+    "auditedAt": "2026-11-24",
+    "scope": "Сверка 15 исследовательских карточек с указанными источниками: название, состав, граммовки, порции, время и база КБЖУ.",
+    "result": "Все 15 карточек остаются исследовательскими кандидатами. Источники подтверждают часть состава и нутриентных значений, но качество источников неоднородно; у отдельных записей не хватает выхода или веса ключевого ингредиента, а у одной найдена внутренняя несогласованность количества масла.",
+    "plannerPolicy": "useInPlanner=false для всех записей; данные не подключать к runtime до независимой проверки рецепта, аллергенов, выхода порций и пищевой ценности.",
+    "sourceQualityNote": "Публикации брендов и редакционные рецептурные сайты отличаются по надёжности; пользовательские записи и расчёты на 100 г не трактовать как проверенные КБЖУ на порцию."
+  },
+  "standardServingPolicy": "Показывать пользователю формат «N ккал (M г)» только если источник даёт и калорийность на порцию, и вес готовой порции. Не выводить вес из суммы сырых ингредиентов без подтверждённого выхода. Значения справочные, не медицинская рекомендация; отсутствие веса или выхода не заполнять догадкой."
 }
