@@ -7788,6 +7788,27 @@
       return schedule;
     }
 
+    // Не повторяем одно и то же блюдо, пока не перебрали остальные доступные
+    // варианты для этого приёма пищи и участника/семьи.
+    function createDishVarietyPicker() {
+      const usedByScope = new Map();
+      return (candidates, scope) => {
+        if (!candidates.length) return null;
+        let used = usedByScope.get(scope);
+        if (!used) {
+          used = new Set();
+          usedByScope.set(scope, used);
+        }
+        let dish = candidates.find(item => !used.has(String(item.id)));
+        if (!dish) {
+          used.clear();
+          dish = candidates[0];
+        }
+        used.add(String(dish.id));
+        return dish;
+      };
+    }
+
     function generatePlan() {
       const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
       const mealLabels = { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин' };
@@ -7800,7 +7821,7 @@
       const compatible = getPreferenceFilteredDishes(getCompatibleDishes());
       const familyCompatible = getFamilyCompatibleDishes(compatible);
       const lovedIngredients = getAllFamilyLikedIngredients();
-      const rotation = { breakfast: 0, lunch: 0, dinner: 0 };
+      const pickVariedDish = createDishVarietyPicker();
       const menuContainer = document.getElementById('resultMenu');
       const shoppingContainer = document.getElementById('resultShopping');
       const selectedDishes = [];
@@ -7867,7 +7888,7 @@
               };
               if (meal.group === 'Общий') {
                 const mains = rankDishesForFamily(getMealCandidates(lunchPool, 'lunch'));
-                const main = mains.length ? mains[rotation.lunch++ % mains.length] : null;
+                const main = pickVariedDish(mains, 'shared:lunch');
                 if (main) {
                   selectedDishes.push({ ...main, plannedServings });
                   dayHtml += renderLunchDish(main, 'Второе');
@@ -7885,7 +7906,7 @@
                   const personalMains = rankDishesForPerson(
                     getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person
                   );
-                  const personalMain = personalMains.length ? personalMains[rotation.lunch++ % personalMains.length] : null;
+                  const personalMain = pickVariedDish(personalMains, 'person:' + person.id + ':lunch');
                   if (personalMain) {
                     selectedDishes.push({ ...personalMain, plannedServings: 1 });
                     dayHtml += renderLunchDish(personalMain, 'Второе', getPersonLabel(person));
@@ -7921,8 +7942,7 @@
                 dayCaloriesComplete = false;
                 dayHtml += renderMealCard(null);
               } else {
-                const dish = candidates[rotation[meal.type] % candidates.length];
-                rotation[meal.type]++;
+                const dish = pickVariedDish(candidates, 'shared:' + meal.type);
                 selectedDishes.push({ ...dish, plannedServings: getHouseholdCount() });
                 dayHtml += renderMealCard(dish);
               }
@@ -7936,8 +7956,7 @@
                   dayHtml += renderMealCard(null, getPersonLabel(person));
                   return;
                 }
-                const dish = candidates[rotation[meal.type] % candidates.length];
-                rotation[meal.type]++;
+                const dish = pickVariedDish(candidates, 'person:' + person.id + ':' + meal.type);
                 selectedDishes.push({ ...dish, plannedServings: 1 });
                 dayHtml += renderMealCard(dish, getPersonLabel(person));
               });
@@ -7948,13 +7967,16 @@
             : '<div class="hint" style="margin-top:8px;">Сумма пока не рассчитана: для части блюд не указаны одновременно калорийность и вес стандартной порции.</div>';
           menuHtml += '<div class="menu-day"><div class="menu-day-title">' + day + '</div>' + dayHtml + daySummary + '</div>';
         });
+        const soupAvailabilityNote = selectedMeals.some(meal => meal.type === 'lunch') && soupCandidates.length === 0
+          ? '<p class="hint" style="margin:0 0 14px;padding:10px 12px;border-radius:10px;background:#FFF1E7;">Суп не удалось включить: среди рецептов, подходящих всем участникам и настройкам кухни, сейчас нет доступного варианта. Это не означает, что супы отключены; нужно расширить проверенные способы приготовления или совместимый набор рецептов.</p>'
+          : '';
         const preferenceNote = (getAllFamilyLikedIngredients().length || getAllFamilyDislikedIngredients().length)
           ? '<p class="hint" style="margin:0 0 14px;">Любимые продукты повышают приоритет блюд, а нелюбимые исключают блюдо из рекомендаций соответствующего человека. Диетические ограничения и аллергии проверяются отдельно для каждого участника; при непроверенном составе блюдо не предлагается человеку с указанной аллергией или непереносимостью.</p>'
           : '';
         const calorieStatusNote = hasAnyDailyTarget
           ? '<p class="hint" style="margin:0 0 14px;">Суточный ориентир показан исключительно как справочная информация. Вы сами определяете размер своей порции и решаете, подходит ли вам предложенное блюдо.</p>'
           : '<p class="hint" style="margin:0 0 14px;">При желании укажите суточный ориентир калорий — он будет показан справочно и не повлияет на выбор блюд.</p>';
-        menuContainer.innerHTML = childMenuNote + calorieIntro + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед состоит из второго блюда с белковым компонентом и гарниром; в выбранные дни к нему добавляется суп. Одна кастрюля распределяется на несколько обедов, а ингредиенты этой варки попадают в список покупок один раз. Составы супов пока черновые: количества ингредиентов и порции требуют проверки.</p>' + menuHtml;
+        menuContainer.innerHTML = childMenuNote + calorieIntro + soupAvailabilityNote + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед состоит из второго блюда с белковым компонентом и гарниром; в выбранные дни к нему добавляется суп. Одна кастрюля распределяется на несколько обедов, а ингредиенты этой варки попадают в список покупок один раз. Составы супов пока черновые: количества ингредиентов и порции требуют проверки.</p>' + menuHtml;
       }
 
       // Черновой расчёт количеств: масштабируем только рецепты с указанными
