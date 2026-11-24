@@ -6109,6 +6109,19 @@
       const shoppingProductAliases = {
         'яйцо': 'яйца', 'яйца': 'яйца', 'яйцо куриное': 'яйца', 'яйца куриные': 'яйца'
       };
+      // Средний съедобный вес одной штуки — для удобного списка закупки.
+      // Граммовки рецептов суммируются, затем переводятся в целые плоды.
+      const shoppingProducePieceWeights = {
+        'банан': 120, 'бананы': 120,
+        'апельсин': 150, 'апельсины': 150,
+        'яблоко': 180, 'яблоки': 180,
+        'груша': 170, 'груши': 170,
+        'мандарин': 80, 'мандарины': 80,
+        'киви': 75, 'лимон': 80, 'лимоны': 80,
+        'персик': 150, 'персики': 150,
+        'нектарин': 140, 'нектарины': 140,
+        'авокадо': 170
+      };
       const normalizeShoppingProduct = name => {
         const displayName = name.trim().replace(/\\s+/g, ' ').replace(/[.,;:]+$/g, '');
         const normalizedName = displayName.toLocaleLowerCase('ru').replace(/ё/g, 'е')
@@ -6132,8 +6145,14 @@
           const knownQuantity = canScale && Number.isFinite(quantity) && quantity > 0 &&
             unit && unit !== 'по вкусу';
           const key = normalized.key;
+          const produceWeight = shoppingProducePieceWeights[key];
+          const rawUnit = String(unit || '').toLocaleLowerCase('ru').trim().replace(/ё/g, 'е');
+          const isMassUnit = ['г','гр','грамм','грамма','граммов','кг','килограмм','килограмма'].includes(rawUnit);
+          const useWholeProduce = Boolean(produceWeight && knownQuantity && (isMassUnit ||
+            ['шт.','шт','штука','штуки','штук'].includes(rawUnit)));
           if (!shoppingItems.has(key)) {
-            shoppingItems.set(key, { name: normalized.displayName, unit: knownQuantity ? unit : '',
+            shoppingItems.set(key, { name: normalized.displayName,
+              unit: useWholeProduce ? 'шт.' : (knownQuantity ? unit : ''),
               quantity: 0, complete: true, unitKey: '' });
           }
           const entry = shoppingItems.get(key);
@@ -6153,7 +6172,18 @@
           };
           if (knownQuantity) {
             const normalizedUnit = normalizeUnit(unit);
-            if (entry.unitKey && entry.unitKey !== normalizedUnit.key) {
+            if (useWholeProduce) {
+              const amountInGrams = isMassUnit
+                ? quantity * factor * normalizedUnit.factor
+                : quantity * factor * produceWeight;
+              if (entry.unitKey && entry.unitKey !== 'piece') {
+                entry.complete = false;
+              } else {
+                entry.unitKey = 'piece';
+                entry.unit = 'шт.';
+                entry.quantity += amountInGrams / produceWeight;
+              }
+            } else if (entry.unitKey && entry.unitKey !== normalizedUnit.key) {
               entry.complete = false;
             } else {
               entry.unitKey = normalizedUnit.key;
@@ -6173,8 +6203,10 @@
       const shoppingListHtml = shoppingEntries.length
         ? '<ul style="padding-left:20px;margin:12px 0;">' +
           shoppingEntries.map(item => {
+            const displayQuantity = item.unitKey === 'piece'
+              ? Math.ceil(item.quantity) : item.quantity;
             const amount = item.complete && item.quantity > 0
-              ? formatShoppingQuantity(item.quantity) + ' ' + item.unit + ' · черновой расчёт'
+              ? formatShoppingQuantity(displayQuantity) + ' ' + item.unit + ' · черновой расчёт'
               : (item.quantity > 0 ? 'количество уточняется (часть данных известна)' : 'количество уточняется');
             return '<li style="margin:8px 0;line-height:1.45;"><strong>' + item.name + '</strong> — ' + amount + '</li>';
           }).join('') + '</ul>'
