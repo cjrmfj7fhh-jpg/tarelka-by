@@ -1323,7 +1323,7 @@
     "name": "Суп-пюре из тыквы",
     "image": null,
     "calories": null,
-    "type": "lunch",
+    "type": "soup",
     "tags": [
       "vegetarian"
     ],
@@ -6630,7 +6630,7 @@
     "name": "Тыквенный суп-пюре с курицей и картофелем",
     "image": null,
     "calories": null,
-    "type": "lunch",
+    "type": "soup",
     "tags": ["meat"],
     "recipeStatus": "needs_review",
     "allergenStatus": "needs_review",
@@ -6649,7 +6649,25 @@
     "allergenCandidates": ["milk"],
     "equipmentCandidates": ["stove", "blender"],
     "methodCandidates": ["boiling"],
-    "preparationOptions": [{"equipment":["stove","blender"],"methods":["boiling"]}],"methods":["boiling"]},
+    "preparationOptions": [{"equipment":["stove","blender"],"methods":["boiling"]}],
+    "preparationStatus": "candidate_needs_review",
+    "source": "https://calorizator.ru/recipe/51679",
+    "reviewNotes": "Отдельная рецептура: тыква, картофель, курица и молоко вместо сливочной основы с перцем и семечками. Источник пользовательский; для текстуры пюре требуется блендер. Выход 1300 г указан как сумма ингредиентов; фактический вес после приготовления проверить.",
+    "ingredientDataStatus": "candidate_needs_review",
+    "caloriesPerServing": 127.5,
+    "servingWeightGrams": 325,
+    "nutritionSource": "https://calorizator.ru/recipe/51679",
+    "nutritionBasis": "source_calculated_per_100g",
+    "nutritionStatus": "estimated",
+    "caloriesPer100g": 39.2,
+    "proteinPer100g": 3.2,
+    "fatPer100g": 0.5,
+    "carbsPer100g": 6.2,
+    "proteinPerServing": 10.5,
+    "fatPerServing": 1.8,
+    "carbsPerServing": 20.3,
+    "nutritionNotes": "Источник рассчитывает КБЖУ по массе ингредиентов без учета уварки и ужарки; значения предварительные, не подтверждены редакторски."
+  },
   {
     "id": 105,
     "name": "Овсяноблин с бананом без блендера",
@@ -6673,6 +6691,7 @@
     "equipmentCandidates": ["stove"],
     "methodCandidates": ["frying"],
     "preparationOptions": [{"equipment":["stove"],"methods":["frying"]}],
+    "preparationStatus": "candidate_needs_review",
     "source": "https://xn----8sbehgcimb3cfabqj3b.xn--p1ai/recipes/selection/ovsyanoblin_s_bananom/",
     "reviewNotes": "Отдельная версия овсяноблина: хлопья набухают в молоке, банан разминается вилкой; блендер не требуется. Источник указывает молоко как «120 шт.» — вероятная опечатка; в карточке временно интерпретировано как 120 мл и требуется подтверждение. Источник: проект Роспотребнадзора; выход 500 г, 4 порции, 155 ккал/100 г.",
     "ingredientDataStatus": "candidate_needs_review",
@@ -6688,24 +6707,9 @@
     "nutritionStatus": "estimated",
     "nutritionBasis": "source_reported_per_100g",
     "nutritionNotes": "Источник сообщает только калорийность; БЖУ не указаны. Масса порции рассчитана из опубликованного выхода 500 г на 4 порции."
-  }],
-    "source": "https://calorizator.ru/recipe/51679",
-    "reviewNotes": "Отдельная рецептура: тыква, картофель, курица и молоко вместо сливочной основы с перцем и семечками. Источник пользовательский; для текстуры пюре требуется блендер. Выход 1300 г указан как сумма ингредиентов; фактический вес после приготовления проверить.",
-    "ingredientDataStatus": "candidate_needs_review",
-    "caloriesPerServing": 127.5,
-    "servingWeightGrams": 325,
-    "nutritionSource": "https://calorizator.ru/recipe/51679",
-    "nutritionBasis": "source_calculated_per_100g",
-    "nutritionStatus": "estimated",
-    "caloriesPer100g": 39.2,
-    "proteinPer100g": 3.2,
-    "fatPer100g": 0.5,
-    "carbsPer100g": 6.2,
-    "proteinPerServing": 10.5,
-    "fatPerServing": 1.8,
-    "carbsPerServing": 20.3,
-    "nutritionNotes": "Источник рассчитывает КБЖУ по массе ингредиентов без учета уварки и ужарки; значения предварительные, не подтверждены редакторски."
-  }];
+  }
+
+  ];
 
     // Кандидатные ингредиенты сохраняем только для вкусового подбора.
     // Они НЕ являются подтверждённым составом и не используются для медицинской фильтрации.
@@ -7684,7 +7688,7 @@
       }));
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
-      const soupCandidates = familyCompatible.filter(dish => Number(dish.id) >= 36 && Number(dish.id) <= 55)
+      const soupCandidates = familyCompatible.filter(dish => dish.type === 'soup')
         .sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
       const soupSchedule = buildSoupSchedule(soupCandidates);
       const addedSoupBatches = new Set();
