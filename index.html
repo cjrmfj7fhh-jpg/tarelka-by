@@ -7814,6 +7814,7 @@
         .sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
       const soupSchedule = buildSoupSchedule(soupCandidates);
       const addedSoupBatches = new Set();
+      const displayedSoupDays = new Set();
 
       const childMenuNote = state.hasKids && state.kids.length
         ? '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;">В настоящее время Тарелка.by не работает с детским меню.</div>'
@@ -7837,7 +7838,7 @@
           selectedMeals.forEach(meal => {
             if (meal.type === 'lunch') {
               const lunchPool = meal.group === 'Общий' ? familyCompatible : compatible;
-              const soupPlan = meal.group === 'Общий' ? soupSchedule[days.indexOf(day)] : null;
+              const soupPlan = soupSchedule[days.indexOf(day)];
               const plannedServings = meal.group === 'Общий' ? getHouseholdCount() : 1;
               const renderLunchDish = (dish, label, personLabel = '') => {
                 if (!dish) return '<div class="menu-item"><span class="menu-item-name">' + label + ': подходящих рецептов пока нет</span></div>';
@@ -7852,6 +7853,18 @@
                   formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) +
                   '</div></div></article>';
               };
+              const appendSharedSoup = () => {
+                const dayIndex = days.indexOf(day);
+                if (!soupPlan || displayedSoupDays.has(dayIndex)) return;
+                dayHtml += renderLunchDish(soupPlan.soup, 'Первое');
+                displayedSoupDays.add(dayIndex);
+                const batchKey = String(soupPlan.batch) + '-' + String(soupPlan.soup.id);
+                if (!addedSoupBatches.has(batchKey)) {
+                  const batchServings = soupSchedule.filter(item => item && item.batch === soupPlan.batch).length;
+                  selectedDishes.push({ ...soupPlan.soup, plannedServings: plannedServings * batchServings });
+                  addedSoupBatches.add(batchKey);
+                }
+              };
               if (meal.group === 'Общий') {
                 const mains = rankDishesForFamily(getMealCandidates(lunchPool, 'lunch'));
                 const main = mains.length ? mains[rotation.lunch++ % mains.length] : null;
@@ -7863,13 +7876,7 @@
                   dayHtml += renderLunchDish(null, 'Второе');
                 }
                 if (soupPlan) {
-                  dayHtml += renderLunchDish(soupPlan.soup, 'Первое');
-                  const batchKey = String(soupPlan.batch) + '-' + String(soupPlan.soup.id);
-                  if (!addedSoupBatches.has(batchKey)) {
-                    const batchServings = soupSchedule.filter(item => item && item.batch === soupPlan.batch).length;
-                    selectedDishes.push({ ...soupPlan.soup, plannedServings: plannedServings * batchServings });
-                    addedSoupBatches.add(batchKey);
-                  }
+                  appendSharedSoup();
                 } else {
                   dayHtml += '<p class="hint" style="margin:4px 0 10px;">Сегодня без супа — полноценный обед включает второе блюдо.</p>';
                 }
@@ -7888,6 +7895,7 @@
                       escapeHtml(getPersonLabel(person)) + ' — подходящего обеда пока нет</span></div>';
                   }
                 });
+                if (soupPlan) appendSharedSoup();
               }
               return;
             }
