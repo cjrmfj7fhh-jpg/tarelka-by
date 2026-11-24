@@ -6778,24 +6778,37 @@
     }
 
     function getPreferenceFilteredDishes(dishes) {
-      const disliked = getAllFamilyDislikedIngredients();
-      // Если состав неизвестен, при активных исключениях не включаем блюдо:
-      // иначе нелюбимый продукт может попасть в меню незаметно.
-      return dishes.filter(dish => {
-        if (!disliked.length) return true;
-        if (!Array.isArray(dish.ingredients) || !dish.ingredients.length) return false;
-        return getDishPreferenceMatches(dish, disliked).length === 0;
-      });
+      // Вкусовые предпочтения влияют на ранжирование, а не исключают блюдо
+      // из меню всей семьи из-за вкуса одного участника.
+      return dishes;
     }
 
     function getCompatibleDishes() {
-      // Повторно проверяем ограничения при генерации: аллергии выбираются
-      // после экрана свайпов и должны обязательно учитываться в итоговом меню.
+      // На этом уровне проверяем только общую кухню. Диетические ограничения
+      // проверяются отдельно для каждого человека при подборе его блюда.
+      return allDishes.filter(dish => isDishCompatibleWithKitchen(dish));
+    }
+
+    function getDishesForPerson(dishes, person) {
+      return dishes.filter(dish => isDishCompatibleWithPerson(dish, person));
+    }
+
+    function getFamilyCompatibleDishes(dishes) {
       const eaters = [...state.persons];
-      return allDishes.filter(dish =>
-        isDishCompatibleWithKitchen(dish) &&
-        eaters.every(person => isDishCompatibleWithPerson(dish, person))
+      return dishes.filter(dish =>
+        eaters.length > 0 && eaters.every(person => isDishCompatibleWithPerson(dish, person))
       );
+    }
+
+    function rankDishesForPerson(dishes, person, familyLiked = []) {
+      const liked = [...new Set([...(person.likedIngredients || []), ...familyLiked])];
+      const disliked = person.dislikedIngredients || [];
+      return [...dishes].sort((a, b) => {
+        const score = dish =>
+          getDishPreferenceMatches(dish, liked).length * 2 -
+          getDishPreferenceMatches(dish, disliked).length;
+        return score(b) - score(a);
+      });
     }
 
     const ingredientGroups = [
