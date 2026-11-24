@@ -6861,8 +6861,8 @@
       );
     }
 
-    function rankDishesForPerson(dishes, person, familyLiked = []) {
-      const liked = [...new Set([...(person.likedIngredients || []), ...familyLiked])];
+    function rankDishesForPerson(dishes, person) {
+      const liked = person.likedIngredients || [];
       const disliked = person.dislikedIngredients || [];
       return [...dishes].sort((a, b) => {
         const score = dish =>
@@ -7388,7 +7388,7 @@
               } else {
                 state.persons.forEach(person => {
                   const personalMains = rankDishesForPerson(
-                    getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person, lovedIngredients
+                    getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person
                   );
                   const personalMain = personalMains.length ? personalMains[rotation.lunch++ % personalMains.length] : null;
                   if (personalMain) {
@@ -7433,7 +7433,7 @@
             } else {
               state.persons.forEach(person => {
                 const candidates = rankDishesForPerson(
-                  getMealCandidates(getDishesForPerson(compatible, person), meal.type), person, lovedIngredients
+                  getMealCandidates(getDishesForPerson(compatible, person), meal.type), person
                 );
                 if (!candidates.length) {
                   dayCaloriesComplete = false;
