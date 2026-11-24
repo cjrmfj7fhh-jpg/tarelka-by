@@ -5952,7 +5952,7 @@
     function getMealCandidates(dishes, mealType) {
       const candidates = dishes.filter(dish => dish.type === mealType);
       if (mealType !== 'lunch') return candidates;
-      const substantialLunchIds = new Set([3, 5, 12]);
+      const substantialLunchIds = new Set([3, 5]);
       return candidates.filter(dish => substantialLunchIds.has(Number(dish.id)));
     }
 
