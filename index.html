@@ -5185,6 +5185,13 @@
         });
         container.appendChild(familyGroup);
       }
+      const planning = state.planning || {};
+      ['workLunchMode','weekdayCooking','soupFrequency','soupBatch'].forEach(id => {
+        const control = document.getElementById(id);
+        if (control && planning[id] !== undefined) control.value = String(planning[id]);
+      });
+      const weekendPrep = document.getElementById('weekendPrep');
+      if (weekendPrep) weekendPrep.checked = planning.weekendPrep !== false;
     }
 
     function toggleMeal(mealId, el) {
