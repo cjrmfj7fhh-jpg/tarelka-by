@@ -609,30 +609,18 @@
   </div>
 
   <div class="step" id="step2">
-    <h1>Кто будет кушать?</h1>
+    <h1>Сколько взрослых будет кушать?</h1>
     <div class="counter-card">
       <div class="counter-row">
-        <div style="font-weight: 600; font-size: 16px;">👨‍👩‍👧 Взрослые</div>
+        <div style="font-weight: 600; font-size: 16px;">👤 Количество взрослых</div>
         <div class="counter-controls">
           <button class="counter-btn" onclick="changeAdults(-1)">−</button>
           <div class="counter-value" id="adultsCount">2</div>
           <button class="counter-btn" onclick="changeAdults(1)">+</button>
         </div>
       </div>
-      <div class="kids-row">
-        <div style="font-weight: 600; font-size: 16px;">👶 Есть дети?</div>
-        <div class="toggle" id="kidsToggle" onclick="toggleKids()" role="switch" aria-checked="false" aria-label="Есть дети"></div>
-      </div>
-      <div class="counter-row" id="kidsCountControl" style="display:none;padding:12px 0 4px;">
-        <div style="font-weight:600;font-size:15px;">Количество детей</div>
-        <div class="counter-controls">
-          <button class="counter-btn" type="button" onclick="changeKids(-1)" aria-label="Уменьшить количество детей">−</button>
-          <div class="counter-value" id="kidsCount">1</div>
-          <button class="counter-btn" type="button" onclick="changeKids(1)" aria-label="Увеличить количество детей">+</button>
-        </div>
-      </div>
-      <div class="summary-box" id="summaryText">Готовим на 2 человек</div>
-      <div class="kids-age-notice"><span aria-hidden="true">ℹ️</span><span><strong>Детское меню — от 3 лет.</strong> Если в семье есть дети младше 3 лет, приложение не рассчитывает для них меню и порции.</span></div>
+      <div class="summary-box" id="summaryText">Готовим на 2 взрослых</div>
+      <div class="kids-age-notice" style="margin-top:14px;"><span aria-hidden="true">ℹ️</span><span>Справочная информация: в настоящее время Тарелка.by не работает с детским меню. Количество и порции рассчитываются только для взрослых.</span></div>
     </div>
   </div>
 
@@ -672,7 +660,7 @@
     <h1>Настройка питания</h1>
     <p class="subtitle">Рассчитаем норму калорий для каждого.</p>
     <div id="personsContainer"></div>
-    <div id="childrenProfilesContainer"></div>
+    
   </div>
 
   <div class="step" id="step6">
@@ -683,7 +671,7 @@
 
   <div class="step" id="step7">
     <h1>Мои вкусовые предпочтения</h1>
-    <p class="subtitle">Настрой вкусы отдельно для каждого взрослого и ребёнка: выбери профиль выше, затем отметь любимые продукты и те, которые нужно исключить. Нелюбимый продукт любого участника исключается из общего семейного меню.</p>
+    <p class="subtitle">Настрой вкусовые предпочтения отдельно для каждого взрослого. Нелюбимые продукты исключаются из общего семейного меню.</p>
     <div id="tastePersonTabs" class="taste-mode" style="margin-bottom:12px;"></div>
     <div class="taste-mode">
       <button type="button" id="tasteLoveTab" class="active-love" onclick="setTasteMode('love')">♥ Люблю</button>
@@ -707,7 +695,7 @@
     <div class="section-title">🥘 Какие способы приготовления предпочитаешь?</div>
     <div id="cookingMethodsContainer"></div>
     <div class="section-title">🚫 Аллергены</div>
-    <p class="hint" style="margin:0 0 10px;">Аллергены и непереносимости настраиваются отдельно для каждого взрослого и каждого ребёнка. Если у участника есть хотя бы одно ограничение, блюдо без проверенного состава и подтверждённых данных об аллергенах не попадёт в общий подбор.</p>
+    <p class="hint" style="margin:0 0 10px;">Аллергены и непереносимости настраиваются отдельно для каждого взрослого. Если у участника есть хотя бы одно ограничение, блюдо без проверенного состава и подтверждённых данных об аллергенах не попадёт в общий подбор.</p>
     <div id="allergyContainer"></div>
     <div class="section-title">ℹ️ Непереносимости</div>
     <div id="intoleranceContainer"></div>
@@ -5290,13 +5278,13 @@
     }
 
     function getHouseholdCount() {
-      return state.adultsCount + (state.hasKids ? state.kids.length : 0);
+      return state.adultsCount;
     }
 
     function updateFamilySummary() {
       const total = getHouseholdCount();
       const summary = document.getElementById('summaryText');
-      if (summary) summary.textContent = `Готовим на ${total} ${total === 1 ? 'человека' : total < 5 ? 'человека' : 'человек'} · ${state.adultsCount} взр. + ${state.hasKids ? state.kids.length : 0} дет.`;
+      if (summary) summary.textContent = `Готовим на ${total} взрослых`;
       const count = document.getElementById('kidsCount');
       if (count) count.textContent = state.kids.length;
       const control = document.getElementById('kidsCountControl');
@@ -5464,7 +5452,6 @@
         `;
         container.appendChild(card);
       });
-      renderChildrenProfiles();
     }
 
     function renderChildrenProfiles() {
@@ -5620,7 +5607,7 @@
     function getCompatibleDishes() {
       // Повторно проверяем ограничения при генерации: аллергии выбираются
       // после экрана свайпов и должны обязательно учитываться в итоговом меню.
-      const eaters = [...state.persons, ...(state.hasKids ? state.kids : [])];
+      const eaters = [...state.persons];
       return allDishes.filter(dish =>
         isDishCompatibleWithKitchen(dish) &&
         eaters.every(person => isDishCompatibleWithPerson(dish, person))
@@ -5678,7 +5665,7 @@
     }
 
     function getAllFamilyLikedIngredients() {
-      return [...new Set([...state.persons, ...(state.hasKids ? state.kids : [])].flatMap(person => person.likedIngredients || []))];
+      return [...new Set([...state.persons].flatMap(person => person.likedIngredients || []))];
     }
 
     function getAllFamilyDislikedIngredients() {
