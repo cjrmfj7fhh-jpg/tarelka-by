@@ -382,6 +382,78 @@
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
 
+  
+    /* Refined editorial food cards — second visual pass */
+    .menu-day {
+      background: #FFFEFC;
+      border: 1px solid #EADFD4;
+      border-radius: 24px;
+      padding: clamp(17px, 2.6vw, 27px);
+      box-shadow: 0 10px 30px rgba(67, 43, 28, .055);
+      overflow: hidden;
+    }
+    .menu-day-title {
+      display: flex; align-items: center; gap: 11px;
+      color: #302923; font-size: 21px; font-weight: 850;
+      letter-spacing: -.045em; margin: 0 0 18px;
+    }
+    .menu-day-title::before {
+      content: ''; width: 5px; height: 25px; border-radius: 10px;
+      background: linear-gradient(180deg, #D96C4D, #B94B34);
+    }
+    .menu-item { display: block; border: 0; padding: 0; margin: 0 0 12px; }
+    .menu-dish-card {
+      display: grid; grid-template-columns: 112px minmax(0,1fr);
+      gap: 16px; align-items: center; min-width: 0;
+      background: #FFFCF8; border: 1px solid #F0E6DC;
+      border-radius: 18px; padding: 10px;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .menu-dish-card:hover {
+      transform: translateY(-2px); border-color: #E7C8B8;
+      box-shadow: 0 9px 22px rgba(74, 46, 29, .075);
+    }
+    .menu-dish-image {
+      display: block; width: 112px; height: 100px; object-fit: cover;
+      border-radius: 13px; background: #F3E9DE;
+    }
+    .menu-dish-placeholder {
+      display: grid; place-items: center; font-size: 30px;
+      color: #887765; background: linear-gradient(135deg,#F8EBDD,#EDE5D7);
+    }
+    .menu-dish-content { min-width: 0; padding: 3px 5px 3px 0; }
+    .menu-dish-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 7px; }
+    .meal-type-pill {
+      display: inline-flex; align-items: center; border-radius: 99px;
+      padding: 4px 9px; background: #FCE9DF; color: #A9432D;
+      font-size: 10px; line-height: 1.2; font-weight: 800; letter-spacing: .045em;
+      text-transform: uppercase;
+    }
+    .meal-group-label { color: #82766D; font-size: 11px; font-weight: 650; }
+    .menu-item-name {
+      color: #302923; font-size: 15px; line-height: 1.3;
+      font-weight: 800; letter-spacing: -.025em; overflow-wrap: anywhere;
+    }
+    .menu-item-cal { margin-top: 7px; color: #82766D; font-size: 11px; line-height: 1.4; }
+    .menu-day .hint { background: #F4F2E9; border-radius: 13px; padding: 12px 14px; color: #6E715B; font-size: 12px; line-height: 1.5; }
+    .result-screen { background: transparent; border: 0; box-shadow: none; padding-left: 0; padding-right: 0; }
+    .result-tabs { padding: 5px; background: #F2EAE1; border: 1px solid #E9DED3; }
+    .result-tab { min-height: 42px; font-weight: 750; }
+    .result-tab.active { background: #C85A3F; }
+    h1 { font-weight: 850; letter-spacing: -.055em; }
+    .subtitle { max-width: 660px; }
+    @media (max-width: 520px) {
+      .menu-day { border-radius: 19px; padding: 15px; }
+      .menu-dish-card { grid-template-columns: 88px minmax(0,1fr); gap: 12px; padding: 8px; border-radius: 15px; }
+      .menu-dish-image { width: 88px; height: 88px; border-radius: 11px; }
+      .menu-item-name { font-size: 14px; }
+      .menu-item-cal { font-size: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .menu-dish-card { transition: none; }
+      .menu-dish-card:hover { transform: none; }
+    }
+
   </style>
 </head>
 <body>
@@ -5583,10 +5655,12 @@
     function generatePlan() {
       const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
       const mealLabels = { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин' };
+      const mealOrder = { breakfast: 0, lunch: 1, dinner: 2 };
       const selectedMeals = state.meals.map(id => {
         const parts = id.split('-');
         return { group: parts[0] === 'family' ? 'Общий' : 'Личный', type: parts[1] };
-      }).filter(meal => mealLabels[meal.type]);
+      }).filter(meal => mealLabels[meal.type])
+        .sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
       const compatible = getPreferenceFilteredDishes(getCompatibleDishes());
       const lovedIngredients = getAllFamilyLikedIngredients();
       const rotation = { breakfast: 0, lunch: 0, dinner: 0 };
@@ -5636,13 +5710,16 @@
             const nutritionEstimate = getDishNutritionEstimate(dish);
             if (nutritionEstimate === null) dayCaloriesComplete = false;
             else dayCaloriesTotal += nutritionEstimate.calories;
-            dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
-              meal.group + ' ' + mealLabels[meal.type] + ': ' + dish.name +
-              '</span><span class="menu-item-cal">' +
+            const dishImage = typeof dish.image === 'string' ? dish.image : '';
+            dayHtml += '<article class="menu-dish-card">' +
+              (dishImage ? '<img class="menu-dish-image" src="' + dishImage + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
+              '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + mealLabels[meal.type] + '</span><span class="meal-group-label">' + meal.group + '</span></div>' +
+              '<div class="menu-item-name">' + dish.name + '</div>' +
+              '<div class="menu-item-cal">' +
               (nutritionEstimate !== null
-                ? nutritionEstimate.calories + ' ккал (' + nutritionEstimate.weight + ' г) · справочный ориентир'
-                : 'Калорийность и вес стандартной порции уточняются') +
-              '</span></div>';
+                ? nutritionEstimate.calories + ' ккал · ' + nutritionEstimate.weight + ' г · справочно'
+                : 'Калорийность и вес порции уточняются') +
+              '</div></div></article>';
           });
           const daySummary = dayCaloriesComplete
             ? '<div class="hint" style="margin-top:8px;">Сумма калорийности стандартных порций выбранных блюд: ' + dayCaloriesTotal + ' ккал. Это справочная сумма; фактическая калорийность вашей порции зависит от того, сколько вы положите себе.</div>'
