@@ -1250,6 +1250,7 @@
     "image": "https://kaskanaus.lt/uploads/recipes/klasikines-graikiskos-salotos-000294.webp",
     "calories": null,
     "type": "lunch",
+    "course": "salad",
     "tags": [
       "vegetarian"
     ],
@@ -5688,6 +5689,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "salad",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -5741,6 +5743,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "salad",
     "tags": [
       "fish"
     ],
@@ -5796,6 +5799,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "salad",
     "tags": [
       "vegan",
       "vegetarian"
@@ -5857,6 +5861,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "salad",
     "tags": [
       "vegan",
       "vegetarian"
@@ -5908,6 +5913,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "salad",
     "tags": [
       "vegan",
       "vegetarian"
@@ -5964,6 +5970,7 @@
     "image": null,
     "calories": null,
     "type": "dinner",
+    "course": "salad",
     "tags": [
       "vegan",
       "vegetarian"
@@ -6015,6 +6022,7 @@
     "image": null,
     "calories": null,
     "type": "dinner",
+    "course": "salad",
     "tags": [],
     "recipeStatus": "needs_review",
     "ingredientDataStatus": "candidate_needs_review",
@@ -6068,6 +6076,7 @@
     "image": null,
     "calories": null,
     "type": "dinner",
+    "course": "salad",
     "tags": [
       "vegan",
       "vegetarian"
@@ -6119,6 +6128,7 @@
     "image": null,
     "calories": null,
     "type": "dinner",
+    "course": "salad",
     "tags": [
       "seafood"
     ],
@@ -6169,6 +6179,7 @@
     "image": null,
     "calories": null,
     "type": "dinner",
+    "course": "salad",
     "tags": [
       "vegetarian"
     ],
@@ -6487,6 +6498,7 @@
     "image": null,
     "calories": null,
     "type": "lunch",
+    "course": "salad",
     "tags": [
       "vegetarian"
     ],
@@ -7740,9 +7752,21 @@
       return dish.type === 'soup' || dish.course === 'soup';
     }
 
+    function isSaladDish(dish) {
+      return dish.course === 'salad';
+    }
+
     function getMealCandidates(dishes, mealType) {
-      const candidates = dishes.filter(dish => dish.type === mealType && !isSoupDish(dish));
-      return candidates;
+      if (mealType === 'lunch') {
+        // На обед подходят полноценные вторые блюда из обеденной и вечерней
+        // подборок. Супы идут отдельным первым блюдом, салаты не подменяют обед.
+        return dishes.filter(dish =>
+          ['lunch', 'dinner'].includes(dish.type) &&
+          !isSoupDish(dish) &&
+          !isSaladDish(dish)
+        );
+      }
+      return dishes.filter(dish => dish.type === mealType && !isSoupDish(dish));
     }
 
     function buildSoupSchedule(soups) {
