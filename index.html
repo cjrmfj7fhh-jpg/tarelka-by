@@ -6120,14 +6120,27 @@
         'киви': 75, 'лимон': 80, 'лимоны': 80,
         'персик': 150, 'персики': 150,
         'нектарин': 140, 'нектарины': 140,
-        'авокадо': 170
+        'авокадо': 170,
+        'картофель': 150, 'лук': 100, 'морковь': 80,
+        'перец': 150, 'помидор': 120, 'огурец': 250,
+        'свекла': 180, 'кабачок': 300, 'баклажан': 300
+      };
+      const shoppingProduceAliases = {
+        'лук репчатый': 'лук', 'репчатый лук': 'лук',
+        'перец болгарский': 'перец', 'болгарский перец': 'перец',
+        'перец сладкий': 'перец', 'сладкий перец': 'перец',
+        'помидоры': 'помидор', 'томаты': 'помидор',
+        'огурцы': 'огурец', 'кабачки': 'кабачок',
+        'баклажаны': 'баклажан', 'свекла': 'свекла'
       };
       const normalizeShoppingProduct = name => {
         const displayName = name.trim().replace(/\\s+/g, ' ').replace(/[.,;:]+$/g, '');
         const normalizedName = displayName.toLocaleLowerCase('ru').replace(/ё/g, 'е')
           .replace(/[.,;:]+/g, '').replace(/\\s+/g, ' ').trim();
-        return { key: shoppingProductAliases[normalizedName] || normalizedName,
-          displayName: shoppingProductAliases[normalizedName] ? 'Яйца' : displayName };
+        const canonicalName = shoppingProduceAliases[normalizedName] || shoppingProductAliases[normalizedName] || normalizedName;
+        const displayAliases = shoppingProduceAliases[normalizedName] ? canonicalName :
+          (shoppingProductAliases[normalizedName] ? 'Яйца' : displayName);
+        return { key: canonicalName, displayName: displayAliases };
       };
       selectedDishes.forEach(dish => {
         if (!Array.isArray(dish.ingredients)) return;
