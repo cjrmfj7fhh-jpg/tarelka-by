@@ -578,6 +578,11 @@
       body:has(.btn-back.show) .header { padding-left: 54px; }
     }
 
+    /* Child profile fields and calculator */
+    #childrenProfilesContainer .person-card { margin-top: 14px; }
+    #childrenProfilesContainer .result-box { margin-top: 14px; }
+    #childrenProfilesContainer .gender-btns { margin: 12px 0; }
+    #childrenProfilesContainer .hint { line-height: 1.55; }
 </style>
 </head>
 <body>
@@ -659,6 +664,7 @@
     <h1>Настройка питания</h1>
     <p class="subtitle">Рассчитаем норму калорий для каждого.</p>
     <div id="personsContainer"></div>
+    <div id="childrenProfilesContainer"></div>
   </div>
 
   <div class="step" id="step6">
@@ -5148,7 +5154,7 @@
 
     let state = {
       step: 1, totalSteps: 10, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
-      persons: [], planning: { workLunchMode: 'container', weekdayCooking: '30', soupFrequency: '2-3', soupBatch: '2', weekendPrep: true }, equipment: ['stove'], cookingMethods: [],
+      persons: [], kids: [], planning: { workLunchMode: 'container', weekdayCooking: '30', soupFrequency: '2-3', soupBatch: '2', weekendPrep: true }, equipment: ['stove'], cookingMethods: [],
       tasteMode: 'love', tastePersonIndex: 0,
       finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
     };
@@ -5285,7 +5291,50 @@
       initPersons(); renderMealsStep();
     }
 
-    function toggleKids() { state.hasKids = !state.hasKids; document.getElementById('kidsToggle').classList.toggle('active', state.hasKids); }
+    function toggleKids() {
+      state.hasKids = !state.hasKids;
+      if (state.hasKids && state.kids.length === 0) addChildProfile(false);
+      document.getElementById('kidsToggle').classList.toggle('active', state.hasKids);
+    }
+
+    function addChildProfile(shouldRender = true) {
+      if (state.kids.length >= 6) return;
+      state.kids.push({ id: state.kids.length + 1, name: '', age: '', gender: 'male', height: '', weight: '', activity: 'sedentary' });
+      if (shouldRender && state.step === 5) renderPersons();
+    }
+
+    function removeChildProfile(index) {
+      state.kids.splice(index, 1);
+      state.kids.forEach((child, i) => child.id = i + 1);
+      state.hasKids = state.kids.length > 0;
+      const toggle = document.getElementById('kidsToggle');
+      if (toggle) toggle.classList.toggle('active', state.hasKids);
+      renderPersons();
+    }
+
+    function updateChild(index, field, value) {
+      const child = state.kids[index];
+      if (!child) return;
+      child[field] = value;
+      renderPersons();
+    }
+
+    function calculateChildCalories(child) {
+      const age = Number(child.age), height = Number(child.height), weight = Number(child.weight);
+      if (!Number.isFinite(age) || age < 3 || age > 17 ||
+          !Number.isFinite(height) || height < 80 || height > 220 ||
+          !Number.isFinite(weight) || weight < 10 || weight > 150) return null;
+      const paByGender = child.gender === 'female'
+        ? { sedentary: 1.00, low: 1.16, active: 1.31, very: 1.56 }
+        : { sedentary: 1.00, low: 1.13, active: 1.26, very: 1.42 };
+      const pa = paByGender[child.activity] || 1.00;
+      const growth = age < 9 ? 20 : 25;
+      const heightM = height / 100;
+      const estimate = child.gender === 'female'
+        ? 135.3 - 30.8 * age + pa * (10 * weight + 934 * heightM) + growth
+        : 88.5 - 61.9 * age + pa * (26.7 * weight + 903 * heightM) + growth;
+      return Number.isFinite(estimate) && estimate > 0 ? Math.round(estimate) : null;
+    }
 
     function renderMealsStep() {
       const container = document.getElementById('mealGroupsContainer');
@@ -5374,6 +5423,32 @@
         `;
         container.appendChild(card);
       });
+      renderChildrenProfiles();
+    }
+
+    function renderChildrenProfiles() {
+      const container = document.getElementById('childrenProfilesContainer');
+      if (!container) return;
+      if (!state.hasKids || state.kids.length === 0) { container.innerHTML = ''; return; }
+      let html = '<div class="section-title" style="margin-top:24px;">👧 Данные детей</div><p class="hint">Для каждого ребёнка отдельно укажи возраст, рост, вес и активность. Ориентир рассчитывается по детской формуле, без целей «похудеть» или «набрать».</p>';
+      state.kids.forEach((child, index) => {
+        const estimate = calculateChildCalories(child);
+        const age = Number(child.age);
+        let result = '';
+        if (child.age !== '' && age < 3) result = '<div class="result-box">Детям младше 3 лет приложение не рассчитывает калорийность и порции. Обсудите питание с педиатром.</div>';
+        else if (estimate !== null) result = '<div class="result-box">Ориентировочная потребность: ' + estimate + ' ккал/день</div>';
+        else result = '<div class="result-box">Заполни возраст, рост и вес — рассчитаем ориентир автоматически</div>';
+        html += '<div class="person-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div class="person-title">Ребёнок ' + (index + 1) + '</div><button type="button" style="width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:transparent;" onclick="removeChildProfile(' + index + ')" aria-label="Удалить профиль ребёнка">×</button></div>' +
+          '<div class="input-group"><label>Имя ребёнка</label><input type="text" maxlength="32" placeholder="Например, Маша" value="' + escapeHtml(child.name) + '" onchange="updateChild(' + index + ', \'name\', this.value)"></div>' +
+          '<div class="input-group"><label>Возраст (полных лет, от 3 до 17)</label><input type="number" min="3" max="17" step="1" value="' + escapeHtml(child.age) + '" placeholder="Например, 8" onchange="updateChild(' + index + ', \'age\', this.value)"></div>' +
+          '<div class="gender-btns"><div class="gender-btn ' + (child.gender === 'male' ? 'active' : '') + '" onclick="updateChild(' + index + ', \'gender\', \'male\')">👦 Мальчик</div><div class="gender-btn ' + (child.gender === 'female' ? 'active' : '') + '" onclick="updateChild(' + index + ', \'gender\', \'female\')">👧 Девочка</div></div>' +
+          '<div class="input-group"><label>Рост (см)</label><input type="number" min="80" max="220" step="0.1" value="' + escapeHtml(child.height) + '" placeholder="Например, 128" onchange="updateChild(' + index + ', \'height\', this.value)"></div>' +
+          '<div class="input-group"><label>Вес (кг)</label><input type="number" min="10" max="150" step="0.1" value="' + escapeHtml(child.weight) + '" placeholder="Например, 27" onchange="updateChild(' + index + ', \'weight\', this.value)"></div>' +
+          '<div class="input-group"><label>Физическая активность</label><select onchange="updateChild(' + index + ', \'activity\', this.value)"><option value="sedentary" ' + (child.activity === 'sedentary' ? 'selected' : '') + '>Низкая — обычная повседневная активность</option><option value="low" ' + (child.activity === 'low' ? 'selected' : '') + '>Невысокая — 30–60 минут умеренной активности в день</option><option value="active" ' + (child.activity === 'active' ? 'selected' : '') + '>Активная — не менее 60 минут умеренной активности</option><option value="very" ' + (child.activity === 'very' ? 'selected' : '') + '>Очень высокая — активность плюс дополнительные тренировки</option></select></div>' +
+          result + '<p class="hint">Это справочная оценка, а не индивидуальное назначение питания. При особенностях роста, веса или здоровья ориентируйтесь на педиатра.</p></div>';
+      });
+      html += '<button type="button" class="btn-next active" style="margin-top:12px;" onclick="addChildProfile()">＋ Добавить ещё ребёнка</button>';
+      container.innerHTML = html;
     }
 
     function updatePerson(index, field, value) {
