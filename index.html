@@ -5952,12 +5952,26 @@
     function getMealCandidates(dishes, mealType) {
       const candidates = dishes.filter(dish => dish.type === mealType);
       if (mealType !== 'lunch') return candidates;
-      // Обед должен быть самостоятельным сытным блюдом, а не салатом или супом.
-      // Пока в каталоге с указанным составом таким критериям соответствуют эти позиции:
-      // белковый компонент + крупа/другая основа. Новые рецепты добавлять сюда
-      // только после редакторской проверки состава и полноценности порции.
       const substantialLunchIds = new Set([3, 5, 12]);
       return candidates.filter(dish => substantialLunchIds.has(Number(dish.id)));
+    }
+
+    function buildSoupSchedule(soups) {
+      const frequency = state.planning?.soupFrequency || '2-3';
+      const targetDays = { daily: 7, alternate: 4, '2-3': 3, weekly: 1, never: 0 }[frequency] ?? 3;
+      const batchDays = Math.max(1, Math.min(4, Number(state.planning?.soupBatch) || 2));
+      const schedule = Array(7).fill(null);
+      if (!targetDays || !soups.length) return schedule;
+      const batches = Math.ceil(targetDays / batchDays);
+      for (let batch = 0; batch < batches; batch++) {
+        const startDay = Math.round(batch * 7 / batches);
+        const soup = soups[batch % soups.length];
+        for (let offset = 0; offset < batchDays && startDay + offset < 7; offset++) {
+          const dayIndex = startDay + offset;
+          if (!schedule[dayIndex]) schedule[dayIndex] = { soup, batch };
+        }
+      }
+      return schedule;
     }
 
     function generatePlan() {
@@ -5981,6 +5995,10 @@
       }));
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
+      const soupCandidates = compatible.filter(dish => Number(dish.id) >= 36 && Number(dish.id) <= 55)
+        .sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
+      const soupSchedule = buildSoupSchedule(soupCandidates);
+      const addedSoupBatches = new Set();
 
       const childMenuNote = state.hasKids && state.kids.length
         ? '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;">В настоящее время Тарелка.by не работает с детским меню.</div>'
@@ -6002,6 +6020,45 @@
           let dayCaloriesComplete = true;
           let dayCaloriesTotal = 0;
           selectedMeals.forEach(meal => {
+            if (meal.type === 'lunch') {
+              const mains = getMealCandidates(compatible, 'lunch')
+                .sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
+              const main = mains.length ? mains[rotation.lunch++ % mains.length] : null;
+              const soupPlan = soupSchedule[days.indexOf(day)];
+              const plannedServings = meal.group === 'Общий' ? getHouseholdCount() : 1;
+              const renderLunchDish = (dish, label) => {
+                if (!dish) return '<div class="menu-item"><span class="menu-item-name">' + label + ': подходящих рецептов пока нет</span></div>';
+                const estimate = getDishNutritionEstimate(dish);
+                if (estimate === null) dayCaloriesComplete = false;
+                else dayCaloriesTotal += estimate.calories;
+                const image = typeof dish.image === 'string' ? dish.image : '';
+                return '<article class="menu-dish-card">' +
+                  (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
+                  '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + meal.group + '</span></div>' +
+                  '<div class="menu-item-name">' + dish.name + '</div><div class="menu-item-cal">' +
+                  (estimate !== null ? estimate.calories + ' ккал · ' + estimate.weight + ' г · справочно' : 'Калорийность и вес порции уточняются') +
+                  '</div></div></article>';
+              };
+              if (main) {
+                selectedDishes.push({ ...main, plannedServings });
+                dayHtml += renderLunchDish(main, 'Второе');
+              } else {
+                dayCaloriesComplete = false;
+                dayHtml += renderLunchDish(null, 'Второе');
+              }
+              if (soupPlan) {
+                dayHtml += renderLunchDish(soupPlan.soup, 'Первое');
+                const batchKey = String(soupPlan.batch) + '-' + String(soupPlan.soup.id);
+                if (!addedSoupBatches.has(batchKey)) {
+                  const batchServings = soupSchedule.filter(item => item && item.batch === soupPlan.batch).length;
+                  selectedDishes.push({ ...soupPlan.soup, plannedServings: plannedServings * batchServings });
+                  addedSoupBatches.add(batchKey);
+                }
+              } else {
+                dayHtml += '<p class="hint" style="margin:4px 0 10px;">Сегодня без супа — полноценный обед включает второе блюдо.</p>';
+              }
+              return;
+            }
             const candidates = getMealCandidates(compatible, meal.type)
               .sort((a, b) =>
                 getDishPreferenceMatches(b, lovedIngredients).length -
@@ -6042,7 +6099,7 @@
         const calorieStatusNote = hasAnyDailyTarget
           ? '<p class="hint" style="margin:0 0 14px;">Суточный ориентир показан исключительно как справочная информация. Вы сами определяете размер своей порции и решаете, подходит ли вам предложенное блюдо.</p>'
           : '<p class="hint" style="margin:0 0 14px;">При желании укажите суточный ориентир калорий — он будет показан справочно и не повлияет на выбор блюд.</p>';
-        menuContainer.innerHTML = childMenuNote + calorieIntro + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед подбирается как сытное основное блюдо с белковым компонентом и гарниром/основой. Салат или суп в одиночку не считаются полноценным обедом.</p>' + menuHtml;
+        menuContainer.innerHTML = childMenuNote + calorieIntro + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед состоит из второго блюда с белковым компонентом и гарниром; в выбранные дни к нему добавляется суп. Одна кастрюля распределяется на несколько обедов, а ингредиенты этой варки попадают в список покупок один раз. Составы супов пока черновые: количества ингредиентов и порции требуют проверки.</p>' + menuHtml;
       }
 
       // Черновой расчёт количеств: масштабируем только рецепты с указанными
