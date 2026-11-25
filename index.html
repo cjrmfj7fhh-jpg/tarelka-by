@@ -10168,24 +10168,80 @@
       return schedule;
     }
 
-    // Не повторяем одно и то же блюдо, пока не перебрали остальные доступные
-    // варианты для этого приёма пищи и участника/семьи.
+    // Разнообразие считаем по людям, а не отдельно по слотам:
+    // обед и ужин используют одну группу "main", поэтому блюдо не дублируется
+    // в один день между этими приёмами пищи.
     function createDishVarietyPicker() {
-      const usedByScope = new Map();
-      return (candidates, scope) => {
+      const usageByPerson = new Map();
+      const usedTodayByPerson = new Map();
+      const maxWeeklyUses = 2;
+      const minRepeatGapDays = 3;
+      const getDishKey = dish => String(dish.varietyGroup || dish.id || dish.name || '');
+
+      return (candidates, varietyGroup, dayIndex, eaterIds = []) => {
         if (!candidates.length) return null;
-        let used = usedByScope.get(scope);
-        if (!used) {
-          used = new Set();
-          usedByScope.set(scope, used);
+        const day = Number(dayIndex);
+        if (!Number.isInteger(day) || day < 0) return null;
+        const people = (eaterIds.length ? eaterIds : [varietyGroup]).map(String);
+        const personKeys = people.map(personId => varietyGroup + '|' + personId);
+        const todayKeys = personKeys.map(key => key + '|' + day);
+        const getStats = (personKey, dishKey) =>
+          usageByPerson.get(personKey)?.get(dishKey) || { count: 0, lastDay: -Infinity };
+        const isUsedToday = dishKey => todayKeys.some(key => usedTodayByPerson.get(key)?.has(dishKey));
+
+        // Сначала исключаем блюда, уже назначенные этим людям сегодня.
+        const notUsedToday = candidates.filter(dish => !isUsedToday(getDishKey(dish)));
+        if (!notUsedToday.length) return null;
+
+        // В первую очередь выбираем блюда, которые ещё не использовались
+        // на этой неделе или достаточно давно (минимум три дня назад).
+        let pool = notUsedToday.filter(dish => personKeys.every(key => {
+          const stats = getStats(key, getDishKey(dish));
+          return stats.count < maxWeeklyUses && day - stats.lastDay >= minRepeatGapDays;
+        }));
+
+        // Если строгий интервал оставил пустой выбор, ослабляем только интервал,
+        // но не разрешаем повтор в тот же день и не превышаем лимит за неделю.
+        if (!pool.length) {
+          pool = notUsedToday.filter(dish =>
+            personKeys.every(key => getStats(key, getDishKey(dish)).count < maxWeeklyUses)
+          );
         }
-        let dish = candidates.find(item => !used.has(String(item.id)));
-        if (!dish) {
-          used.clear();
-          dish = candidates[0];
-        }
-        used.add(String(dish.id));
-        return dish;
+        if (!pool.length) return null;
+
+        // При равных условиях сохраняется порядок предпочтений из ранжирования.
+        pool.sort((a, b) => {
+          const score = dish => personKeys.reduce((result, key) => {
+            const stats = getStats(key, getDishKey(dish));
+            return {
+              count: Math.max(result.count, stats.count),
+              lastDay: Math.max(result.lastDay, stats.lastDay)
+            };
+          }, { count: 0, lastDay: -Infinity });
+          const aScore = score(a);
+          const bScore = score(b);
+          return aScore.count - bScore.count || aScore.lastDay - bScore.lastDay;
+        });
+
+        const selected = pool[0];
+        const selectedKey = getDishKey(selected);
+        personKeys.forEach(personKey => {
+          let statsByDish = usageByPerson.get(personKey);
+          if (!statsByDish) {
+            statsByDish = new Map();
+            usageByPerson.set(personKey, statsByDish);
+          }
+          const previous = getStats(personKey, selectedKey);
+          statsByDish.set(selectedKey, { count: previous.count + 1, lastDay: day });
+          const todayKey = personKey + '|' + day;
+          let todaySet = usedTodayByPerson.get(todayKey);
+          if (!todaySet) {
+            todaySet = new Set();
+            usedTodayByPerson.set(todayKey, todaySet);
+          }
+          todaySet.add(selectedKey);
+        });
+        return selected;
       };
     }
 
@@ -10253,14 +10309,14 @@
         menuContainer.innerHTML = '<p class="subtitle">Не выбраны приёмы пищи. Вернись на предыдущий шаг и выбери хотя бы один.</p>';
       } else {
         let menuHtml = '';
-        days.forEach(day => {
+        days.forEach((day, dayIndex) => {
           let dayHtml = '';
           let dayCaloriesComplete = true;
           let dayCaloriesTotal = 0;
           selectedMeals.forEach(meal => {
             if (meal.type === 'lunch') {
               const lunchPool = meal.group === 'Общий' ? familyCompatible : compatible;
-              const soupPlan = soupSchedule[days.indexOf(day)];
+              const soupPlan = soupSchedule[dayIndex];
               const plannedServings = meal.group === 'Общий' ? getHouseholdCount() : 1;
               const renderLunchDish = (dish, label, personLabel = '') => {
                 if (!dish) return '<div class="menu-item"><span class="menu-item-name">' + label + ': подходящих рецептов пока нет</span></div>';
@@ -10276,7 +10332,6 @@
                   '</div></div></article>';
               };
               const appendSharedSoup = () => {
-                const dayIndex = days.indexOf(day);
                 if (!soupPlan || displayedSoupDays.has(dayIndex)) return;
                 const batchKey = String(soupPlan.batch) + '-' + String(soupPlan.soup.id);
                 const batchServings = soupSchedule.filter(item => item && item.batch === soupPlan.batch).length;
@@ -10302,7 +10357,7 @@
                   rankDishesForFamily(getMealCandidates(lunchPool, 'lunch'))
                     .filter(dish => !dish.familyComposition || Boolean(buildFamilyComposition(dish)))
                 );
-                const main = pickVariedDish(mains, 'shared:lunch');
+                const main = pickVariedDish(mains, 'main', dayIndex, state.persons.map(person => person.id));
                 if (main) {
                   const compositionHtml = familyCompositionHtml(
                     main, 'Второе', 1,
@@ -10327,7 +10382,7 @@
                   const personalMains = rankDishesForPerson(
                     getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person
                   );
-                  const personalMain = pickVariedDish(personalMains, 'person:' + person.id + ':lunch');
+                  const personalMain = pickVariedDish(personalMains, 'main', dayIndex, [person.id]);
                   if (personalMain) {
                     selectedDishes.push({ ...personalMain, plannedServings: 1 });
                     dayHtml += renderLunchDish(personalMain, 'Второе', getPersonLabel(person));
@@ -10363,9 +10418,15 @@
                 dayCaloriesComplete = false;
                 dayHtml += renderMealCard(null);
               } else {
-                const dish = pickVariedDish(candidates, 'shared:' + meal.type);
-                selectedDishes.push({ ...dish, plannedServings: getHouseholdCount() });
-                dayHtml += renderMealCard(dish);
+                const varietyGroup = meal.type === 'breakfast' ? 'breakfast' : 'main';
+                const dish = pickVariedDish(candidates, varietyGroup, dayIndex, state.persons.map(person => person.id));
+                if (dish) {
+                  selectedDishes.push({ ...dish, plannedServings: getHouseholdCount() });
+                  dayHtml += renderMealCard(dish);
+                } else {
+                  dayCaloriesComplete = false;
+                  dayHtml += renderMealCard(null);
+                }
               }
             } else {
               state.persons.forEach(person => {
@@ -10377,9 +10438,15 @@
                   dayHtml += renderMealCard(null, getPersonLabel(person));
                   return;
                 }
-                const dish = pickVariedDish(candidates, 'person:' + person.id + ':' + meal.type);
-                selectedDishes.push({ ...dish, plannedServings: 1 });
-                dayHtml += renderMealCard(dish, getPersonLabel(person));
+                const varietyGroup = meal.type === 'breakfast' ? 'breakfast' : 'main';
+                const dish = pickVariedDish(candidates, varietyGroup, dayIndex, [person.id]);
+                if (dish) {
+                  selectedDishes.push({ ...dish, plannedServings: 1 });
+                  dayHtml += renderMealCard(dish, getPersonLabel(person));
+                } else {
+                  dayCaloriesComplete = false;
+                  dayHtml += renderMealCard(null, getPersonLabel(person));
+                }
               });
             }
           });
@@ -10397,7 +10464,7 @@
         const calorieStatusNote = hasAnyDailyTarget
           ? '<p class="hint" style="margin:0 0 14px;">Суточный ориентир показан исключительно как справочная информация. Вы сами определяете размер своей порции и решаете, подходит ли вам предложенное блюдо.</p>'
           : '<p class="hint" style="margin:0 0 14px;">При желании укажите суточный ориентир калорий — он будет показан справочно и не повлияет на выбор блюд.</p>';
-        menuContainer.innerHTML = calorieIntro + soupAvailabilityNote + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед состоит из второго блюда с белковым компонентом и гарниром; в выбранные дни к нему добавляется суп. Одна кастрюля распределяется на несколько обедов, а ингредиенты этой варки попадают в список покупок один раз. Составы супов пока черновые: количества ингредиентов и порции требуют проверки.</p>' + menuHtml;
+        menuContainer.innerHTML = calorieIntro + soupAvailabilityNote + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед состоит из второго блюда с белковым компонентом и гарниром; в выбранные дни к нему добавляется суп. Одна кастрюля распределяется на несколько обедов, а ингредиенты этой варки попадают в список покупок один раз. Основные блюда не повторяются между обедом и ужином в один день; повторы ограничены двумя появлениями за неделю и по возможности разделяются минимум тремя днями. Если подходящей альтернативы нет, приложение покажет это вместо автоматического дублирования. Составы супов пока черновые: количества ингредиентов и порции требуют проверки.</p>' + menuHtml;
       }
 
       // Черновой расчёт количеств: масштабируем только рецепты с указанными
