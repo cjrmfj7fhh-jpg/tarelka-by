@@ -10215,9 +10215,12 @@
       }));
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
-      const soupCandidates = prioritizeFamilyCompositions(familyCompatible.filter(dish =>
+      const soupCandidates = familyCompatible.filter(dish =>
         isSoupDish(dish) && (!dish.familyComposition || Boolean(buildFamilyComposition(dish)))
-      )).sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
+      ).sort((a, b) =>
+        (hasMixedDiet ? Number(Boolean(b.familyComposition)) - Number(Boolean(a.familyComposition)) : 0) ||
+        getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length
+      );
       const soupSchedule = buildSoupSchedule(soupCandidates);
       const addedSoupBatches = new Set();
       const displayedSoupDays = new Set();
