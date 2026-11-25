@@ -9761,9 +9761,20 @@
       return components;
     }
 
+    // Перемешиваем варианты с одинаковым уровнем предпочтений,
+    // чтобы одинаковые настройки не выдавали одну и ту же неделю по порядку каталога.
+    function shuffleDishes(dishes) {
+      const shuffled = [...dishes];
+      for (let index = shuffled.length - 1; index > 0; index--) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+      }
+      return shuffled;
+    }
+
     function rankDishesForPerson(dishes, person) {
       const liked = person.likedIngredients || [];
-      return [...dishes].sort((a, b) =>
+      return shuffleDishes(dishes).sort((a, b) =>
         getDishPreferenceMatches(b, liked).length -
         getDishPreferenceMatches(a, liked).length
       );
@@ -9771,7 +9782,7 @@
 
     function rankDishesForFamily(dishes) {
       const liked = getAllFamilyLikedIngredients();
-      return [...dishes].sort((a, b) =>
+      return shuffleDishes(dishes).sort((a, b) =>
         getDishPreferenceMatches(b, liked).length -
         getDishPreferenceMatches(a, liked).length
       );
@@ -10271,9 +10282,9 @@
       }));
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
-      const soupCandidates = familyCompatible.filter(dish =>
+      const soupCandidates = shuffleDishes(familyCompatible.filter(dish =>
         isSoupDish(dish) && (!dish.familyComposition || Boolean(buildFamilyComposition(dish)))
-      ).sort((a, b) =>
+      )).sort((a, b) =>
         (hasMixedDiet ? Number(Boolean(b.familyComposition)) - Number(Boolean(a.familyComposition)) : 0) ||
         getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length
       );
