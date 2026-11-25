@@ -9485,6 +9485,67 @@
       );
     }
 
+    // Семейная композиция: общая основа + явно описанные добавки для отдельных взрослых.
+    // Не пытаемся угадывать состав по названию блюда: без familyComposition рецепт
+    // остаётся обычным блюдом и не получает автоматических персональных замен.
+    function buildFamilyComposition(dish, persons = state.persons) {
+      const composition = dish && dish.familyComposition;
+      if (!composition || !composition.base || !Array.isArray(composition.addOns)) return null;
+      if (!Array.isArray(composition.base.ingredients) || !composition.base.ingredients.length) return null;
+      if (!persons.length) return null;
+
+      const baseDish = {
+        ...dish,
+        ingredients: composition.base.ingredients,
+        tags: composition.base.tags || dish.tags || [],
+        allergens: composition.base.allergens || dish.allergens || [],
+        intolerances: composition.base.intolerances || dish.intolerances || [],
+        allergenStatus: composition.base.allergenStatus || dish.allergenStatus
+      };
+      const baseAllowed = persons.every(person =>
+        isDishCompatibleWithPerson(baseDish, person) &&
+        !dishContainsDislikedIngredient(baseDish, person)
+      );
+      if (!baseAllowed) return null;
+
+      const personAddOns = [];
+      for (const person of persons) {
+        const allowedAddOns = composition.addOns.filter(addOn => {
+          const assigned = Array.isArray(addOn.personIds) && addOn.personIds.includes(person.id);
+          if (!assigned || !Array.isArray(addOn.ingredients) || !addOn.ingredients.length) return false;
+          const addOnDish = {
+            ...dish,
+            name: addOn.name || 'Индивидуальная добавка',
+            ingredients: addOn.ingredients,
+            tags: addOn.tags || [],
+            allergens: addOn.allergens || [],
+            intolerances: addOn.intolerances || [],
+            allergenStatus: addOn.allergenStatus || 'needs_review'
+          };
+          return isDishCompatibleWithPerson(addOnDish, person) &&
+            !dishContainsDislikedIngredient(addOnDish, person);
+        });
+        const requestedAddOns = composition.addOns.filter(addOn =>
+          Array.isArray(addOn.personIds) && addOn.personIds.includes(person.id)
+        );
+        if (requestedAddOns.length !== allowedAddOns.length) return null;
+        personAddOns.push({ personId: person.id, addOns: allowedAddOns });
+      }
+
+      return { base: baseDish, personAddOns };
+    }
+
+    function getFamilyCompositionShoppingIngredients(composition) {
+      if (!composition || !composition.base) return [];
+      const result = [...composition.base.ingredients];
+      composition.personAddOns.forEach(personPlan => {
+        personPlan.addOns.forEach(addOn => {
+          addOn.ingredients.forEach(item => result.push(item));
+        });
+      });
+      return result;
+    }
+
     function rankDishesForPerson(dishes, person) {
       const liked = person.likedIngredients || [];
       return [...dishes].sort((a, b) =>
