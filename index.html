@@ -10168,21 +10168,24 @@
       return schedule;
     }
 
-    // Не повторяем одно и то же блюдо, пока не перебрали остальные доступные
-    // варианты для этого приёма пищи и участника/семьи.
+    // Сохраняем разнообразие в пределах недели и не допускаем
+    // повторения одного основного блюда между приёмами пищи одного дня.
     function createDishVarietyPicker() {
       const usedByScope = new Map();
-      return (candidates, scope) => {
+      return (candidates, scope, excludedIds = new Set()) => {
         if (!candidates.length) return null;
+        const excluded = excludedIds instanceof Set ? excludedIds : new Set(excludedIds || []);
+        const available = candidates.filter(item => !excluded.has(String(item.id)));
+        if (!available.length) return null;
         let used = usedByScope.get(scope);
         if (!used) {
           used = new Set();
           usedByScope.set(scope, used);
         }
-        let dish = candidates.find(item => !used.has(String(item.id)));
+        let dish = available.find(item => !used.has(String(item.id)));
         if (!dish) {
           used.clear();
-          dish = candidates[0];
+          dish = available[0];
         }
         used.add(String(dish.id));
         return dish;
@@ -10257,6 +10260,27 @@
           let dayHtml = '';
           let dayCaloriesComplete = true;
           let dayCaloriesTotal = 0;
+          // Учёт основных блюд ведётся по каждому взрослому: общее блюдо
+          // считается использованным у всех, личное — только у получателя.
+          const dayUsedDishIdsByPerson = new Map(
+            state.persons.map(person => [String(person.id), new Set()])
+          );
+          const getDayExcludedDishIds = persons => {
+            const excluded = new Set();
+            (persons || []).forEach(person => {
+              const used = dayUsedDishIdsByPerson.get(String(person.id));
+              if (used) used.forEach(id => excluded.add(id));
+            });
+            return excluded;
+          };
+          const markDayDishUsed = (dish, persons) => {
+            if (!dish) return;
+            (persons || []).forEach(person => {
+              const key = String(person.id);
+              if (!dayUsedDishIdsByPerson.has(key)) dayUsedDishIdsByPerson.set(key, new Set());
+              dayUsedDishIdsByPerson.get(key).add(String(dish.id));
+            });
+          };
           selectedMeals.forEach(meal => {
             if (meal.type === 'lunch') {
               const lunchPool = meal.group === 'Общий' ? familyCompatible : compatible;
@@ -10302,8 +10326,9 @@
                   rankDishesForFamily(getMealCandidates(lunchPool, 'lunch'))
                     .filter(dish => !dish.familyComposition || Boolean(buildFamilyComposition(dish)))
                 );
-                const main = pickVariedDish(mains, 'shared:lunch');
+                const main = pickVariedDish(mains, 'shared:lunch', getDayExcludedDishIds(state.persons));
                 if (main) {
+                  markDayDishUsed(main, state.persons);
                   const compositionHtml = familyCompositionHtml(
                     main, 'Второе', 1,
                     (component, componentLabel, peopleLabel) => renderLunchDish(component, componentLabel, peopleLabel)
@@ -10327,8 +10352,13 @@
                   const personalMains = rankDishesForPerson(
                     getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person
                   );
-                  const personalMain = pickVariedDish(personalMains, 'person:' + person.id + ':lunch');
+                  const personalMain = pickVariedDish(
+                    personalMains,
+                    'person:' + person.id + ':lunch',
+                    dayUsedDishIdsByPerson.get(String(person.id))
+                  );
                   if (personalMain) {
+                    markDayDishUsed(personalMain, [person]);
                     selectedDishes.push({ ...personalMain, plannedServings: 1 });
                     dayHtml += renderLunchDish(personalMain, 'Второе', getPersonLabel(person));
                   } else {
@@ -10363,7 +10393,12 @@
                 dayCaloriesComplete = false;
                 dayHtml += renderMealCard(null);
               } else {
-                const dish = pickVariedDish(candidates, 'shared:' + meal.type);
+                const dish = pickVariedDish(
+                  candidates,
+                  'shared:' + meal.type,
+                  getDayExcludedDishIds(state.persons)
+                );
+                markDayDishUsed(dish, state.persons);
                 selectedDishes.push({ ...dish, plannedServings: getHouseholdCount() });
                 dayHtml += renderMealCard(dish);
               }
@@ -10377,7 +10412,12 @@
                   dayHtml += renderMealCard(null, getPersonLabel(person));
                   return;
                 }
-                const dish = pickVariedDish(candidates, 'person:' + person.id + ':' + meal.type);
+                const dish = pickVariedDish(
+                  candidates,
+                  'person:' + person.id + ':' + meal.type,
+                  dayUsedDishIdsByPerson.get(String(person.id))
+                );
+                markDayDishUsed(dish, [person]);
                 selectedDishes.push({ ...dish, plannedServings: 1 });
                 dayHtml += renderMealCard(dish, getPersonLabel(person));
               });
