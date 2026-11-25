@@ -64,7 +64,6 @@
     .counter-controls { display: flex; align-items: center; gap: 15px; }
     .counter-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg); font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .counter-value { font-size: 32px; font-weight: 800; }
-    .kids-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 20px; }
     .toggle { width: 50px; height: 28px; background: #ddd; border-radius: 20px; position: relative; cursor: pointer; transition: 0.2s; }
     .toggle.active { background: var(--success); }
     .toggle::after { content: ''; position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.2s; }
@@ -286,7 +285,7 @@
     .store-circle { width: 62px; height: 62px; flex-basis: 62px; border-radius: 19px; box-shadow: 0 5px 12px rgba(0,0,0,.09); }
     .store-name { font-size: 14px; font-weight: 750; letter-spacing: -.02em; }
     .counter-card, .person-card { border-radius: 22px; padding: 24px; }
-    .counter-row, .kids-row { min-height: 62px; }
+    .counter-row { min-height: 62px; }
     .counter-value { color: var(--primary); font-size: 30px; font-weight: 850; font-variant-numeric: tabular-nums; }
     .counter-btn { background: var(--surface-soft); border: 1px solid #EAD5C7; color: var(--primary-strong); font-weight: 700; }
     .counter-btn:hover { background: var(--primary-light); }
@@ -348,13 +347,13 @@
     .btn-next.active:hover { background: var(--primary-strong); transform: translateY(-1px); box-shadow: 0 10px 22px rgba(200,90,63,.24); }
     .btn-back { background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-card); }
     .btn-back.show { display: flex; }
-    .kids-age-notice {
+    .info-notice {
       margin-top: 16px; padding: 14px 16px; border-radius: 14px;
       display: flex; align-items: flex-start; gap: 10px;
       background: #FFF4DF; border: 1px solid #F0DDBA; color: #77551E;
       font-size: 13px; line-height: 1.5;
     }
-    .kids-age-notice strong { color: #654719; }
+    .info-notice strong { color: #654719; }
     @media (min-width: 760px) {
       body { padding: 34px 32px 140px; }
       .header, .step, .result-screen { max-width: 1000px; }
@@ -588,12 +587,6 @@
       body:has(.btn-back.show) .header { padding-left: 54px; }
     }
 
-    /* Child profile fields and calculator */
-    #childrenProfilesContainer .person-card { margin-top: 14px; }
-    #childrenProfilesContainer .result-box { margin-top: 14px; }
-    #childrenProfilesContainer .gender-btns { margin: 12px 0; }
-    #childrenProfilesContainer .hint { line-height: 1.55; }
-
     /* Mobile nutrition layout: keep every value inside the dish card. */
     @media (max-width: 480px) {
       .menu-dish-card {
@@ -682,7 +675,7 @@
         </div>
       </div>
       <div class="summary-box" id="summaryText">Готовим на 2 взрослых</div>
-      <div class="kids-age-notice" style="margin-top:14px;"><span aria-hidden="true">ℹ️</span><span>Справочная информация: в настоящее время Тарелка.by не работает с детским меню. Количество и порции рассчитываются только для взрослых.</span></div>
+      <div class="info-notice" style="margin-top:14px;"><span aria-hidden="true">ℹ️</span><span>Справочная информация: в настоящее время Тарелка.by не работает с детским меню. Количество и порции рассчитываются только для взрослых.</span></div>
     </div>
   </div>
 
@@ -720,9 +713,8 @@
 
   <div class="step" id="step5">
     <h1>Настройка питания</h1>
-    <p class="subtitle">Настроим индивидуальные данные взрослых и детей.</p>
+    <p class="subtitle">Настроим индивидуальные данные взрослых.</p>
     <div id="personsContainer"></div>
-    <div id="childrenProfilesContainer"></div>
   </div>
 
   <div class="step" id="step6">
@@ -9058,8 +9050,8 @@
     }));
 
     let state = {
-      step: 1, totalSteps: 10, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
-      persons: [], kids: [], planning: { workLunchMode: 'container', weekdayCooking: '30', soupFrequency: '2-3', soupBatch: '2', weekendPrep: true }, equipment: ['stove'], cookingMethods: [],
+      step: 1, totalSteps: 10, store: '', adultsCount: 2, meals: [], budget: 200,
+      persons: [], planning: { workLunchMode: 'container', weekdayCooking: '30', soupFrequency: '2-3', soupBatch: '2', weekendPrep: true }, equipment: ['stove'], cookingMethods: [],
       tasteMode: 'love', tastePersonIndex: 0, tastePersonType: 'adult',
       finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
     };
@@ -9173,11 +9165,7 @@
       if (state.step === 3) isValid = state.meals.length > 0;
       if (state.step === 4) isValid = true;
       if (state.step === 5) {
-        const childrenHaveValidAges = !state.hasKids || state.kids.every(child => {
-          const age = Number(child.age);
-          return child.age !== '' && Number.isInteger(age) && age >= 3 && age <= 17;
-        });
-        isValid = childrenHaveValidAges;
+        isValid = true;
       } 
       if (state.step === 6) isValid = state.persons.every(p => p.dietType !== '');
       if (state.step === 7) isValid = true; 
@@ -9200,15 +9188,6 @@
       const total = getHouseholdCount();
       const summary = document.getElementById('summaryText');
       if (summary) summary.textContent = `Готовим на ${total} взрослых`;
-      const count = document.getElementById('kidsCount');
-      if (count) count.textContent = state.kids.length;
-      const control = document.getElementById('kidsCountControl');
-      if (control) control.style.display = state.hasKids ? 'flex' : 'none';
-      const toggle = document.getElementById('kidsToggle');
-      if (toggle) {
-        toggle.classList.toggle('active', state.hasKids);
-        toggle.setAttribute('aria-checked', String(state.hasKids));
-      }
     }
 
     function changeAdults(delta) {
@@ -9219,70 +9198,6 @@
       if (getHouseholdCount() <= 1) state.meals = state.meals.filter(m => !m.startsWith('family-'));
       updateFamilySummary();
       initPersons(); renderMealsStep();
-    }
-
-    function toggleKids() {
-      state.hasKids = !state.hasKids;
-      if (state.hasKids && state.kids.length === 0) addChildProfile(false);
-      if (getHouseholdCount() <= 1) state.meals = state.meals.filter(m => !m.startsWith('family-'));
-      updateFamilySummary();
-      renderMealsStep();
-    }
-
-    function changeKids(delta) {
-      if (!state.hasKids) return;
-      const target = Math.max(1, Math.min(6, state.kids.length + delta));
-      while (state.kids.length < target) addChildProfile(false);
-      while (state.kids.length > target) state.kids.pop();
-      state.kids.forEach((child, i) => child.id = i + 1);
-      updateFamilySummary();
-      if (state.step === 5) renderPersons();
-      renderMealsStep();
-    }
-
-    function addChildProfile(shouldRender = true) {
-      if (state.kids.length >= 6) return;
-      state.kids.push({ id: state.kids.length + 1, name: '', age: '', gender: 'male', height: '', weight: '', activity: 'sedentary', allergies: [], intolerances: [], likedIngredients: [], dislikedIngredients: [] });
-      updateFamilySummary();
-      if (shouldRender && state.step === 5) {
-        renderPersons();
-        validateNextBtn();
-      }
-    }
-
-    function removeChildProfile(index) {
-      state.kids.splice(index, 1);
-      state.kids.forEach((child, i) => child.id = i + 1);
-      state.hasKids = state.kids.length > 0;
-      updateFamilySummary();
-      renderPersons();
-      renderMealsStep();
-      validateNextBtn();
-    }
-
-    function updateChild(index, field, value) {
-      const child = state.kids[index];
-      if (!child) return;
-      child[field] = value;
-      renderPersons();
-      validateNextBtn();
-    }
-
-    function calculateChildCalories(child) {
-      const age = Number(child.age), height = Number(child.height), weight = Number(child.weight);
-      if (!Number.isFinite(age) || age < 3 || age > 17 ||
-          !Number.isFinite(height) || height < 80 || height > 220 ||
-          !Number.isFinite(weight) || weight < 10 || weight > 150) return null;
-      const paByGender = child.gender === 'female'
-        ? { sedentary: 1.00, low: 1.16, active: 1.31, very: 1.56 }
-        : { sedentary: 1.00, low: 1.13, active: 1.26, very: 1.42 };
-      const pa = paByGender[child.activity] || 1.00;
-      const growth = age < 9 ? 20 : 25;
-      const heightM = height / 100;
-      const estimate = child.gender === 'female'
-        ? 135.3 - 30.8 * age + pa * (10 * weight + 934 * heightM) + growth
-        : 88.5 - 61.9 * age + pa * (26.7 * weight + 903 * heightM) + growth;
-      return Number.isFinite(estimate) && estimate > 0 ? Math.round(estimate) : null;
     }
 
     function renderMealsStep() {
@@ -9367,42 +9282,11 @@
             </div>
             <div class="result-box" id="calc-result-${index}">
               ${person.age && person.height && person.weight ? (calculateCalories(person) > 0 ? `Ориентир: ${calculateCalories(person)} ккал/день` : 'Проверьте возраст, рост и вес') : 'Заполните данные'}
-            </div><p class="hint" style="margin:10px 0 0;">Приблизительная оценка по формуле, не медицинская рекомендация. Для детей и особых состояний этот расчёт не подходит.</p>
+            </div><p class="hint" style="margin:10px 0 0;">Приблизительная оценка по формуле, не медицинская рекомендация. Этот расчёт не подходит для несовершеннолетних и людей с особыми состояниями.</p>
           `}</div>
         `;
         container.appendChild(card);
       });
-      renderChildrenProfiles();
-    }
-
-    function renderChildrenProfiles() {
-      const container = document.getElementById('childrenProfilesContainer');
-      if (!container) return;
-      if (!state.hasKids || state.kids.length === 0) { container.innerHTML = ''; return; }
-      let html = '<div class="section-title" style="margin-top:24px;">👧 Данные детей</div><p class="hint">Для каждого ребёнка отдельно укажи возраст, рост, вес и активность. Ориентир рассчитывается по детской формуле, без целей «похудеть» или «набрать».</p><div class="budget-notice" style="margin:10px 0 14px;"><div>🛡️</div><div><strong>Отдельные настройки питания для каждого ребёнка</strong><br><span>На шаге 7 отметь его любимые и нелюбимые продукты. На шаге 8 укажи аллергены и непереносимости отдельно для каждого ребёнка. Эти ограничения учитываются при подборе общего меню.</span></div></div>';
-      state.kids.forEach((child, index) => {
-        const estimate = calculateChildCalories(child);
-        const age = Number(child.age);
-        let result = '';
-        if (child.age !== '' && age < 3) result = '<div class="result-box">Детям младше 3 лет приложение не рассчитывает калорийность и порции. Обсудите питание с педиатром.</div>';
-        else if (estimate !== null) result = '<div class="result-box">Ориентировочная потребность: ' + estimate + ' ккал/день</div>';
-        else result = '<div class="result-box">Заполни возраст, рост и вес — рассчитаем ориентир автоматически</div>';
-        child.allergies = child.allergies || [];
-        child.intolerances = child.intolerances || [];
-        child.likedIngredients = child.likedIngredients || [];
-        child.dislikedIngredients = child.dislikedIngredients || [];
-        const foodSettingsSummary = 'Аллергены: ' + child.allergies.length + ' · Непереносимости: ' + child.intolerances.length + ' · Любимые продукты: ' + child.likedIngredients.length + ' · Исключить по вкусу: ' + child.dislikedIngredients.length;
-        html += '<div class="person-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div class="person-title">Ребёнок ' + (index + 1) + '</div><button type="button" style="width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:transparent;" onclick="removeChildProfile(' + index + ')" aria-label="Удалить профиль ребёнка">×</button></div><p class="hint" style="margin:0 0 12px;">' + foodSettingsSummary + '</p>' +
-          '<div class="input-group"><label>Имя ребёнка</label><input type="text" maxlength="32" placeholder="Например, Маша" value="' + escapeHtml(child.name) + '" onchange="updateChild(' + index + ', \'name\', this.value)"></div>' +
-          '<div class="input-group"><label>Возраст (полных лет, от 3 до 17)</label><input type="number" min="3" max="17" step="1" value="' + escapeHtml(child.age) + '" placeholder="Например, 8" onchange="updateChild(' + index + ', \'age\', this.value)"></div>' +
-          '<div class="gender-btns"><div class="gender-btn ' + (child.gender === 'male' ? 'active' : '') + '" onclick="updateChild(' + index + ', \'gender\', \'male\')">👦 Мальчик</div><div class="gender-btn ' + (child.gender === 'female' ? 'active' : '') + '" onclick="updateChild(' + index + ', \'gender\', \'female\')">👧 Девочка</div></div>' +
-          '<div class="input-group"><label>Рост (см)</label><input type="number" min="80" max="220" step="0.1" value="' + escapeHtml(child.height) + '" placeholder="Например, 128" onchange="updateChild(' + index + ', \'height\', this.value)"></div>' +
-          '<div class="input-group"><label>Вес (кг)</label><input type="number" min="10" max="150" step="0.1" value="' + escapeHtml(child.weight) + '" placeholder="Например, 27" onchange="updateChild(' + index + ', \'weight\', this.value)"></div>' +
-          '<div class="input-group"><label>Физическая активность</label><select onchange="updateChild(' + index + ', \'activity\', this.value)"><option value="sedentary" ' + (child.activity === 'sedentary' ? 'selected' : '') + '>Низкая — обычная повседневная активность</option><option value="low" ' + (child.activity === 'low' ? 'selected' : '') + '>Невысокая — 30–60 минут умеренной активности в день</option><option value="active" ' + (child.activity === 'active' ? 'selected' : '') + '>Активная — не менее 60 минут умеренной активности</option><option value="very" ' + (child.activity === 'very' ? 'selected' : '') + '>Очень высокая — активность плюс дополнительные тренировки</option></select></div>' +
-          result + '<p class="hint">Это справочная оценка, а не индивидуальное назначение питания. При особенностях роста, веса или здоровья ориентируйтесь на педиатра.</p></div>';
-      });
-      html += '<button type="button" class="btn-next active" style="margin-top:12px;" onclick="addChildProfile()">＋ Добавить ещё ребёнка</button>';
-      container.innerHTML = html;
     }
 
     function updatePerson(index, field, value) {
@@ -9577,7 +9461,7 @@
     }
 
     function getFamilyCompatibleDishes(dishes) {
-      const eaters = [...state.persons, ...(state.hasKids ? state.kids : [])];
+      const eaters = [...state.persons];
       // Общее блюдо не предлагаем, если в нём есть продукт, который не любит
       // хотя бы один участник. Персональная адаптация будет отдельной функцией.
       return dishes.filter(dish =>
@@ -9636,8 +9520,7 @@
     };
 
     function getActiveTastePerson() {
-      const group = state.tastePersonType === 'child' ? state.kids : state.persons;
-      return group[state.tastePersonIndex] || state.persons[0] || { likedIngredients: [], dislikedIngredients: [], allergies: [] };
+      return state.persons[state.tastePersonIndex] || state.persons[0] || { likedIngredients: [], dislikedIngredients: [], allergies: [] };
     }
 
     function getPersonAllergyBlockedIngredients(person) {
@@ -9660,7 +9543,7 @@
     }
 
     function getAllFamilyDislikedIngredients() {
-      return [...new Set([...state.persons, ...(state.hasKids ? state.kids : [])].flatMap(person => person.dislikedIngredients || []))];
+      return [...new Set(state.persons.flatMap(person => person.dislikedIngredients || []))];
     }
 
     function setTastePerson(type, index) {
@@ -9673,10 +9556,7 @@
       const container = document.getElementById('tastePersonTabs');
       if (!container) return;
       container.innerHTML = '';
-      const profiles = [
-        ...state.persons.map((person, index) => ({ person, index, type: 'adult', label: getPersonLabel(person) })),
-        ...(state.hasKids ? state.kids.map((person, index) => ({ person, index, type: 'child', label: person.name?.trim() || 'Ребёнок ' + (index + 1) })) : [])
-      ];
+      const profiles = state.persons.map((person, index) => ({ person, index, type: 'adult', label: getPersonLabel(person) }));
       profiles.forEach(({ person, index, type, label }) => {
         const button = document.createElement('button');
         button.type = 'button';
@@ -9843,21 +9723,6 @@
         intoleranceContainer.appendChild(intoleranceCard);
       });
 
-      if (state.hasKids) state.kids.forEach((child, index) => {
-        child.allergies = child.allergies || [];
-        child.intolerances = child.intolerances || [];
-        const card = document.createElement('div'); card.className = 'person-card';
-        let html = '<div class="tag-grid">';
-        allergens.forEach(a => { html += `<div class="tag-item ${child.allergies.includes(a.id) ? 'selected' : ''}" onclick="toggleChildAllergy(${index}, '${a.id}')">${a.label}</div>`; });
-        html += '</div>'; card.innerHTML = `<div class="person-title">${escapeHtml(child.name?.trim() || 'Ребёнок ' + (index + 1))}</div><p class="hint">Отметь все подтверждённые аллергены ребёнка.</p>${html}`;
-        allergyContainer.appendChild(card);
-
-        const intoleranceCard = document.createElement('div'); intoleranceCard.className = 'person-card';
-        let intoleranceHtml = '<div class="tag-grid">';
-        intolerances.forEach(item => { intoleranceHtml += `<div class="tag-item ${child.intolerances.includes(item.id) ? 'selected' : ''}" onclick="toggleChildIntolerance(${index}, '${item.id}')">${item.label}</div>`; });
-        intoleranceHtml += '</div>';
-        intoleranceCard.innerHTML = `<div class="person-title">${escapeHtml(child.name?.trim() || 'Ребёнок ' + (index + 1))}</div>${intoleranceHtml}`;
-        intoleranceContainer.appendChild(intoleranceCard);
       });
     }
 
@@ -9877,25 +9742,6 @@
     function toggleIntolerance(index, id) {
       const p = state.persons[index];
       p.intolerances.includes(id) ? p.intolerances = p.intolerances.filter(a => a !== id) : p.intolerances.push(id);
-      renderAllergiesAndEquipment();
-    }
-    function toggleChildAllergy(index, id) {
-      const child = state.kids[index]; if (!child) return;
-      child.allergies = child.allergies || [];
-      const removing = child.allergies.includes(id);
-      child.allergies = removing ? child.allergies.filter(a => a !== id) : [...child.allergies, id];
-      if (!removing) {
-        const blocked = getPersonAllergyBlockedIngredients(child);
-        child.likedIngredients = (child.likedIngredients || []).filter(item =>
-          ![...blocked].some(name => normalizeIngredientText(name) === normalizeIngredientText(item))
-        );
-      }
-      renderAllergiesAndEquipment(); renderTastePreferences();
-    }
-    function toggleChildIntolerance(index, id) {
-      const child = state.kids[index]; if (!child) return;
-      child.intolerances = child.intolerances || [];
-      child.intolerances.includes(id) ? child.intolerances = child.intolerances.filter(a => a !== id) : child.intolerances.push(id);
       renderAllergiesAndEquipment();
     }
     function toggleEquipment(id) {
@@ -10085,9 +9931,6 @@
       const addedSoupBatches = new Set();
       const displayedSoupDays = new Set();
 
-      const childMenuNote = state.hasKids && state.kids.length
-        ? '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;">В настоящее время Тарелка.by не работает с детским меню.</div>'
-        : '';
       const calorieIntro = '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;">' +
         '<strong>Справочный ориентир по калориям</strong><br>' +
         'Для блюда будут показаны калорийность, белки, жиры и углеводы стандартной порции, если эти данные известны. Для общих блюд дополнительно показывается справочная сумма на запланированное число порций. Суточный ориентир приведён только для сравнения — приложение не решает за вас, сколько нужно съесть и не подбирает блюда под заданную норму. ' +
@@ -10224,7 +10067,7 @@
         const calorieStatusNote = hasAnyDailyTarget
           ? '<p class="hint" style="margin:0 0 14px;">Суточный ориентир показан исключительно как справочная информация. Вы сами определяете размер своей порции и решаете, подходит ли вам предложенное блюдо.</p>'
           : '<p class="hint" style="margin:0 0 14px;">При желании укажите суточный ориентир калорий — он будет показан справочно и не повлияет на выбор блюд.</p>';
-        menuContainer.innerHTML = childMenuNote + calorieIntro + soupAvailabilityNote + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед состоит из второго блюда с белковым компонентом и гарниром; в выбранные дни к нему добавляется суп. Одна кастрюля распределяется на несколько обедов, а ингредиенты этой варки попадают в список покупок один раз. Составы супов пока черновые: количества ингредиентов и порции требуют проверки.</p>' + menuHtml;
+        menuContainer.innerHTML = calorieIntro + soupAvailabilityNote + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед состоит из второго блюда с белковым компонентом и гарниром; в выбранные дни к нему добавляется суп. Одна кастрюля распределяется на несколько обедов, а ингредиенты этой варки попадают в список покупок один раз. Составы супов пока черновые: количества ингредиентов и порции требуют проверки.</p>' + menuHtml;
       }
 
       // Черновой расчёт количеств: масштабируем только рецепты с указанными
