@@ -9395,7 +9395,11 @@
     // Сопоставление пользовательских предпочтений с кандидатными названиями ингредиентов.
     // Расширяем словарь по мере редакторского утверждения каталога.
     const ingredientPreferenceAliases = {
-      'Курица': ['куриц'], 'Индейка': ['индейк'], 'Говядина': ['говядин'], 'Свинина': ['свинин'],
+      'Курица': ['куриц', 'курин', 'цыплен', 'chicken'],
+      'Индейка': ['индейк', 'индюш', 'turkey'],
+      'Говядина': ['говядин', 'говяж', 'beef'],
+      'Свинина': ['свинин', 'свин', 'pork'],
+      'Баранина': ['баранин', 'ягнен', 'ягнят', 'lamb'], 'Кролик': ['кролик', 'rabbit'], 'Утка': ['утин', 'duck'],
       'Лосось': ['лосос', 'сёмг'], 'Форель': ['форел'], 'Треска': ['треск'], 'Креветки': ['кревет'],
       'Молоко': ['молок'], 'Сливки': ['сливк'], 'Сметана': ['сметан'], 'Творог': ['творог'],
       'Сыр': ['сыр', 'фет', 'моцарел'], 'Фета': ['фет'], 'Моцарелла': ['моцарел'],
@@ -9420,9 +9424,17 @@
       const ingredient = normalizeIngredientText(recipeIngredient);
       const selected = normalizeIngredientText(preference);
       if (!ingredient || !selected) return false;
-      if (ingredient.includes(selected) || selected.includes(ingredient)) return true;
-      const aliases = ingredientPreferenceAliases[preference] || [preference.toLocaleLowerCase('ru')];
-      return aliases.some(alias => ingredient.includes(normalizeIngredientText(alias)));
+      const ingredientTokens = ingredient.split(' ');
+      const matchesAlias = alias => {
+        const normalizedAlias = normalizeIngredientText(alias);
+        if (!normalizedAlias) return false;
+        const aliasTokens = normalizedAlias.split(' ');
+        if (aliasTokens.length > 1) return ingredient.includes(normalizedAlias);
+        return ingredientTokens.some(token => token.startsWith(aliasTokens[0]));
+      };
+      if (matchesAlias(selected)) return true;
+      const aliases = ingredientPreferenceAliases[preference] || [preference];
+      return aliases.some(matchesAlias);
     }
 
     function getDishPreferenceMatches(dish, preferences) {
