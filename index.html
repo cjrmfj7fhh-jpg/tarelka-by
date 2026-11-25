@@ -10217,12 +10217,12 @@
       const soupSchedule = buildSoupSchedule(soupCandidates);
       const addedSoupBatches = new Set();
       const displayedSoupDays = new Set();
-      const familyCompositionHtml = (dish, label, multiplier = 1, renderComponent) => {
+      const familyCompositionHtml = (dish, label, multiplier = 1, renderComponent, trackShopping = true) => {
         const components = getFamilyCompositionComponents(dish, state.persons, multiplier);
         if (!components) return null;
         let html = '';
         components.forEach(component => {
-          selectedDishes.push(component);
+          if (trackShopping) selectedDishes.push(component);
           const componentLabel = component.componentType === 'base'
             ? label + ' · общая основа'
             : 'Добавка';
@@ -10273,15 +10273,17 @@
                 if (!soupPlan || displayedSoupDays.has(dayIndex)) return;
                 const batchKey = String(soupPlan.batch) + '-' + String(soupPlan.soup.id);
                 const batchServings = soupSchedule.filter(item => item && item.batch === soupPlan.batch).length;
+                const addBatchToShopping = !addedSoupBatches.has(batchKey);
                 const compositionHtml = familyCompositionHtml(
                   soupPlan.soup, 'Первое', batchServings,
-                  (component, componentLabel, peopleLabel) => renderLunchDish(component, componentLabel, peopleLabel)
+                  (component, componentLabel, peopleLabel) => renderLunchDish(component, componentLabel, peopleLabel),
+                  addBatchToShopping
                 );
                 if (compositionHtml !== null) {
                   dayHtml += compositionHtml;
                 } else {
                   dayHtml += renderLunchDish(soupPlan.soup, 'Первое');
-                  if (!addedSoupBatches.has(batchKey)) {
+                  if (addBatchToShopping) {
                     selectedDishes.push({ ...soupPlan.soup, plannedServings: plannedServings * batchServings });
                   }
                 }
