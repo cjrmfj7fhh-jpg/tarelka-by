@@ -10201,6 +10201,10 @@
       const compatible = getPreferenceFilteredDishes(getCompatibleDishes());
       const familyCompatible = getFamilyCompatibleDishes(compatible);
       const lovedIngredients = getAllFamilyLikedIngredients();
+      const hasMixedDiet = new Set(state.persons.map(person => person.dietType).filter(Boolean)).size > 1;
+      const prioritizeFamilyCompositions = dishes => hasMixedDiet
+        ? [...dishes].sort((a, b) => Number(Boolean(b.familyComposition)) - Number(Boolean(a.familyComposition)))
+        : dishes;
       const pickVariedDish = createDishVarietyPicker();
       const menuContainer = document.getElementById('resultMenu');
       const shoppingContainer = document.getElementById('resultShopping');
@@ -10211,9 +10215,9 @@
       }));
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
-      const soupCandidates = familyCompatible.filter(dish =>
+      const soupCandidates = prioritizeFamilyCompositions(familyCompatible.filter(dish =>
         isSoupDish(dish) && (!dish.familyComposition || Boolean(buildFamilyComposition(dish)))
-      ).sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
+      )).sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
       const soupSchedule = buildSoupSchedule(soupCandidates);
       const addedSoupBatches = new Set();
       const displayedSoupDays = new Set();
@@ -10291,8 +10295,10 @@
                 addedSoupBatches.add(batchKey);
               };
               if (meal.group === 'Общий') {
-                const mains = rankDishesForFamily(getMealCandidates(lunchPool, 'lunch'))
-                  .filter(dish => !dish.familyComposition || Boolean(buildFamilyComposition(dish)));
+                const mains = prioritizeFamilyCompositions(
+                  rankDishesForFamily(getMealCandidates(lunchPool, 'lunch'))
+                    .filter(dish => !dish.familyComposition || Boolean(buildFamilyComposition(dish)))
+                );
                 const main = pickVariedDish(mains, 'shared:lunch');
                 if (main) {
                   const compositionHtml = familyCompositionHtml(
