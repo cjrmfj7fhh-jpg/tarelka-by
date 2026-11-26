@@ -9699,6 +9699,18 @@
       // Аллергенные теги старого демо-каталога не подтверждают состав.
       // При выбранной аллергии показываем только рецепты с проверенной allergen-меткой.
       const restrictions = [...(person.allergies || []), ...(person.intolerances || [])];
+      // При аллергии не полагаемся только на теги рецепта: дополнительно проверяем
+      // явный список ингредиентов по справочнику аллергенов (например, ореховую муку).
+      const ingredientNames = Array.isArray(dish.ingredients)
+        ? dish.ingredients.map(item => Array.isArray(item) ? item[0] : item).filter(Boolean)
+        : [];
+      const containsKnownAllergen = (person.allergies || []).some(allergen =>
+        (allergyBlockedIngredients[allergen] || []).some(blocked =>
+          ingredientNames.some(name => ingredientMatchesPreference(name, blocked))
+        )
+      );
+      if (containsKnownAllergen) return false;
+      // Непроверенный состав не допускается человеку с аллергией/непереносимостью.
       if (restrictions.length && dish.allergenStatus !== 'verified') return false;
       return !restrictions.some(item => (dish.allergens || []).includes(item) || (dish.intolerances || []).includes(item));
     }
@@ -10012,7 +10024,7 @@
       crustaceans: ['Креветки'],
       soy: ['Тофу','Соевый соус'],
       peanuts: ['Арахис'],
-      tree_nuts: ['Грецкие орехи','Миндаль','Фундук','Кешью'],
+      tree_nuts: ['Грецкие орехи','Орехи грецкие','Миндаль','Миндальная мука','Фундук','Кешью','Фисташки','Пекан','Бразильский орех','Макадамия','Кедровые орехи'],
       sesame: ['Кунжут'],
       buckwheat: ['Гречка'],
       corn: ['Кукуруза'],
