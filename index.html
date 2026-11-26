@@ -41,7 +41,16 @@
       .menu-day { padding: 24px 28px; }
       .menu-item { align-items: flex-start; gap: 18px; }
       .menu-item-name { flex: 1; }
-      .product-identity-note {
+      .product-picker-section { margin-top:28px; padding-top:22px; border-top:1px solid var(--border); }
+    .product-picker-card { padding:15px 0; border-bottom:1px solid var(--border); }
+    .product-picker-name { display:block; margin-bottom:10px; color:var(--ink); font:600 17px 'Playfair Display',Georgia,serif; }
+    .product-picker-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .product-picker-fields label { display:flex; flex-direction:column; gap:6px; color:var(--muted); font-size:12px; }
+    .product-picker-fields input { width:100%; min-width:0; padding:11px 10px; border:1px solid var(--border); border-radius:2px; background:var(--paper); color:var(--ink); font:inherit; font-size:14px; }
+    .product-picker-fields input:focus { outline:2px solid var(--olive); outline-offset:1px; }
+    .product-picker-note { margin-top:8px; color:var(--muted); font-size:11px; line-height:1.45; }
+    @media (max-width:420px) { .product-picker-fields { grid-template-columns:1fr; } }
+    .product-identity-note {
       margin-top: 5px; color: var(--muted); font-size: 11px;
       line-height: 1.4; overflow-wrap: anywhere;
     }
@@ -742,6 +751,11 @@
     </div>
     <p class="hint" id="tasteModeHint" style="margin:0 0 12px;">Отмечай продукты, которые тебе нравятся. Они будут приоритетом при составлении меню.</p>
     <div id="ingredientCatalog"></div>
+    <div class="product-picker-section">
+      <div class="section-title">🛒 Уточнить готовые продукты</div>
+      <p class="hint">Если в рецепте указан соус, бульон, приправа или другой готовый продукт, укажи марку и вариант, которые обычно покупаешь в Беларуси. Это поможет точнее определить продукт. Сам по себе выбор марки не подтверждает состав и не снимает предупреждения об аллергенах.</p>
+      <div id="ingredientProductPicker"></div>
+    </div>
   </div>
 
   <div class="step" id="step8">
@@ -9413,6 +9427,7 @@
     let state = {
       step: 1, totalSteps: 10, store: '', adultsCount: 2, meals: [], budget: 200,
       persons: [], planning: { workLunchMode: 'container', weekdayCooking: '30', soupFrequency: '2-3', soupBatch: '2', weekendPrep: true }, equipment: ['stove'], cookingMethods: [],
+      productSelections: {},
       tasteMode: 'love', tastePersonIndex: 0, tastePersonType: 'adult',
       finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
     };
@@ -9915,6 +9930,65 @@
       return productId ? ingredientProductCatalog[productId] || null : null;
     }
 
+    function renderIngredientProductPicker() {
+      const container = document.getElementById('ingredientProductPicker');
+      if (!container) return;
+      container.innerHTML = '';
+      Object.values(ingredientProductCatalog).forEach(product => {
+        const saved = state.productSelections[product.id] || {};
+        const brandValue = saved.brand !== undefined ? saved.brand : (product.brand || '');
+        const variantValue = saved.variant !== undefined ? saved.variant : (product.variant || '');
+        const card = document.createElement('div');
+        card.className = 'product-picker-card';
+
+        const title = document.createElement('strong');
+        title.className = 'product-picker-name';
+        title.textContent = product.canonicalName;
+        card.appendChild(title);
+
+        const fields = document.createElement('div');
+        fields.className = 'product-picker-fields';
+        const brandLabel = document.createElement('label');
+        brandLabel.textContent = 'Марка / производитель';
+        const brandInput = document.createElement('input');
+        brandInput.type = 'text';
+        brandInput.autocomplete = 'off';
+        brandInput.maxLength = 80;
+        brandInput.placeholder = 'Например, MAGGI, Bonduelle';
+        brandInput.value = brandValue;
+        brandLabel.appendChild(brandInput);
+
+        const variantLabel = document.createElement('label');
+        variantLabel.textContent = 'Точный вариант / название';
+        const variantInput = document.createElement('input');
+        variantInput.type = 'text';
+        variantInput.autocomplete = 'off';
+        variantInput.maxLength = 120;
+        variantInput.placeholder = 'Например, классический, 200 г';
+        variantInput.value = variantValue;
+        variantLabel.appendChild(variantInput);
+
+        const saveField = (field, value) => {
+          const current = state.productSelections[product.id] || {
+            brand: product.brand || '', variant: product.variant || ''
+          };
+          current[field] = value;
+          state.productSelections[product.id] = current;
+        };
+        brandInput.addEventListener('input', () => saveField('brand', brandInput.value.trim()));
+        variantInput.addEventListener('input', () => saveField('variant', variantInput.value.trim()));
+        fields.appendChild(brandLabel);
+        fields.appendChild(variantLabel);
+        card.appendChild(fields);
+
+        const note = document.createElement('p');
+        note.className = 'product-picker-note';
+        note.textContent = 'Состав и возможные следы аллергенов нужно сверять по актуальной упаковке. Введённые данные пока не проверены.';
+        card.appendChild(note);
+        container.appendChild(card);
+      });
+    }
+
     function getDishProductIdentityReview(dish) {
       const ingredients = Array.isArray(dish?.ingredients) ? dish.ingredients : [];
       return ingredients.map(item => Array.isArray(item) ? item[0] : item)
@@ -9926,15 +10000,20 @@
     function formatDishProductIdentityNote(dish) {
       const linked = getDishProductIdentityReview(dish);
       if (!linked.length) return '';
-      const generic = linked.filter(item => item.product.identityLevel === 'generic_type')
-        .map(item => item.ingredientName);
-      const branded = linked.filter(item => item.product.identityLevel === 'brand_variant')
-        .map(item => item.product.brand + ' ' + item.product.variant);
+      const generic = [];
+      const branded = [];
+      linked.forEach(item => {
+        const selection = state.productSelections?.[item.product.id] || {};
+        const brand = (selection.brand !== undefined ? selection.brand : item.product.brand || '').trim();
+        const variant = (selection.variant !== undefined ? selection.variant : item.product.variant || '').trim();
+        if (brand || variant) branded.push([brand, variant].filter(Boolean).join(' '));
+        else generic.push(item.ingredientName);
+      });
       const parts = [];
       if (generic.length) parts.push('Марка не указана: ' + generic.join(', ') + '.');
-      if (branded.length) parts.push('Указан продукт: ' + branded.join(', ') + ' — сверяйте актуальную упаковку.');
+      if (branded.length) parts.push('Выбран продукт: ' + branded.join(', ') + ' — состав по упаковке не подтверждён.');
       return '<div class="product-identity-note">' + escapeHtml(parts.join(' ')) +
-        ' Состав и предупреждения на упаковке могут отличаться.</div>';
+        ' Состав и предупреждения на актуальной упаковке могут отличаться.</div>';
     }
 
     function getProductIdentityStatus(product) {
@@ -10304,6 +10383,7 @@
         ? 'Отмечай продукты, которые тебе нравятся. Они будут приоритетом при составлении меню.'
         : 'Отмечай продукты, которые не хочешь видеть в меню. Они будут исключены из подбора.';
       renderIngredientCatalog();
+      renderIngredientProductPicker();
     }
 
     function renderIngredientCatalog() {
