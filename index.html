@@ -10237,6 +10237,35 @@
       return Number.isFinite(value) && value > 0 ? Math.round(value) : null;
     }
 
+    // Доля суточной цели, выделяемая на основные приёмы пищи.
+    // Оставшиеся 10% не распределяем автоматически: это запас на перекусы и индивидуальный режим.
+    function getMealCalorieBudget(person, mealType, course = 'main', hasSoup = false) {
+      const dailyTarget = getPersonDailyCalorieTarget(person);
+      if (!dailyTarget) return null;
+      const shares = { breakfast: 0.25, lunch: 0.35, dinner: 0.30 };
+      if (mealType === 'lunch' && hasSoup) {
+        return Math.round(dailyTarget * shares.lunch * (course === 'soup' ? 0.30 : 0.70));
+      }
+      return Math.round(dailyTarget * (shares[mealType] || 0));
+    }
+
+    // Не меняем состав рецепта: адаптируем только размер порции.
+    // Ограничение 0.65–1.50 защищает от чрезмерно маленьких/больших порций.
+    function getAdaptivePortionScale(dish, person, mealType, course = 'main', hasSoup = false) {
+      const budget = getMealCalorieBudget(person, mealType, course, hasSoup);
+      const standardCalories = Number(dish?.caloriesPerServing);
+      if (!budget || !Number.isFinite(standardCalories) || standardCalories <= 0) return 1;
+      return Math.max(0.65, Math.min(1.5, budget / standardCalories));
+    }
+
+    function getHouseholdPortionScale(dish, mealType, course = 'main', hasSoup = false) {
+      if (!Array.isArray(state.persons) || !state.persons.length) return 1;
+      const scales = state.persons.map(person =>
+        getAdaptivePortionScale(dish, person, mealType, course, hasSoup)
+      );
+      return scales.reduce((sum, value) => sum + value, 0) / scales.length;
+    }
+
     function getDishNutritionEstimate(dish) {
       const fields = {
         calories: Number(dish.caloriesPerServing),
@@ -10256,11 +10285,11 @@
       );
       return hasCalories && hasWeight
         ? {
-            calories: Math.round(fields.calories),
-            weight: Math.round(fields.weight),
-            protein: hasMacros ? Math.round(fields.protein * 10) / 10 : null,
-            fat: hasMacros ? Math.round(fields.fat * 10) / 10 : null,
-            carbs: hasMacros ? Math.round(fields.carbs * 10) / 10 : null,
+            calories: Math.round(fields.calories * (Number(dish.portionScale) || 1)),
+            weight: Math.round(fields.weight * (Number(dish.portionScale) || 1)),
+            protein: hasMacros ? Math.round(fields.protein * (Number(dish.portionScale) || 1) * 10) / 10 : null,
+            fat: hasMacros ? Math.round(fields.fat * (Number(dish.portionScale) || 1) * 10) / 10 : null,
+            carbs: hasMacros ? Math.round(fields.carbs * (Number(dish.portionScale) || 1) * 10) / 10 : null,
             per100g: ['caloriesPer100g', 'proteinPer100g', 'fatPer100g', 'carbsPer100g'].every(key =>
               Number.isFinite(fields[key]) && fields[key] >= 0
             ) ? {
@@ -10362,7 +10391,7 @@
       const minRepeatGapDays = 3;
       const getDishKey = dish => String(dish.varietyGroup || dish.id || dish.name || '');
 
-      return (candidates, varietyGroup, dayIndex, eaterIds = []) => {
+      return (candidates, varietyGroup, dayIndex, eaterIds = [], targetCalories = null) => {
         if (!candidates.length) return null;
         const day = Number(dayIndex);
         if (!Number.isInteger(day) || day < 0) return null;
@@ -10404,7 +10433,10 @@
           }, { count: 0, lastDay: -Infinity });
           const aScore = score(a);
           const bScore = score(b);
-          return aScore.count - bScore.count || aScore.lastDay - bScore.lastDay;
+          return aScore.count - bScore.count || aScore.lastDay - bScore.lastDay ||
+            (Number.isFinite(targetCalories)
+              ? Math.abs(Number(a.caloriesPerServing) - targetCalories) - Math.abs(Number(b.caloriesPerServing) - targetCalories)
+              : 0);
         });
 
         const selected = pool[0];
@@ -10483,7 +10515,7 @@
 
       const calorieIntro = '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;">' +
         '<strong>Справочный ориентир по калориям</strong><br>' +
-        'Для блюда будут показаны калорийность, белки, жиры и углеводы стандартной порции, если эти данные известны. Для общих блюд дополнительно показывается справочная сумма на запланированное число порций. Суточный ориентир приведён только для сравнения — приложение не решает за вас, сколько нужно съесть и не подбирает блюда под заданную норму. ' +
+        'Размер порции ориентировочно адаптируется под суточную цель: завтрак — 25%, обед — 35% (при супе 30% обеденного бюджета отводится на первое), ужин — 30%. Это стартовое распределение, а не медицинская рекомендация; масштаб порции ограничен диапазоном 65–150% от стандартной. ' +
         (allDailyTargetsValid
           ? dailyTargets.map(person => getPersonLabel(person) + ': ориентир ' + person.target + ' ккал/день').join(' · ')
           : 'Для части участников суточный ориентир не задан или не рассчитан.') +
@@ -10528,9 +10560,9 @@
                 if (compositionHtml !== null) {
                   dayHtml += compositionHtml;
                 } else {
-                  dayHtml += renderLunchDish(soupPlan.soup, 'Первое');
+                  dayHtml += renderLunchDish({ ...soupPlan.soup, portionScale: getHouseholdPortionScale(soupPlan.soup, 'lunch', 'soup', true) }, 'Первое');
                   if (addBatchToShopping) {
-                    selectedDishes.push({ ...soupPlan.soup, plannedServings: plannedServings * batchServings });
+                    selectedDishes.push({ ...soupPlan.soup, portionScale: getHouseholdPortionScale(soupPlan.soup, 'lunch', 'soup', true), plannedServings: plannedServings * batchServings });
                   }
                 }
                 displayedSoupDays.add(dayIndex);
@@ -10541,7 +10573,10 @@
                   rankDishesForFamily(getMealCandidates(lunchPool, 'lunch'))
                     .filter(dish => !dish.familyComposition || Boolean(buildFamilyComposition(dish)))
                 );
-                const main = pickVariedDish(mains, 'main', dayIndex, state.persons.map(person => person.id));
+                const mainTarget = state.persons.length
+                  ? state.persons.reduce((sum, person) => sum + (getMealCalorieBudget(person, 'lunch', 'main', Boolean(soupPlan)) || 0), 0) / state.persons.length
+                  : null;
+                const main = pickVariedDish(mains, 'main', dayIndex, state.persons.map(person => person.id), mainTarget);
                 if (main) {
                   const compositionHtml = familyCompositionHtml(
                     main, 'Второе', 1,
@@ -10549,8 +10584,9 @@
                   );
                   if (compositionHtml !== null) dayHtml += compositionHtml;
                   else {
-                    selectedDishes.push({ ...main, plannedServings });
-                    dayHtml += renderLunchDish(main, 'Второе');
+                    const sharedMain = { ...main, portionScale: getHouseholdPortionScale(main, 'lunch', 'main', Boolean(soupPlan)) };
+                    selectedDishes.push({ ...sharedMain, plannedServings });
+                    dayHtml += renderLunchDish(sharedMain, 'Второе');
                   }
                 } else {
                   dayCaloriesComplete = false;
@@ -10566,10 +10602,12 @@
                   const personalMains = rankDishesForPerson(
                     getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person
                   );
-                  const personalMain = pickVariedDish(personalMains, 'main', dayIndex, [person.id]);
+                  const personalTarget = getMealCalorieBudget(person, 'lunch', 'main', Boolean(soupPlan));
+                  const personalMain = pickVariedDish(personalMains, 'main', dayIndex, [person.id], personalTarget);
                   if (personalMain) {
-                    selectedDishes.push({ ...personalMain, plannedServings: 1 });
-                    dayHtml += renderLunchDish(personalMain, 'Второе', getPersonLabel(person));
+                    const adaptedMain = { ...personalMain, portionScale: getAdaptivePortionScale(personalMain, person, 'lunch', 'main', Boolean(soupPlan)) };
+                    selectedDishes.push({ ...adaptedMain, plannedServings: 1 });
+                    dayHtml += renderLunchDish(adaptedMain, 'Второе', getPersonLabel(person));
                   } else {
                     dayCaloriesComplete = false;
                     dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
@@ -10603,10 +10641,14 @@
                 dayHtml += renderMealCard(null);
               } else {
                 const varietyGroup = meal.type === 'breakfast' ? 'breakfast' : 'main';
-                const dish = pickVariedDish(candidates, varietyGroup, dayIndex, state.persons.map(person => person.id));
+                const targetCalories = state.persons.length
+                  ? state.persons.reduce((sum, person) => sum + (getMealCalorieBudget(person, meal.type) || 0), 0) / state.persons.length
+                  : null;
+                const dish = pickVariedDish(candidates, varietyGroup, dayIndex, state.persons.map(person => person.id), targetCalories);
                 if (dish) {
-                  selectedDishes.push({ ...dish, plannedServings: getHouseholdCount() });
-                  dayHtml += renderMealCard(dish);
+                  const sharedDish = { ...dish, portionScale: getHouseholdPortionScale(dish, meal.type) };
+                  selectedDishes.push({ ...sharedDish, plannedServings: getHouseholdCount() });
+                  dayHtml += renderMealCard(sharedDish);
                 } else {
                   dayCaloriesComplete = false;
                   dayHtml += renderMealCard(null);
@@ -10623,10 +10665,12 @@
                   return;
                 }
                 const varietyGroup = meal.type === 'breakfast' ? 'breakfast' : 'main';
-                const dish = pickVariedDish(candidates, varietyGroup, dayIndex, [person.id]);
+                const targetCalories = getMealCalorieBudget(person, meal.type);
+                const dish = pickVariedDish(candidates, varietyGroup, dayIndex, [person.id], targetCalories);
                 if (dish) {
-                  selectedDishes.push({ ...dish, plannedServings: 1 });
-                  dayHtml += renderMealCard(dish, getPersonLabel(person));
+                  const adaptedDish = { ...dish, portionScale: getAdaptivePortionScale(dish, person, meal.type) };
+                  selectedDishes.push({ ...adaptedDish, plannedServings: 1 });
+                  dayHtml += renderMealCard(adaptedDish, getPersonLabel(person));
                 } else {
                   dayCaloriesComplete = false;
                   dayHtml += renderMealCard(null, getPersonLabel(person));
@@ -10695,7 +10739,7 @@
         const baseServings = Number(dish.servings);
         const plannedServings = Number(dish.plannedServings) || 1;
         const canScale = Number.isFinite(baseServings) && baseServings > 0;
-        const factor = canScale ? plannedServings / baseServings : null;
+        const factor = canScale ? (plannedServings / baseServings) * (Number(dish.portionScale) || 1) : null;
         dish.ingredients.forEach(item => {
           const name = Array.isArray(item) ? item[0] : item;
           if (!name || typeof name !== 'string') return;
