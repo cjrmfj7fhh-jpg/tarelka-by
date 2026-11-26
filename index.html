@@ -10322,10 +10322,19 @@
       const batchDays = Math.max(1, Math.min(4, Number(state.planning?.soupBatch) || 2));
       const schedule = Array(7).fill(null);
       if (!targetDays || !soups.length) return schedule;
+
+      // Варианты одного и того же супа считаем одним семейством:
+      // сначала планируем разные супы, а не разные редакции одного рецепта.
+      const soupFamilies = new Map();
+      soups.forEach(soup => {
+        const familyKey = String(soup.varietyGroup || soup.id || soup.name || '');
+        if (!soupFamilies.has(familyKey)) soupFamilies.set(familyKey, soup);
+      });
+      const uniqueSoups = [...soupFamilies.values()];
       const batches = Math.ceil(targetDays / batchDays);
       for (let batch = 0; batch < batches; batch++) {
         const startDay = Math.round(batch * 7 / batches);
-        const soup = soups[batch % soups.length];
+        const soup = uniqueSoups[batch % uniqueSoups.length];
         const daysInThisBatch = Math.min(batchDays, targetDays - batch * batchDays);
         for (let offset = 0; offset < daysInThisBatch && startDay + offset < 7; offset++) {
           const dayIndex = startDay + offset;
