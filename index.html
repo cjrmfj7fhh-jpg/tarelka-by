@@ -10752,7 +10752,11 @@
           !isSaladDish(dish)
         );
       }
-      return dishes.filter(dish => dish.type === mealType && !isSoupDish(dish));
+      return dishes.filter(dish =>
+        dish.type === mealType &&
+        !isSoupDish(dish) &&
+        (!isSaladDish(dish) || (mealType === 'dinner' && Array.isArray(dish.allergenAdaptations) && dish.allergenAdaptations.length > 0))
+      );
     }
 
     function buildSoupSchedule(soups) {
