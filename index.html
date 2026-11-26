@@ -9896,12 +9896,30 @@
     // Разворачиваем семейную композицию в отдельные компоненты меню и закупки.
     // Общая основа учитывается один раз на число едоков, добавка — только для тех,
     // кому она назначена; существующий агрегатор покупок суммирует компоненты.
-    function getFamilyCompositionComponents(dish, persons = state.persons, servingMultiplier = 1) {
+    function getFamilyCompositionComponents(dish, persons = state.persons, servingMultiplier = 1, mealType = 'lunch', course = 'main', hasSoup = false) {
       const composition = buildFamilyComposition(dish, persons);
       if (!composition) return null;
+      const addOnsByPerson = new Map(composition.personAddOns.map(plan => [plan.personId, plan.addOns]));
+      const scaleByPerson = new Map();
+      persons.forEach(person => {
+        const addOnCalories = (addOnsByPerson.get(person.id) || []).reduce((sum, addOn) =>
+          sum + (Number(addOn.caloriesPerServing) || 0), 0);
+        const totalCalories = (Number(composition.base.caloriesPerServing) || 0) + addOnCalories;
+        const budget = getMealCalorieBudget(person, mealType, course, hasSoup);
+        const scale = budget && totalCalories > 0
+          ? Math.max(0.65, Math.min(1.5, budget / totalCalories))
+          : 1;
+        scaleByPerson.set(person.id, scale);
+      });
+      const averageScale = ids => {
+        const values = ids.map(id => scaleByPerson.get(id) || 1);
+        return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 1;
+      };
+      const multiplier = Math.max(1, Number(servingMultiplier) || 1);
       const components = [{
         ...composition.base,
-        plannedServings: Math.max(1, Number(servingMultiplier) || 1) * persons.length,
+        portionScale: averageScale(persons.map(person => person.id)),
+        plannedServings: multiplier * persons.length,
         componentType: 'base',
         personLabels: []
       }];
@@ -9910,14 +9928,18 @@
         const person = persons.find(item => item.id === personPlan.personId);
         personPlan.addOns.forEach(addOn => {
           const key = String(addOn.id || addOn.name) + '|' + JSON.stringify(addOn.ingredients);
-          if (!groupedAddOns.has(key)) groupedAddOns.set(key, { dish: addOn, people: [] });
-          if (person) groupedAddOns.get(key).people.push(getPersonLabel(person));
+          if (!groupedAddOns.has(key)) groupedAddOns.set(key, { dish: addOn, people: [], personIds: [] });
+          if (person) {
+            groupedAddOns.get(key).people.push(getPersonLabel(person));
+            groupedAddOns.get(key).personIds.push(person.id);
+          }
         });
       });
       groupedAddOns.forEach(group => {
         components.push({
           ...group.dish,
-          plannedServings: Math.max(1, Number(servingMultiplier) || 1) * group.people.length,
+          portionScale: averageScale(group.personIds),
+          plannedServings: multiplier * group.people.length,
           componentType: 'addOn',
           personLabels: group.people
         });
@@ -10496,8 +10518,8 @@
       const soupSchedule = buildSoupSchedule(soupCandidates);
       const addedSoupBatches = new Set();
       const displayedSoupDays = new Set();
-      const familyCompositionHtml = (dish, label, multiplier = 1, renderComponent, trackShopping = true) => {
-        const components = getFamilyCompositionComponents(dish, state.persons, multiplier);
+      const familyCompositionHtml = (dish, label, multiplier = 1, renderComponent, trackShopping = true, mealType = 'lunch', course = 'main', hasSoup = false) => {
+        const components = getFamilyCompositionComponents(dish, state.persons, multiplier, mealType, course, hasSoup);
         if (!components) return null;
         let html = '';
         components.forEach(component => {
@@ -10555,7 +10577,7 @@
                 const compositionHtml = familyCompositionHtml(
                   soupPlan.soup, 'Первое', batchServings,
                   (component, componentLabel, peopleLabel) => renderLunchDish(component, componentLabel, peopleLabel),
-                  addBatchToShopping
+                  addBatchToShopping, 'lunch', 'soup', true
                 );
                 if (compositionHtml !== null) {
                   dayHtml += compositionHtml;
@@ -10580,7 +10602,8 @@
                 if (main) {
                   const compositionHtml = familyCompositionHtml(
                     main, 'Второе', 1,
-                    (component, componentLabel, peopleLabel) => renderLunchDish(component, componentLabel, peopleLabel)
+                    (component, componentLabel, peopleLabel) => renderLunchDish(component, componentLabel, peopleLabel),
+                    true, 'lunch', 'main', Boolean(soupPlan)
                   );
                   if (compositionHtml !== null) dayHtml += compositionHtml;
                   else {
