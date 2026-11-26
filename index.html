@@ -9942,6 +9942,9 @@
       if (product.identityLevel === 'brand_variant' && product.labelStatus === 'manufacturer_product_page') {
         return 'brand_variant_needs_package_check';
       }
+      if (product.identityLevel === 'brand_variant' && product.labelStatus === 'manufacturer_category_listing') {
+        return 'brand_variant_needs_exact_label';
+      }
       return 'generic_product_needs_identification';
     }
 
