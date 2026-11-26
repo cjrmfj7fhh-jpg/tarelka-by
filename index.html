@@ -9778,6 +9778,148 @@
         '</div>';
     }
 
+    // Идентификация готовых/составных продуктов отделена от обычных ингредиентов.
+    // Типовой продукт не равен конкретной марке; примеры этикеток не переносятся на всю категорию.
+    const ingredientProductCatalog = {
+      'sauce.soy.generic': {
+        id: 'sauce.soy.generic', category: 'sauce', canonicalName: 'Соевый соус',
+        identityLevel: 'generic_type', brand: null, variant: null,
+        labelStatus: 'brand_not_identified',
+        allergenEvidence: { contains: ['soy'], mayContain: ['gluten_cereals'], unknown: [] },
+        evidenceScope: 'Типовой ингредиент; пшеница зависит от рецептуры конкретного соуса.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'broth.meat.generic': {
+        id: 'broth.meat.generic', category: 'broth', canonicalName: 'Мясной бульон',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['celery', 'gluten_cereals', 'milk', 'soy'] },
+        evidenceScope: 'Неизвестно, домашний это бульон или промышленный продукт.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'broth.vegetable.generic': {
+        id: 'broth.vegetable.generic', category: 'broth', canonicalName: 'Овощной бульон',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['celery', 'gluten_cereals', 'milk', 'soy'] },
+        evidenceScope: 'Неизвестно, домашний это бульон или промышленный продукт.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'broth.chicken.generic': {
+        id: 'broth.chicken.generic', category: 'broth', canonicalName: 'Куриный бульон',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['celery', 'gluten_cereals', 'milk', 'soy'] },
+        evidenceScope: 'Неизвестно, домашний это бульон или промышленный продукт.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'seasoning.shashlik.generic': {
+        id: 'seasoning.shashlik.generic', category: 'seasoning', canonicalName: 'Приправа для шашлыка',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['mustard', 'celery', 'gluten_cereals'] },
+        evidenceScope: 'Состав смесей зависит от марки и конкретного варианта.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'seasoning.maggi.universal.200g': {
+        id: 'seasoning.maggi.universal.200g', category: 'seasoning', canonicalName: 'Универсальная приправа',
+        identityLevel: 'brand_variant', brand: 'MAGGI', variant: 'Универсальная приправа 200 г',
+        labelStatus: 'manufacturer_product_page', allergenEvidence: {
+          contains: ['celery'], mayContain: ['gluten_cereals', 'milk'], unknown: []
+        },
+        evidenceScope: 'Декларация производителя на странице продукта; сверять актуальную упаковку.',
+        sourceUrl: 'https://www.maggi.ru/products/universalnaya-priprava',
+        checkedAt: '2026-11-26', labelRequired: true, exampleBrandIsNotDefault: false
+      },
+      'seasoning.maggi.buket': {
+        id: 'seasoning.maggi.buket', category: 'seasoning', canonicalName: 'Букет приправ',
+        identityLevel: 'brand_variant', brand: 'MAGGI', variant: 'Букет приправ. Универсальная приправа',
+        labelStatus: 'manufacturer_product_page', allergenEvidence: {
+          contains: ['celery', 'gluten_cereals'], mayContain: ['milk'], unknown: []
+        },
+        evidenceScope: 'Декларация производителя на странице продукта; сверять актуальную упаковку.',
+        sourceUrl: 'https://www.maggi.ru/products/buket-priprav',
+        checkedAt: '2026-11-26', labelRequired: true, exampleBrandIsNotDefault: false
+      },
+      'processed.meat.sausage.generic': {
+        id: 'processed.meat.sausage.generic', category: 'processed_meat', canonicalName: 'Сосиски',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'milk', 'gluten_cereals', 'mustard', 'soy', 'tree_nuts', 'celery'] },
+        evidenceScope: 'Аллергены зависят от рецептуры производителя и предупреждений на упаковке.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'processed.meat.boiled_sausage.generic': {
+        id: 'processed.meat.boiled_sausage.generic', category: 'processed_meat', canonicalName: 'Варёная колбаса',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'milk', 'gluten_cereals', 'mustard', 'soy', 'tree_nuts', 'celery'] },
+        evidenceScope: 'Аллергены зависят от рецептуры производителя и предупреждений на упаковке.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'processed.meat.smoked_sausage.generic': {
+        id: 'processed.meat.smoked_sausage.generic', category: 'processed_meat', canonicalName: 'Копчёная колбаса',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'milk', 'gluten_cereals', 'mustard', 'soy', 'tree_nuts', 'celery'] },
+        evidenceScope: 'Аллергены зависят от рецептуры производителя и предупреждений на упаковке.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'processed.meat.ham.generic': {
+        id: 'processed.meat.ham.generic', category: 'processed_meat', canonicalName: 'Ветчина',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'milk', 'gluten_cereals', 'mustard', 'soy', 'tree_nuts', 'celery'] },
+        evidenceScope: 'Аллергены зависят от рецептуры производителя и предупреждений на упаковке.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'sauce.mayonnaise.generic': {
+        id: 'sauce.mayonnaise.generic', category: 'sauce', canonicalName: 'Майонез',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'mustard', 'milk', 'soy'] },
+        evidenceScope: 'Состав и предупреждения зависят от производителя; яйцо нельзя считать гарантированным для любого варианта.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      }
+    };
+
+    // Привязка ингредиентов рецепта к типу/варианту готового продукта.
+    // Здесь намеренно нет подстановки случайных брендов вместо неизвестных марок.
+    const recipeProductComponentLinks = {
+      5: { 'Соевый соус': 'sauce.soy.generic' },
+      8: { 'MAGGI® Универсальная приправа': 'seasoning.maggi.universal.200g' },
+      11: { 'Соевый соус': 'sauce.soy.generic', 'Овощная смесь': null },
+      41: { 'Мясной бульон': 'broth.meat.generic' },
+      42: { 'Сосиски молочные': 'processed.meat.sausage.generic', 'Колбаса варёная': 'processed.meat.boiled_sausage.generic' },
+      44: { 'Овощной бульон': 'broth.vegetable.generic' },
+      48: { 'Куриный бульон': 'broth.chicken.generic' },
+      81: { 'Соевый соус': 'sauce.soy.generic' },
+      83: { 'Соевый соус': 'sauce.soy.generic' },
+      111: {
+        'Майонез': 'sauce.mayonnaise.generic',
+        'MAGGI® Приправа универсальная Букет приправ': 'seasoning.maggi.buket'
+      },
+      114: { 'Приправа натуральная для шашлыка': 'seasoning.shashlik.generic' },
+      116: {
+        'Говяжий бульон': 'broth.meat.generic',
+        'Колбаса копчёная': 'processed.meat.smoked_sausage.generic',
+        'Ветчина': 'processed.meat.ham.generic',
+        'Сосиски': 'processed.meat.sausage.generic'
+      }
+    };
+
+    function getIngredientProductIdentity(dishId, ingredientName) {
+      const productId = recipeProductComponentLinks[dishId]?.[ingredientName];
+      return productId ? ingredientProductCatalog[productId] || null : null;
+    }
+
+    function getDishProductIdentityReview(dish) {
+      const ingredients = Array.isArray(dish?.ingredients) ? dish.ingredients : [];
+      return ingredients.map(item => Array.isArray(item) ? item[0] : item)
+        .filter(Boolean)
+        .map(name => ({ ingredientName: name, product: getIngredientProductIdentity(dish.id, name) }))
+        .filter(item => item.product);
+    }
+
+    function getProductIdentityStatus(product) {
+      if (!product) return 'ordinary_ingredient';
+      if (product.identityLevel === 'brand_variant' && product.labelStatus === 'manufacturer_product_page') {
+        return 'brand_variant_needs_package_check';
+      }
+      return 'generic_product_needs_identification';
+    }
+
     // Сопоставление пользовательских предпочтений с кандидатными названиями ингредиентов.
     // Расширяем словарь по мере редакторского утверждения каталога.
     const ingredientPreferenceAliases = {
