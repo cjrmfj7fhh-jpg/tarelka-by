@@ -10531,8 +10531,10 @@
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
       const homeLunchPersons = state.persons.filter(person => person.lunchMode === 'home');
-      const homeFamilyCompatible = compatible.filter(dish => homeLunchPersons.length > 0 && homeLunchPersons.every(person =>
-        isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person)
+      const homeFamilyCompatible = compatible.filter(dish => homeLunchPersons.length > 0 && (
+        dish.familyComposition
+          ? Boolean(buildFamilyComposition(dish, homeLunchPersons))
+          : homeLunchPersons.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))
       ));
       const soupCandidates = shuffleDishes(homeFamilyCompatible.filter(dish =>
         isSoupDish(dish) && (!dish.familyComposition || Boolean(buildFamilyComposition(dish, homeLunchPersons)))      )).sort((a, b) =>
@@ -10579,7 +10581,10 @@
             if (meal.type === 'lunch') {
               const lunchPeople = (meal.personIds || state.persons.map(person => person.id)).map(id => state.persons.find(person => person.id === id)).filter(Boolean);
               const isHomeLunch = meal.lunchMode === 'home';
-              const lunchPool = isHomeLunch ? compatible.filter(dish => lunchPeople.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))) : compatible;
+              const lunchPool = isHomeLunch ? compatible.filter(dish => dish.familyComposition
+                ? Boolean(buildFamilyComposition(dish, lunchPeople))
+                : lunchPeople.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))
+              ) : compatible;
               const soupPlan = isHomeLunch ? soupSchedule[dayIndex] : null;
               const plannedServings = lunchPeople.length;
               const renderLunchDish = (dish, label, personLabel = '') => {
