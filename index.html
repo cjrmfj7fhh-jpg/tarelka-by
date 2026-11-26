@@ -680,12 +680,12 @@
   </div>
 
   <div class="step" id="step3">
-    <h1>Сколько приёмов пищи в день?</h1>
+    <h1>Как питается каждый взрослый?</h1>
     <div id="mealGroupsContainer"></div>
     <div class="person-card" style="margin-top:18px;">
       <div class="section-title" style="margin-top:0;">⏱️ Как устроена ваша неделя?</div>
       <p class="hint" style="margin:0 0 14px;">Ориентир — рабочие будни: работа 9:00–18:00, обед 13:00–14:00. Настройки можно поменять под вашу семью.</p>
-      <div class="input-group"><label for="workLunchMode">Где обычно проходит обед в будни?</label><select id="workLunchMode" onchange="updatePlanning('workLunchMode', this.value)"><option value="container">Беру еду с собой, нужен контейнер</option><option value="home">Обедаю дома</option><option value="cafe">Обедаю вне дома</option><option value="varies">По-разному</option></select></div>
+      <p class="hint" style="margin:0 0 14px;">Для каждого взрослого отдельно укажи завтрак и обед. Если человек обедает вне дома, домашний обед и продукты для него не формируются.</p>
       <div class="input-group"><label for="weekdayCooking">Сколько активного времени готовы тратить на ужин?</label><select id="weekdayCooking" onchange="updatePlanning('weekdayCooking', this.value)"><option value="20">До 20 минут</option><option value="30" selected>Около 30 минут</option><option value="40">До 40 минут</option><option value="60">До часа, если нужно</option></select></div>
       <div class="input-group"><label for="soupFrequency">Как часто хотите есть суп?</label><select id="soupFrequency" onchange="updatePlanning('soupFrequency', this.value)"><option value="daily">Почти каждый день</option><option value="alternate">Через день</option><option value="2-3" selected>2–3 раза в неделю</option><option value="weekly">Примерно раз в неделю</option><option value="never">Супы не планировать</option></select></div>
       <div class="input-group"><label for="soupBatch">На сколько обедов варить одну кастрюлю?</label><select id="soupBatch" onchange="updatePlanning('soupBatch', this.value)"><option value="1">На один обед</option><option value="2" selected>На два обеда (например, на два дня)</option><option value="3">На три обеда</option><option value="4">На четыре обеда</option></select></div>
@@ -9404,7 +9404,7 @@
       for (let i = 1; i <= state.adultsCount; i++) {
         const existing = oldPersons[i-1];
         state.persons.push({
-          id: i, name: existing ? (existing.name || '') : '', gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'),
+          id: i, name: existing ? (existing.name || '') : '', gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'), breakfastMode: existing?.breakfastMode || 'shared', lunchMode: existing?.lunchMode || 'home',
           mode: existing ? existing.mode : 'calc', calories: existing ? existing.calories : 2000, activity: existing ? existing.activity : 1.2,
           age: existing ? existing.age : '', height: existing ? existing.height : '', weight: existing ? existing.weight : '',
           goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : [], intolerances: existing ? (existing.intolerances || []) : [], likedIngredients: existing ? (existing.likedIngredients || []) : [], dislikedIngredients: existing ? (existing.dislikedIngredients || []) : []
@@ -9504,7 +9504,7 @@
       let isValid = false;
       if (state.step === 1) isValid = state.store !== '';
       if (state.step === 2) isValid = true;
-      if (state.step === 3) isValid = state.meals.length > 0;
+      if (state.step === 3) isValid = state.persons.some(p => p.breakfastMode !== 'skip' || p.lunchMode !== 'away') || state.meals.some(id => id.endsWith('-dinner'));
       if (state.step === 4) isValid = true;
       if (state.step === 5) {
         isValid = true;
@@ -9545,32 +9545,49 @@
     function renderMealsStep() {
       const container = document.getElementById('mealGroupsContainer');
       container.innerHTML = '';
-      const selfGroup = document.createElement('div');
-      selfGroup.className = 'meal-group';
-      selfGroup.innerHTML = `<div class="meal-group-title">${state.adultsCount === 1 ? 'Твои приёмы пищи' : 'Личные приёмы пищи'}</div>`;
-      [ { id: 'self-breakfast', label: 'Завтрак ☕' }, { id: 'self-lunch', label: 'Обед 🍲' }, { id: 'self-dinner', label: 'Ужин 🍽️' } ].forEach(opt => {
-        const isSelected = state.meals.includes(opt.id);
-        selfGroup.innerHTML += `<div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)"><div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div></div>`;
+      state.persons.forEach((person, index) => {
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        card.innerHTML = `
+          <div class="person-title">${escapeHtml(getPersonLabel(person))}</div>
+          <div class="input-group"><label for="breakfastMode-${index}">Завтрак</label>
+            <select id="breakfastMode-${index}" onchange="updatePersonMealMode(${index}, 'breakfastMode', this.value)">
+              <option value="shared" ${person.breakfastMode === 'shared' ? 'selected' : ''}>Завтракает вместе с семьёй</option>
+              <option value="individual" ${person.breakfastMode === 'individual' ? 'selected' : ''}>Нужен отдельный завтрак</option>
+              <option value="skip" ${person.breakfastMode === 'skip' ? 'selected' : ''}>Завтрак не нужен</option>
+            </select>
+          </div>
+          <div class="input-group"><label for="lunchMode-${index}">Обед</label>
+            <select id="lunchMode-${index}" onchange="updatePersonMealMode(${index}, 'lunchMode', this.value)">
+              <option value="home" ${person.lunchMode === 'home' ? 'selected' : ''}>Обедает дома — суп и второе</option>
+              <option value="container" ${person.lunchMode === 'container' ? 'selected' : ''}>Берёт с собой — ланч-бокс</option>
+              <option value="away" ${person.lunchMode === 'away' ? 'selected' : ''}>Обедает вне дома — обед не нужен</option>
+            </select>
+          </div>`;
+        container.appendChild(card);
       });
-      container.appendChild(selfGroup);
-
-      if (getHouseholdCount() > 1) {
-        const familyGroup = document.createElement('div');
-        familyGroup.className = 'meal-group';
-        familyGroup.innerHTML = `<div class="meal-group-title" style="margin-top: 20px;">Общие приёмы пищи</div><div class="hint" style="margin-bottom: 10px; margin-left: 0;">Готовим сразу на всех.</div>`;
-        [ { id: 'family-breakfast', label: 'Общие завтраки ☕' }, { id: 'family-lunch', label: 'Общие обеды 🍲' }, { id: 'family-dinner', label: 'Общие ужины 🍽️' } ].forEach(opt => {
-          const isSelected = state.meals.includes(opt.id);
-          familyGroup.innerHTML += `<div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)"><div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div></div>`;
-        });
-        container.appendChild(familyGroup);
-      }
+      const dinnerGroup = document.createElement('div');
+      dinnerGroup.className = 'meal-group';
+      dinnerGroup.innerHTML = '<div class="meal-group-title">Ужин</div>';
+      [{id:'self-dinner',label:'Индивидуальный ужин'},{id:'family-dinner',label:'Общий ужин для семьи'}].forEach(opt => {
+        const selected = state.meals.includes(opt.id);
+        dinnerGroup.innerHTML += `<div class="meal-option ${selected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)"><div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div></div>`;
+      });
+      container.appendChild(dinnerGroup);
       const planning = state.planning || {};
-      ['workLunchMode','weekdayCooking','soupFrequency','soupBatch'].forEach(id => {
+      ['weekdayCooking','soupFrequency','soupBatch'].forEach(id => {
         const control = document.getElementById(id);
         if (control && planning[id] !== undefined) control.value = String(planning[id]);
       });
       const weekendPrep = document.getElementById('weekendPrep');
       if (weekendPrep) weekendPrep.checked = planning.weekendPrep !== false;
+    }
+
+    function updatePersonMealMode(index, field, value) {
+      const person = state.persons[index];
+      if (!person || !['breakfastMode', 'lunchMode'].includes(field)) return;
+      person[field] = value;
+      validateNextBtn();
     }
 
     function toggleMeal(mealId, el) {
@@ -10280,9 +10297,9 @@
       return Math.max(0.65, Math.min(1.5, budget / standardCalories));
     }
 
-    function getHouseholdPortionScale(dish, mealType, course = 'main', hasSoup = false) {
-      if (!Array.isArray(state.persons) || !state.persons.length) return 1;
-      const scales = state.persons.map(person =>
+    function getHouseholdPortionScale(dish, mealType, course = 'main', hasSoup = false, persons = state.persons) {
+      if (!Array.isArray(persons) || !persons.length) return 1;
+      const scales = persons.map(person =>
         getAdaptivePortionScale(dish, person, mealType, course, hasSoup)
       );
       return scales.reduce((sum, value) => sum + value, 0) / scales.length;
@@ -10487,11 +10504,15 @@
       const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
       const mealLabels = { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин' };
       const mealOrder = { breakfast: 0, lunch: 1, dinner: 2 };
-      const selectedMeals = state.meals.map(id => {
-        const parts = id.split('-');
-        return { group: parts[0] === 'family' ? 'Общий' : 'Личный', type: parts[1] };
-      }).filter(meal => mealLabels[meal.type])
-        .sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
+      const selectedMeals = [];
+      const sharedBreakfastIds = state.persons.filter(person => person.breakfastMode === 'shared').map(person => person.id);
+      if (sharedBreakfastIds.length) selectedMeals.push({ group: 'Общий', type: 'breakfast', personIds: sharedBreakfastIds });
+      state.persons.filter(person => person.breakfastMode === 'individual').forEach(person => selectedMeals.push({ group: 'Личный', type: 'breakfast', personIds: [person.id] }));
+      const homeLunchIds = state.persons.filter(person => person.lunchMode === 'home').map(person => person.id);
+      if (homeLunchIds.length) selectedMeals.push({ group: 'Общий', type: 'lunch', personIds: homeLunchIds, lunchMode: 'home' });
+      state.persons.filter(person => person.lunchMode === 'container').forEach(person => selectedMeals.push({ group: 'Личный', type: 'lunch', personIds: [person.id], lunchMode: 'container' }));
+      state.meals.filter(id => id.endsWith('-dinner')).forEach(id => selectedMeals.push({ group: id.startsWith('family-') ? 'Общий' : 'Личный', type: 'dinner' }));
+      selectedMeals.sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
       const compatible = getPreferenceFilteredDishes(getCompatibleDishes());
       const familyCompatible = getFamilyCompatibleDishes(compatible);
       const lovedIngredients = getAllFamilyLikedIngredients();
@@ -10509,9 +10530,12 @@
       }));
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
-      const soupCandidates = shuffleDishes(familyCompatible.filter(dish =>
-        isSoupDish(dish) && (!dish.familyComposition || Boolean(buildFamilyComposition(dish)))
-      )).sort((a, b) =>
+      const homeLunchPersons = state.persons.filter(person => person.lunchMode === 'home');
+      const homeFamilyCompatible = compatible.filter(dish => homeLunchPersons.length > 0 && homeLunchPersons.every(person =>
+        isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person)
+      ));
+      const soupCandidates = shuffleDishes(homeFamilyCompatible.filter(dish =>
+        isSoupDish(dish) && (!dish.familyComposition || Boolean(buildFamilyComposition(dish, homeLunchPersons)))      )).sort((a, b) =>
         (hasMixedDiet ? Number(Boolean(b.familyComposition)) - Number(Boolean(a.familyComposition)) : 0) ||
         getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length
       );
@@ -10553,94 +10577,63 @@
           let dayCaloriesTotal = 0;
           selectedMeals.forEach(meal => {
             if (meal.type === 'lunch') {
-              const lunchPool = meal.group === 'Общий' ? familyCompatible : compatible;
-              const soupPlan = soupSchedule[dayIndex];
-              const plannedServings = meal.group === 'Общий' ? getHouseholdCount() : 1;
+              const lunchPeople = (meal.personIds || state.persons.map(person => person.id)).map(id => state.persons.find(person => person.id === id)).filter(Boolean);
+              const isHomeLunch = meal.lunchMode === 'home';
+              const lunchPool = isHomeLunch ? compatible.filter(dish => lunchPeople.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))) : compatible;
+              const soupPlan = isHomeLunch ? soupSchedule[dayIndex] : null;
+              const plannedServings = lunchPeople.length;
               const renderLunchDish = (dish, label, personLabel = '') => {
                 if (!dish) return '<div class="menu-item"><span class="menu-item-name">' + label + ': подходящих рецептов пока нет</span></div>';
                 const estimate = getDishNutritionEstimate(dish);
-                if (estimate === null) dayCaloriesComplete = false;
-                else dayCaloriesTotal += estimate.calories;
+                if (estimate === null) dayCaloriesComplete = false; else dayCaloriesTotal += estimate.calories;
                 const image = typeof dish.image === 'string' ? dish.image : '';
-                return '<article class="menu-dish-card">' +
-                  (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
-                  '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + meal.group + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
-                  '<div class="menu-item-name">' + dish.name + '</div>' + formatDishPreparation(dish) + '<div class="menu-item-cal">' +
-                  formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) +
-                  '</div></div></article>';
+                return '<article class="menu-dish-card">' + (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
+                  '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + (isHomeLunch ? 'Обед дома' : 'Ланч-бокс') + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
+                  '<div class="menu-item-name">' + dish.name + '</div>' + formatDishPreparation(dish) + '<div class="menu-item-cal">' + formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) + '</div></div></article>';
               };
-              const appendSharedSoup = () => {
-                if (!soupPlan || displayedSoupDays.has(dayIndex)) return;
-                const batchKey = String(soupPlan.batch) + '-' + String(soupPlan.soup.id);
-                const batchServings = soupSchedule.filter(item => item && item.batch === soupPlan.batch).length;
-                const addBatchToShopping = !addedSoupBatches.has(batchKey);
-                const compositionHtml = familyCompositionHtml(
-                  soupPlan.soup, 'Первое', batchServings,
-                  (component, componentLabel, peopleLabel) => renderLunchDish(component, componentLabel, peopleLabel),
-                  addBatchToShopping, 'lunch', 'soup', true
-                );
-                if (compositionHtml !== null) {
-                  dayHtml += compositionHtml;
-                } else {
-                  dayHtml += renderLunchDish({ ...soupPlan.soup, portionScale: getHouseholdPortionScale(soupPlan.soup, 'lunch', 'soup', true) }, 'Первое');
-                  if (addBatchToShopping) {
-                    selectedDishes.push({ ...soupPlan.soup, portionScale: getHouseholdPortionScale(soupPlan.soup, 'lunch', 'soup', true), plannedServings: plannedServings * batchServings });
-                  }
-                }
-                displayedSoupDays.add(dayIndex);
-                addedSoupBatches.add(batchKey);
-              };
-              if (meal.group === 'Общий') {
-                const mains = prioritizeFamilyCompositions(
-                  rankDishesForFamily(getMealCandidates(lunchPool, 'lunch'))
-                    .filter(dish => !dish.familyComposition || Boolean(buildFamilyComposition(dish)))
-                );
-                const mainTarget = state.persons.length
-                  ? state.persons.reduce((sum, person) => sum + (getMealCalorieBudget(person, 'lunch', 'main', Boolean(soupPlan)) || 0), 0) / state.persons.length
-                  : null;
-                const main = pickVariedDish(mains, 'main', dayIndex, state.persons.map(person => person.id), mainTarget);
+              if (!lunchPeople.length) return;
+              if (isHomeLunch) {
+                const soup = soupPlan && !displayedSoupDays.has(dayIndex) ? soupPlan : null;
+                const mains = prioritizeFamilyCompositions(rankDishesForFamily(getMealCandidates(lunchPool, 'lunch')).filter(dish => !dish.familyComposition || Boolean(buildFamilyComposition(dish, lunchPeople))));
+                const target = lunchPeople.reduce((sum, person) => sum + (getMealCalorieBudget(person, 'lunch', 'main', Boolean(soup)) || 0), 0) / lunchPeople.length;
+                const main = pickVariedDish(mains, 'main', dayIndex, lunchPeople.map(person => person.id), target);
                 if (main) {
-                  const compositionHtml = familyCompositionHtml(
-                    main, 'Второе', 1,
-                    (component, componentLabel, peopleLabel) => renderLunchDish(component, componentLabel, peopleLabel),
-                    true, 'lunch', 'main', Boolean(soupPlan)
-                  );
-                  if (compositionHtml !== null) dayHtml += compositionHtml;
+                  const components = getFamilyCompositionComponents(main, lunchPeople, 1, 'lunch', 'main', Boolean(soup));
+                  if (components) components.forEach(component => {
+                    selectedDishes.push(component);
+                    dayHtml += renderLunchDish(component, component.componentType === 'base' ? 'Второе · общая основа' : 'Добавка', component.componentType === 'addOn' ? component.personLabels.join(', ') : '');
+                  });
                   else {
-                    const sharedMain = { ...main, portionScale: getHouseholdPortionScale(main, 'lunch', 'main', Boolean(soupPlan)) };
-                    selectedDishes.push({ ...sharedMain, plannedServings });
-                    dayHtml += renderLunchDish(sharedMain, 'Второе');
+                    const shared = { ...main, portionScale: getHouseholdPortionScale(main, 'lunch', 'main', Boolean(soup), lunchPeople) };
+                    selectedDishes.push({ ...shared, plannedServings });
+                    dayHtml += renderLunchDish(shared, 'Второе');
                   }
-                } else {
-                  dayCaloriesComplete = false;
-                  dayHtml += renderLunchDish(null, 'Второе');
-                }
-                if (soupPlan) {
-                  appendSharedSoup();
-                } else {
-                  dayHtml += '<p class="hint" style="margin:4px 0 10px;">Сегодня без супа — полноценный обед включает второе блюдо.</p>';
-                }
+                } else { dayCaloriesComplete = false; dayHtml += renderLunchDish(null, 'Второе'); }
+                if (soup) {
+                  const batchKey = String(soup.batch) + '-' + String(soup.soup.id);
+                  const batchServings = soupSchedule.filter(item => item && item.batch === soup.batch).length;
+                  if (!addedSoupBatches.has(batchKey)) {
+                    const scale = getHouseholdPortionScale(soup.soup, 'lunch', 'soup', true, lunchPeople);
+                    dayHtml += renderLunchDish({ ...soup.soup, portionScale: scale }, 'Первое');
+                    selectedDishes.push({ ...soup.soup, portionScale: scale, plannedServings: lunchPeople.length * batchServings });
+                    addedSoupBatches.add(batchKey);
+                  }
+                  displayedSoupDays.add(dayIndex);
+                } else dayHtml += '<p class="hint" style="margin:4px 0 10px;">Сегодня без супа — предусмотрено второе блюдо.</p>';
               } else {
-                state.persons.forEach(person => {
-                  const personalMains = rankDishesForPerson(
-                    getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person
-                  );
-                  const personalTarget = getMealCalorieBudget(person, 'lunch', 'main', Boolean(soupPlan));
-                  const personalMain = pickVariedDish(personalMains, 'main', dayIndex, [person.id], personalTarget);
-                  if (personalMain) {
-                    const adaptedMain = { ...personalMain, portionScale: getAdaptivePortionScale(personalMain, person, 'lunch', 'main', Boolean(soupPlan)) };
-                    selectedDishes.push({ ...adaptedMain, plannedServings: 1 });
-                    dayHtml += renderLunchDish(adaptedMain, 'Второе', getPersonLabel(person));
-                  } else {
-                    dayCaloriesComplete = false;
-                    dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
-                      escapeHtml(getPersonLabel(person)) + ' — подходящего обеда пока нет</span></div>';
-                  }
+                lunchPeople.forEach(person => {
+                  const candidates = rankDishesForPerson(getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person);
+                  const dish = pickVariedDish(candidates, 'main', dayIndex, [person.id], getMealCalorieBudget(person, 'lunch', 'main', false));
+                  if (dish) {
+                    const adapted = { ...dish, portionScale: getAdaptivePortionScale(dish, person, 'lunch', 'main', false) };
+                    selectedDishes.push({ ...adapted, plannedServings: 1 });
+                    dayHtml += renderLunchDish(adapted, 'Ланч-бокс', getPersonLabel(person));
+                  } else { dayCaloriesComplete = false; dayHtml += '<div class="menu-item"><span class="menu-item-name">' + escapeHtml(getPersonLabel(person)) + ' — подходящего блюда для ланч-бокса пока нет</span></div>'; }
                 });
-                if (soupPlan) appendSharedSoup();
               }
               return;
             }
+            const mealPeople = (meal.personIds || state.persons.map(person => person.id)).map(id => state.persons.find(person => person.id === id)).filter(Boolean);
             const renderMealCard = (dish, personLabel = '') => {
               if (!dish) return '<div class="menu-item"><span class="menu-item-name">' +
                 (personLabel ? escapeHtml(personLabel) + ' — ' : '') + meal.group + ' ' + mealLabels[meal.type] +
@@ -10649,7 +10642,7 @@
               if (nutritionEstimate === null) dayCaloriesComplete = false;
               else dayCaloriesTotal += nutritionEstimate.calories;
               const dishImage = typeof dish.image === 'string' ? dish.image : '';
-              const count = personLabel ? 1 : (meal.group === 'Общий' ? getHouseholdCount() : 1);
+              const count = personLabel ? 1 : mealPeople.length;
               return '<article class="menu-dish-card">' +
                 (dishImage ? '<img class="menu-dish-image" src="' + dishImage + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
                 '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + mealLabels[meal.type] + '</span><span class="meal-group-label">' + meal.group + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
@@ -10658,19 +10651,19 @@
                 '</div></div></article>';
             };
             if (meal.group === 'Общий') {
-              const candidates = rankDishesForFamily(getMealCandidates(familyCompatible, meal.type));
+              const candidates = rankDishesForFamily(getMealCandidates(compatible.filter(dish => mealPeople.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))), meal.type));
               if (!candidates.length) {
                 dayCaloriesComplete = false;
                 dayHtml += renderMealCard(null);
               } else {
                 const varietyGroup = meal.type === 'breakfast' ? 'breakfast' : 'main';
-                const targetCalories = state.persons.length
-                  ? state.persons.reduce((sum, person) => sum + (getMealCalorieBudget(person, meal.type) || 0), 0) / state.persons.length
+                const targetCalories = mealPeople.length
+                  ? mealPeople.reduce((sum, person) => sum + (getMealCalorieBudget(person, meal.type) || 0), 0) / mealPeople.length
                   : null;
-                const dish = pickVariedDish(candidates, varietyGroup, dayIndex, state.persons.map(person => person.id), targetCalories);
+                const dish = pickVariedDish(candidates, varietyGroup, dayIndex, mealPeople.map(person => person.id), targetCalories);
                 if (dish) {
-                  const sharedDish = { ...dish, portionScale: getHouseholdPortionScale(dish, meal.type) };
-                  selectedDishes.push({ ...sharedDish, plannedServings: getHouseholdCount() });
+                  const sharedDish = { ...dish, portionScale: getHouseholdPortionScale(dish, meal.type, 'main', false, mealPeople) };
+                  selectedDishes.push({ ...sharedDish, plannedServings: mealPeople.length });
                   dayHtml += renderMealCard(sharedDish);
                 } else {
                   dayCaloriesComplete = false;
@@ -10678,7 +10671,7 @@
                 }
               }
             } else {
-              state.persons.forEach(person => {
+              mealPeople.forEach(person => {
                 const candidates = rankDishesForPerson(
                   getMealCandidates(getDishesForPerson(compatible, person), meal.type), person
                 );
