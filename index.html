@@ -10287,6 +10287,13 @@
     // любой аллерген или угадывать состав заправки по названию блюда.
     // Правило привязано к конкретному рецепту и ингредиенту из его состава.
     const allergenAdaptationRules = {
+      33: {
+        tree_nuts: {
+          removeIngredients: ['Орехи', 'Грецкие орехи', 'Орехи грецкие'],
+          replacementIngredients: [],
+          note: 'Орехи исключены. Дополнительную текстуру можно получить за счёт увеличения порции овсяных хлопьев; точное количество нужно уточнить.'
+        }
+      },
       93: {
         tree_nuts: {
           removeIngredients: ['Грецкие орехи', 'Орехи грецкие'],
@@ -10295,6 +10302,13 @@
             ['Лимонный сок', null, 'по вкусу']
           ],
           note: 'Грецкие орехи исключены. Вместо ореховой заправки можно использовать оливковое масло с лимонным соком.'
+        }
+      },
+      98: {
+        tree_nuts: {
+          removeIngredients: ['Грецкие орехи', 'Орехи грецкие'],
+          replacementIngredients: [],
+          note: 'Грецкие орехи исключены; вместо них можно увеличить количество ягод.'
         }
       }
     };
@@ -10962,7 +10976,25 @@
                     selectedDishes.push({ ...shared, plannedServings });
                     dayHtml += renderLunchDish(shared, 'Второе');
                   }
-                } else { dayCaloriesComplete = false; dayHtml += renderLunchDish(null, 'Второе'); }
+                } else {
+                  // Если общее второе не подходит всем (например, из-за аллергии),
+                  // подбираем персональные блюда и применяем только явные адаптации.
+                  lunchPeople.forEach(person => {
+                    const personalPool = getDishesForPerson(compatible, person).filter(dish => !dish.familyComposition);
+                    const personalCandidates = rankDishesForPerson(getMealCandidates(personalPool, 'lunch'), person);
+                    const personalMain = pickVariedDish(
+                      personalCandidates, 'main', dayIndex, [person.id], getMealCalorieBudget(person, 'lunch', 'main', Boolean(soup))
+                    );
+                    if (personalMain) {
+                      const adapted = { ...personalMain, portionScale: getAdaptivePortionScale(personalMain, person, 'lunch', 'main', Boolean(soup)) };
+                      selectedDishes.push({ ...adapted, plannedServings: 1 });
+                      dayHtml += renderLunchDish(adapted, 'Второе', getPersonLabel(person));
+                    } else {
+                      dayCaloriesComplete = false;
+                      dayHtml += renderLunchDish(null, 'Второе · ' + getPersonLabel(person));
+                    }
+                  });
+                }
                 if (soup) {
                   const batchKey = String(soup.batch) + '-' + String(soup.soup.id);
                   const batchServings = soupSchedule.filter(item => item && item.batch === soup.batch).length;
