@@ -10651,9 +10651,16 @@
             }
             const mealPeople = (meal.personIds || state.persons.map(person => person.id)).map(id => state.persons.find(person => person.id === id)).filter(Boolean);
             const renderMealCard = (dish, personLabel = '') => {
-              if (!dish) return '<div class="menu-item"><span class="menu-item-name">' +
-                (personLabel ? escapeHtml(personLabel) + ' — ' : '') + meal.group + ' ' + mealLabels[meal.type] +
-                ': подходящего рецепта пока нет</span><span class="menu-item-cal">Нужно добавить подходящий рецепт</span></div>';
+              if (!dish) {
+                const person = personLabel ? mealPeople.find(item => getPersonLabel(item) === personLabel) : null;
+                const hasRestrictions = Boolean(person && ((person.allergies || []).length || (person.intolerances || []).length));
+                const reason = hasRestrictions
+                  ? 'Нет рецепта с подтверждённым составом для указанных ограничений'
+                  : 'Подходящего рецепта пока нет';
+                return '<div class="menu-item"><span class="menu-item-name">' +
+                  (personLabel ? escapeHtml(personLabel) + ' — ' : '') + mealLabels[meal.type] +
+                  ': ' + reason + '</span><span class="menu-item-cal">Нужна проверка состава рецептов</span></div>';
+              }
               const nutritionEstimate = getDishNutritionEstimate(dish);
               if (nutritionEstimate === null) dayCaloriesComplete = false;
               else dayCaloriesTotal += nutritionEstimate.calories;
@@ -10668,9 +10675,34 @@
             };
             if (meal.group === 'Общий') {
               const candidates = rankDishesForFamily(getMealCandidates(compatible.filter(dish => mealPeople.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))), meal.type));
+              const renderPersonalFallback = () => {
+                // Если общего блюда нет из-за разных вкусов или индивидуальных ограничений,
+                // не обнуляем весь семейный приём пищи: подбираем каждому только его совместимые блюда.
+                mealPeople.forEach(person => {
+                  const personalCandidates = rankDishesForPerson(
+                    getMealCandidates(getDishesForPerson(compatible, person), meal.type), person
+                  );
+                  if (!personalCandidates.length) {
+                    dayCaloriesComplete = false;
+                    dayHtml += renderMealCard(null, getPersonLabel(person));
+                    return;
+                  }
+                  const group = meal.type === 'breakfast' ? 'breakfast' : 'main';
+                  const personalDish = pickVariedDish(
+                    personalCandidates, group, dayIndex, [person.id], getMealCalorieBudget(person, meal.type)
+                  );
+                  if (!personalDish) {
+                    dayCaloriesComplete = false;
+                    dayHtml += renderMealCard(null, getPersonLabel(person));
+                    return;
+                  }
+                  const adaptedDish = { ...personalDish, portionScale: getAdaptivePortionScale(personalDish, person, meal.type) };
+                  selectedDishes.push({ ...adaptedDish, plannedServings: 1 });
+                  dayHtml += renderMealCard(adaptedDish, getPersonLabel(person));
+                });
+              };
               if (!candidates.length) {
-                dayCaloriesComplete = false;
-                dayHtml += renderMealCard(null);
+                renderPersonalFallback();
               } else {
                 const varietyGroup = meal.type === 'breakfast' ? 'breakfast' : 'main';
                 const targetCalories = mealPeople.length
@@ -10682,8 +10714,7 @@
                   selectedDishes.push({ ...sharedDish, plannedServings: mealPeople.length });
                   dayHtml += renderMealCard(sharedDish);
                 } else {
-                  dayCaloriesComplete = false;
-                  dayHtml += renderMealCard(null);
+                  renderPersonalFallback();
                 }
               }
             } else {
