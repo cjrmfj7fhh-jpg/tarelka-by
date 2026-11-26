@@ -41,7 +41,11 @@
       .menu-day { padding: 24px 28px; }
       .menu-item { align-items: flex-start; gap: 18px; }
       .menu-item-name { flex: 1; }
-      .menu-item-cal { text-align: right; }
+      .product-identity-note {
+      margin-top: 5px; color: var(--muted); font-size: 11px;
+      line-height: 1.4; overflow-wrap: anywhere;
+    }
+    .menu-item-cal { text-align: right; }
       .footer { padding: 14px 32px calc(14px + env(safe-area-inset-bottom)); }
       .footer > * { max-width: 920px; margin-left: auto; margin-right: auto; }
     }
@@ -9820,11 +9824,11 @@
       'seasoning.maggi.universal.200g': {
         id: 'seasoning.maggi.universal.200g', category: 'seasoning', canonicalName: 'Универсальная приправа',
         identityLevel: 'brand_variant', brand: 'MAGGI', variant: 'Универсальная приправа 200 г',
-        labelStatus: 'manufacturer_product_page', allergenEvidence: {
-          contains: ['celery'], mayContain: ['gluten_cereals', 'milk'], unknown: []
+        labelStatus: 'manufacturer_category_listing', allergenEvidence: {
+          contains: [], mayContain: [], unknown: ['celery', 'gluten_cereals', 'milk']
         },
-        evidenceScope: 'Декларация производителя на странице продукта; сверять актуальную упаковку.',
-        sourceUrl: 'https://www.maggi.ru/products/universalnaya-priprava',
+        evidenceScope: 'Найдена только категория производителя с названием продукта; детальная этикетка точного варианта отдельно не подтверждена.',
+        sourceUrl: 'https://www.maggi.ru/products/maggi-universalnyy-pripravi',
         checkedAt: '2026-11-26', labelRequired: true, exampleBrandIsNotDefault: false
       },
       'seasoning.maggi.buket': {
@@ -9834,7 +9838,7 @@
           contains: ['celery', 'gluten_cereals'], mayContain: ['milk'], unknown: []
         },
         evidenceScope: 'Декларация производителя на странице продукта; сверять актуальную упаковку.',
-        sourceUrl: 'https://www.maggi.ru/products/buket-priprav',
+        sourceUrl: 'https://www.maggi.ru/products/maggi-buket-priprav-universalnaya-priprava',
         checkedAt: '2026-11-26', labelRequired: true, exampleBrandIsNotDefault: false
       },
       'processed.meat.sausage.generic': {
@@ -9910,6 +9914,20 @@
         .filter(Boolean)
         .map(name => ({ ingredientName: name, product: getIngredientProductIdentity(dish.id, name) }))
         .filter(item => item.product);
+    }
+
+    function formatDishProductIdentityNote(dish) {
+      const linked = getDishProductIdentityReview(dish);
+      if (!linked.length) return '';
+      const generic = linked.filter(item => item.product.identityLevel === 'generic_type')
+        .map(item => item.ingredientName);
+      const branded = linked.filter(item => item.product.identityLevel === 'brand_variant')
+        .map(item => item.product.brand + ' ' + item.product.variant);
+      const parts = [];
+      if (generic.length) parts.push('Марка не указана: ' + generic.join(', ') + '.');
+      if (branded.length) parts.push('Указан продукт: ' + branded.join(', ') + ' — сверяйте актуальную упаковку.');
+      return '<div class="product-identity-note">' + escapeHtml(parts.join(' ')) +
+        ' Состав и предупреждения на упаковке могут отличаться.</div>';
     }
 
     function getProductIdentityStatus(product) {
@@ -10763,7 +10781,7 @@
                 const image = typeof dish.image === 'string' ? dish.image : '';
                 return '<article class="menu-dish-card">' + (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
                   '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + (isHomeLunch ? 'Обед дома' : 'Ланч-бокс') + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
-                  '<div class="menu-item-name">' + dish.name + '</div>' + formatDishPreparation(dish) + '<div class="menu-item-cal">' + formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) + '</div></div></article>';
+                  '<div class="menu-item-name">' + dish.name + '</div>' + formatDishProductIdentityNote(dish) + formatDishPreparation(dish) + '<div class="menu-item-cal">' + formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) + '</div></div></article>';
               };
               if (!lunchPeople.length) return;
               if (isHomeLunch) {
