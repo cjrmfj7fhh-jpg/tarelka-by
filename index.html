@@ -10612,12 +10612,23 @@
                 if (soup) {
                   const batchKey = String(soup.batch) + '-' + String(soup.soup.id);
                   const batchServings = soupSchedule.filter(item => item && item.batch === soup.batch).length;
-                  if (!addedSoupBatches.has(batchKey)) {
+                  const addBatchToShopping = !addedSoupBatches.has(batchKey);
+                  const soupComponents = getFamilyCompositionComponents(soup.soup, lunchPeople, batchServings, 'lunch', 'soup', true);
+                  if (soupComponents) {
+                    soupComponents.forEach(component => {
+                      if (addBatchToShopping) selectedDishes.push(component);
+                      dayHtml += renderLunchDish(
+                        component,
+                        component.componentType === 'base' ? 'Первое · общая основа' : 'Добавка',
+                        component.componentType === 'addOn' ? component.personLabels.join(', ') : ''
+                      );
+                    });
+                  } else {
                     const scale = getHouseholdPortionScale(soup.soup, 'lunch', 'soup', true, lunchPeople);
                     dayHtml += renderLunchDish({ ...soup.soup, portionScale: scale }, 'Первое');
-                    selectedDishes.push({ ...soup.soup, portionScale: scale, plannedServings: lunchPeople.length * batchServings });
-                    addedSoupBatches.add(batchKey);
+                    if (addBatchToShopping) selectedDishes.push({ ...soup.soup, portionScale: scale, plannedServings: lunchPeople.length * batchServings });
                   }
+                  if (addBatchToShopping) addedSoupBatches.add(batchKey);
                   displayedSoupDays.add(dayIndex);
                 } else dayHtml += '<p class="hint" style="margin:4px 0 10px;">Сегодня без супа — предусмотрено второе блюдо.</p>';
               } else {
