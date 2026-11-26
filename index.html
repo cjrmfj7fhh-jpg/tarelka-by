@@ -10304,11 +10304,63 @@
           note: 'Грецкие орехи исключены. Вместо ореховой заправки можно использовать оливковое масло с лимонным соком.'
         }
       },
+      7: {
+        milk: {
+          removeIngredients: ['Фета'],
+          replacementIngredients: [],
+          note: 'Фета исключена. Салат можно подать без сыра; вкус и пищевая ценность изменятся.'
+        }
+      },
+      9: {
+        milk: {
+          removeIngredients: ['Сливочное масло'],
+          replacementIngredients: [['Оливковое масло', null, 'для приготовления']],
+          note: 'Сливочное масло заменено оливковым маслом для приготовления стейка.'
+        }
+      },
+      13: {
+        milk: {
+          removeIngredients: ['Сыр'],
+          replacementIngredients: [],
+          note: 'Сыр исключён из запечённой курицы с овощами; текстура и вкус блюда изменятся.'
+        }
+      },
+      15: {
+        tree_nuts: {
+          removeIngredients: ['Кешью'],
+          replacementIngredients: [],
+          note: 'Кешью исключён. Кокос в составе не относится автоматически к древесным орехам, но его индивидуальную переносимость и маркировку нужно проверить отдельно.'
+        }
+      },
+      33: {
+        tree_nuts: {
+          removeIngredients: ['Орехи', 'Грецкие орехи', 'Орехи грецкие'],
+          replacementIngredients: [],
+          note: 'Орехи исключены. Дополнительную текстуру можно получить за счёт увеличения порции овсяных хлопьев; точное количество нужно уточнить.'
+        }
+      },
+      93: {
+        tree_nuts: {
+          removeIngredients: ['Грецкие орехи', 'Орехи грецкие'],
+          replacementIngredients: [
+            ['Оливковое масло', null, 'по вкусу'],
+            ['Лимонный сок', null, 'по вкусу']
+          ],
+          note: 'Грецкие орехи исключены. Вместо ореховой заправки можно использовать оливковое масло с лимонным соком.'
+        }
+      },
       98: {
         tree_nuts: {
           removeIngredients: ['Грецкие орехи', 'Орехи грецкие'],
           replacementIngredients: [],
           note: 'Грецкие орехи исключены; вместо них можно увеличить количество ягод.'
+        }
+      },
+      101: {
+        milk: {
+          removeIngredients: ['Фетакса'],
+          replacementIngredients: [],
+          note: 'Фетакса исключена. Овощную часть салата можно подать без неё; вкус и пищевая ценность изменятся.'
         }
       }
     };
@@ -10335,6 +10387,17 @@
           if (!rule || !matches.every(name =>
             rule.removeIngredients.some(remove => ingredientMatchesPreference(name, remove))
           )) return { status: 'blocked', reason: 'allergen_without_validated_substitution', adaptations: [] };
+          // Проверяем каждую добавляемую замену против всех выбранных аллергий,
+          // а не только против того аллергена, для которого создано правило.
+          const replacementNames = (rule.replacementIngredients || []).map(item => item[0]).filter(Boolean);
+          const replacementConflicts = replacementNames.some(name =>
+            allergies.some(selectedAllergen =>
+              (allergyBlockedIngredients[selectedAllergen] || []).some(blocked =>
+                ingredientMatchesPreference(name, blocked)
+              )
+            )
+          );
+          if (replacementConflicts) return { status: 'blocked', reason: 'replacement_conflicts_with_another_allergy', adaptations: [] };
           adaptations.push({ allergen, matchedIngredients: matches, ...rule });
         } else if (tagged || dish.allergenStatus !== 'verified') {
           // Неизвестный состав нельзя объявлять подходящим только потому,
