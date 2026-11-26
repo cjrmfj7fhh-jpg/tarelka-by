@@ -9730,23 +9730,9 @@
       if (person.dietType === 'vegan' && !tags.includes('vegan')) return false;
       if (person.dietType === 'vegetarian' && !tags.includes('vegetarian') && !tags.includes('vegan')) return false;
       if (person.dietType === 'fish' && !['fish', 'seafood', 'vegetarian', 'vegan'].some(tag => tags.includes(tag))) return false;
-      // Аллергенные теги старого демо-каталога не подтверждают состав.
-      // При выбранной аллергии показываем только рецепты с проверенной allergen-меткой.
-      const restrictions = [...(person.allergies || []), ...(person.intolerances || [])];
-      // При аллергии не полагаемся только на теги рецепта: дополнительно проверяем
-      // явный список ингредиентов по справочнику аллергенов (например, ореховую муку).
-      const ingredientNames = Array.isArray(dish.ingredients)
-        ? dish.ingredients.map(item => Array.isArray(item) ? item[0] : item).filter(Boolean)
-        : [];
-      const containsKnownAllergen = (person.allergies || []).some(allergen =>
-        (allergyBlockedIngredients[allergen] || []).some(blocked =>
-          ingredientNames.some(name => ingredientMatchesPreference(name, blocked))
-        )
-      );
-      if (containsKnownAllergen) return false;
-      // Непроверенный состав не допускается человеку с аллергией/непереносимостью.
-      if (restrictions.length && dish.allergenStatus !== 'verified') return false;
-      return !restrictions.some(item => (dish.allergens || []).includes(item) || (dish.intolerances || []).includes(item));
+      // Для общего блюда допускаем только вариант без необходимости персональной адаптации.
+      // Адаптируемые рецепты выдаются отдельно конкретному человеку.
+      return getDishAllergenAssessment(dish, person).status === 'clear';
     }
 
     function isDishCompatibleWithKitchen(dish) {
@@ -10099,11 +10085,11 @@
     }
 
     function getDishesForPerson(dishes, person) {
-      // Нелюбимый ингредиент исключает блюдо из личной рекомендации,
-      // а не просто немного понижает его рейтинг.
-      return dishes.filter(dish =>
-        isDishCompatibleWithPerson(dish, person) &&
-        !dishContainsDislikedIngredient(dish, person)
+      // Нелюбимый ингредиент исключает блюдо для конкретного человека.
+      // Если известный аллерген можно удалить по явному правилу, возвращаем
+      // отдельную адаптированную копию рецепта — исходный рецепт не меняется.
+      return dishes.map(dish => adaptDishForPerson(dish, person)).filter(dish =>
+        Boolean(dish) && !dishContainsDislikedIngredient(dish, person)
       );
     }
 
@@ -10296,6 +10282,92 @@
       gluten_cereals: ['Пшеничный хлеб','Ржаной хлеб','Лаваш','Макароны','Булгур','Кускус','Перловка'],
       celery: ['Сельдерей'], mustard: ['Горчица'], sulphites: [], lupin: [], molluscs: ['Кальмары','Мидии']
     };
+
+    // Только точечные редакторские адаптации: нельзя автоматически заменять
+    // любой аллерген или угадывать состав заправки по названию блюда.
+    // Правило привязано к конкретному рецепту и ингредиенту из его состава.
+    const allergenAdaptationRules = {
+      93: {
+        tree_nuts: {
+          removeIngredients: ['Грецкие орехи', 'Орехи грецкие'],
+          replacementIngredients: [
+            ['Оливковое масло', null, 'по вкусу'],
+            ['Лимонный сок', null, 'по вкусу']
+          ],
+          note: 'Грецкие орехи исключены. Вместо ореховой заправки можно использовать оливковое масло с лимонным соком.'
+        }
+      }
+    };
+
+    function getDishAllergenAssessment(dish, person) {
+      const allergies = person?.allergies || [];
+      const intolerances = person?.intolerances || [];
+      if (!allergies.length && !intolerances.length) return { status: 'clear', adaptations: [] };
+      // Непереносимости и неизвестный состав не адаптируем автоматически.
+      if (intolerances.length) return { status: 'blocked', reason: 'intolerance_or_unverified_composition', adaptations: [] };
+      const ingredientNames = Array.isArray(dish.ingredients)
+        ? dish.ingredients.map(item => Array.isArray(item) ? item[0] : item).filter(Boolean)
+        : [];
+      const adaptations = [];
+      for (const allergen of allergies) {
+        const blockedNames = allergyBlockedIngredients[allergen] || [];
+        const matches = ingredientNames.filter(name =>
+          blockedNames.some(blocked => ingredientMatchesPreference(name, blocked))
+        );
+        const tagged = (dish.allergens || []).includes(allergen) ||
+          (dish.allergenCandidates || []).includes(allergen);
+        if (matches.length) {
+          const rule = allergenAdaptationRules[dish.id]?.[allergen];
+          if (!rule || !matches.every(name =>
+            rule.removeIngredients.some(remove => ingredientMatchesPreference(name, remove))
+          )) return { status: 'blocked', reason: 'allergen_without_validated_substitution', adaptations: [] };
+          adaptations.push({ allergen, matchedIngredients: matches, ...rule });
+        } else if (tagged || dish.allergenStatus !== 'verified') {
+          // Неизвестный состав нельзя объявлять подходящим только потому,
+          // что в коротком списке ингредиентов аллерген не встретился.
+          return { status: 'blocked', reason: 'unverified_composition', adaptations: [] };
+        }
+      }
+      return adaptations.length
+        ? { status: 'adaptable', adaptations }
+        : { status: 'clear', adaptations: [] };
+    }
+
+    function adaptDishForPerson(dish, person) {
+      const assessment = getDishAllergenAssessment(dish, person);
+      if (assessment.status === 'blocked') return null;
+      if (assessment.status === 'clear') return dish;
+      const ingredients = [...(dish.ingredients || [])];
+      assessment.adaptations.forEach(adaptation => {
+        for (let index = ingredients.length - 1; index >= 0; index--) {
+          const item = ingredients[index];
+          const name = Array.isArray(item) ? item[0] : item;
+          if (adaptation.removeIngredients.some(remove => ingredientMatchesPreference(name, remove))) {
+            ingredients.splice(index, 1);
+          }
+        }
+        adaptation.replacementIngredients.forEach(replacement => {
+          if (!ingredients.some(item => ingredientMatchesPreference(Array.isArray(item) ? item[0] : item, replacement[0]))) {
+            ingredients.push(replacement);
+          }
+        });
+      });
+      return {
+        ...dish,
+        ingredients,
+        allergenAdaptations: assessment.adaptations,
+        allergenAdaptationWarning: 'Это предварительная адаптация, а не подтверждение безопасности. Проверьте полный состав всех продуктов, маркировку «может содержать» и риск перекрёстного контакта.'
+      };
+    }
+
+    function formatDishAllergenAdaptationNote(dish) {
+      if (!Array.isArray(dish?.allergenAdaptations) || !dish.allergenAdaptations.length) return '';
+      const notes = dish.allergenAdaptations.map(item => item.note).join(' ');
+      return '<div class="hint allergen-adaptation-note" role="note"><strong>Предложена замена аллергена.</strong> ' +
+        escapeHtml(notes) + ' <strong>Важно:</strong> ' +
+        escapeHtml(dish.allergenAdaptationWarning || 'Проверьте состав и возможные следы аллергенов.') +
+        '</div>';
+    }
 
     function getActiveTastePerson() {
       return state.persons[state.tastePersonIndex] || state.persons[0] || { likedIngredients: [], dislikedIngredients: [], allergies: [] };
@@ -10871,7 +10943,7 @@
                 const image = typeof dish.image === 'string' ? dish.image : '';
                 return '<article class="menu-dish-card">' + (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
                   '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + (isHomeLunch ? 'Обед дома' : 'Ланч-бокс') + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
-                  '<div class="menu-item-name">' + dish.name + '</div>' + formatDishProductIdentityNote(dish) + formatDishPreparation(dish) + '<div class="menu-item-cal">' + formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) + '</div></div></article>';
+                  '<div class="menu-item-name">' + dish.name + '</div>' + formatDishAllergenAdaptationNote(dish) + formatDishProductIdentityNote(dish) + formatDishPreparation(dish) + '<div class="menu-item-cal">' + formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) + '</div></div></article>';
               };
               if (!lunchPeople.length) return;
               if (isHomeLunch) {
@@ -10946,7 +11018,7 @@
               return '<article class="menu-dish-card">' +
                 (dishImage ? '<img class="menu-dish-image" src="' + dishImage + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
                 '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + mealLabels[meal.type] + '</span><span class="meal-group-label">' + meal.group + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
-                '<div class="menu-item-name">' + dish.name + '</div>' + formatDishPreparation(dish) +
+                '<div class="menu-item-name">' + dish.name + '</div>' + formatDishAllergenAdaptationNote(dish) + formatDishPreparation(dish) +
                 '<div class="menu-item-cal">' + formatDishNutrition(nutritionEstimate, count) +
                 '</div></div></article>';
             };
