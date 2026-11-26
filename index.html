@@ -9823,7 +9823,7 @@
       },
       'seasoning.maggi.universal.200g': {
         id: 'seasoning.maggi.universal.200g', category: 'seasoning', canonicalName: 'Универсальная приправа',
-        identityLevel: 'brand_variant', brand: 'MAGGI', variant: 'Универсальная приправа 200 г',
+        identityLevel: 'brand_variant', brand: 'MAGGI', variant: 'Универсальная приправа 200 г', market: 'RU',
         labelStatus: 'manufacturer_category_listing', allergenEvidence: {
           contains: [], mayContain: [], unknown: ['celery', 'gluten_cereals', 'milk']
         },
@@ -9833,7 +9833,7 @@
       },
       'seasoning.maggi.buket': {
         id: 'seasoning.maggi.buket', category: 'seasoning', canonicalName: 'Букет приправ',
-        identityLevel: 'brand_variant', brand: 'MAGGI', variant: 'Букет приправ. Универсальная приправа',
+        identityLevel: 'brand_variant', brand: 'MAGGI', variant: 'Букет приправ. Универсальная приправа', market: 'RU',
         labelStatus: 'manufacturer_product_page', allergenEvidence: {
           contains: ['celery', 'gluten_cereals'], mayContain: ['milk'], unknown: []
         },
@@ -9869,7 +9869,14 @@
         evidenceScope: 'Аллергены зависят от рецептуры производителя и предупреждений на упаковке.',
         labelRequired: true, exampleBrandIsNotDefault: true
       },
-      'sauce.mayonnaise.generic': {
+            'frozen.vegetable_mix.generic': {
+        id: 'frozen.vegetable_mix.generic', category: 'frozen_mixture', canonicalName: 'Овощная смесь',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['celery', 'soy', 'gluten_cereals'] },
+        evidenceScope: 'Состав овощной смеси зависит от конкретного набора, соуса и предприятия.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+'sauce.mayonnaise.generic': {
         id: 'sauce.mayonnaise.generic', category: 'sauce', canonicalName: 'Майонез',
         identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
         allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'mustard', 'milk', 'soy'] },
@@ -9883,7 +9890,7 @@
     const recipeProductComponentLinks = {
       5: { 'Соевый соус': 'sauce.soy.generic' },
       8: { 'MAGGI® Универсальная приправа': 'seasoning.maggi.universal.200g' },
-      11: { 'Соевый соус': 'sauce.soy.generic', 'Овощная смесь': null },
+      11: { 'Соевый соус': 'sauce.soy.generic', 'Овощная смесь': 'frozen.vegetable_mix.generic' },
       41: { 'Мясной бульон': 'broth.meat.generic' },
       42: { 'Сосиски молочные': 'processed.meat.sausage.generic', 'Колбаса варёная': 'processed.meat.boiled_sausage.generic' },
       44: { 'Овощной бульон': 'broth.vegetable.generic' },
