@@ -10686,7 +10686,12 @@
                 '</div></div></article>';
             };
             if (meal.group === 'Общий') {
-              const candidates = rankDishesForFamily(getMealCandidates(compatible.filter(dish => mealPeople.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))), meal.type));
+              const mealCandidatePool = getMealCandidates(compatible, meal.type);
+              const candidates = rankDishesForFamily(mealCandidatePool.filter(dish => mealPeople.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))));
+              const hasCrossPersonPreferenceConflict = mealCandidatePool.some(dish =>
+                mealPeople.some(person => dishContainsDislikedIngredient(dish, person)) &&
+                mealPeople.some(person => getDishPreferenceMatches(dish, person.likedIngredients || []).length > 0)
+              );
               const renderPersonalFallback = () => {
                 // Если общего блюда нет из-за разных вкусов или индивидуальных ограничений,
                 // не обнуляем весь семейный приём пищи: подбираем каждому только его совместимые блюда.
@@ -10713,7 +10718,7 @@
                   dayHtml += renderMealCard(adaptedDish, getPersonLabel(person));
                 });
               };
-              if (!candidates.length) {
+              if (!candidates.length || hasCrossPersonPreferenceConflict) {
                 renderPersonalFallback();
               } else {
                 const varietyGroup = meal.type === 'breakfast' ? 'breakfast' : 'main';
