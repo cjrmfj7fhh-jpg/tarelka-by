@@ -9414,15 +9414,14 @@
 
     // Кандидатные ингредиенты сохраняем только для вкусового подбора.
     // Они НЕ являются подтверждённым составом и не используются для медицинской фильтрации.
-    allDishes.forEach(dish => Object.assign(dish, {
-      ingredientDataStatus: 'candidate_needs_review',
-      allergenStatus: 'needs_review',
-      allergens: null,
-      intolerances: null,
-      equipment: null,
-      cookingMethods: null,
-      recipeStatus: 'needs_review'
-    }));
+    // Preserve editorial metadata supplied by the recipe catalog. Only fill missing
+    // review statuses; never erase allergen candidates, intolerance data, or
+    // equipment/method metadata at runtime. Missing status remains conservative.
+    allDishes.forEach(dish => {
+      if (!dish.ingredientDataStatus) dish.ingredientDataStatus = 'candidate_needs_review';
+      if (!dish.allergenStatus) dish.allergenStatus = 'needs_review';
+      if (!dish.recipeStatus) dish.recipeStatus = 'needs_review';
+    });
 
     let state = {
       step: 1, totalSteps: 10, store: '', adultsCount: 2, meals: [], budget: 200,
