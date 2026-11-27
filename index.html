@@ -10401,6 +10401,39 @@
       }
     };
 
+    function getLinkedProductRestrictionConflict(dish, restrictionKey, restrictionType = 'allergy') {
+      const links = recipeProductComponentLinks[dish?.id] || {};
+      for (const [ingredientName, productId] of Object.entries(links)) {
+        const product = ingredientProductCatalog[productId];
+        if (!product) {
+          return { reason: 'unresolved_linked_product', ingredient: ingredientName, productId };
+        }
+        const evidence = product.allergenEvidence || {};
+        const contains = Array.isArray(evidence.contains) ? evidence.contains : [];
+        const mayContain = Array.isArray(evidence.mayContain) ? evidence.mayContain : [];
+        const unknown = Array.isArray(evidence.unknown) ? evidence.unknown : [];
+        if (restrictionType === 'allergy') {
+          if (contains.includes(restrictionKey)) {
+            return { reason: 'linked_product_contains_allergen', ingredient: ingredientName, product: product.canonicalName, productId };
+          }
+          if (mayContain.includes(restrictionKey)) {
+            return { reason: 'linked_product_may_contain_allergen', ingredient: ingredientName, product: product.canonicalName, productId };
+          }
+          if (unknown.includes(restrictionKey)) {
+            return { reason: 'linked_product_allergen_unknown', ingredient: ingredientName, product: product.canonicalName, productId };
+          }
+        } else if (product.labelRequired && product.labelStatus !== 'label_verified') {
+          return { reason: 'linked_product_label_unverified_for_intolerance', ingredient: ingredientName, product: product.canonicalName, productId };
+        }
+        // Введённые пользователем марка и вариант — это идентификация, не доказательство состава.
+        // До проверки конкретной этикетки составной продукт не считается подтверждённо безопасным.
+        if (product.labelRequired && product.labelStatus !== 'label_verified') {
+          return { reason: 'linked_product_label_unverified', ingredient: ingredientName, product: product.canonicalName, productId };
+        }
+      }
+      return null;
+    }
+
     function getDishAllergenAssessment(dish, person) {
       const allergies = person?.allergies || [];
       const intolerances = person?.intolerances || [];
@@ -10416,6 +10449,10 @@
         return { status: 'blocked', reason: 'missing_ingredient_list', adaptations: [] };
       }
       for (const intolerance of intolerances) {
+        const linkedProductConflict = getLinkedProductRestrictionConflict(dish, intolerance, 'intolerance');
+        if (linkedProductConflict) {
+          return { status: 'blocked', ...linkedProductConflict, adaptations: [] };
+        }
         const blockedNames = intoleranceBlockedIngredients[intolerance];
         if (!Array.isArray(blockedNames) || !blockedNames.length) {
           return { status: 'blocked', reason: 'unsupported_intolerance_type', adaptations: [] };
@@ -10429,6 +10466,10 @@
         }
       }
       for (const allergen of allergies) {
+        const linkedProductConflict = getLinkedProductRestrictionConflict(dish, allergen, 'allergy');
+        if (linkedProductConflict) {
+          return { status: 'blocked', ...linkedProductConflict, adaptations: [] };
+        }
         const blockedNames = allergyBlockedIngredients[allergen];
         if (!Array.isArray(blockedNames) || !blockedNames.length) {
           return { status: 'blocked', reason: 'unsupported_allergen_type', adaptations: [] };
