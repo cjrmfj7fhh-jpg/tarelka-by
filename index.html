@@ -10556,9 +10556,10 @@
     }
 
     function isIngredientBlockedByAllergy(name, person = getActiveTastePerson()) {
-      const normalized = normalizeIngredientText(name);
+      // Используем тот же словарь синонимов, что и фильтр рецептов:
+      // нельзя добавить в любимые «миндальную муку», если выбрана аллергия на орехи.
       return [...getPersonAllergyBlockedIngredients(person)].some(item =>
-        normalizeIngredientText(item) === normalized
+        ingredientMatchesPreference(name, item) || ingredientMatchesPreference(item, name)
       );
     }
 
