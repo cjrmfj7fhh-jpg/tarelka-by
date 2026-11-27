@@ -41,7 +41,20 @@
       .menu-day { padding: 24px 28px; }
       .menu-item { align-items: flex-start; gap: 18px; }
       .menu-item-name { flex: 1; }
-      .menu-item-cal { text-align: right; }
+      .product-picker-section { margin-top:28px; padding-top:22px; border-top:1px solid var(--border); }
+    .product-picker-card { padding:15px 0; border-bottom:1px solid var(--border); }
+    .product-picker-name { display:block; margin-bottom:10px; color:var(--ink); font:600 17px 'Playfair Display',Georgia,serif; }
+    .product-picker-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .product-picker-fields label { display:flex; flex-direction:column; gap:6px; color:var(--muted); font-size:12px; }
+    .product-picker-fields input { width:100%; min-width:0; padding:11px 10px; border:1px solid var(--border); border-radius:2px; background:var(--paper); color:var(--ink); font:inherit; font-size:14px; }
+    .product-picker-fields input:focus { outline:2px solid var(--olive); outline-offset:1px; }
+    .product-picker-note { margin-top:8px; color:var(--muted); font-size:11px; line-height:1.45; }
+    @media (max-width:420px) { .product-picker-fields { grid-template-columns:1fr; } }
+    .product-identity-note {
+      margin-top: 5px; color: var(--muted); font-size: 11px;
+      line-height: 1.4; overflow-wrap: anywhere;
+    }
+    .menu-item-cal { text-align: right; }
       .footer { padding: 14px 32px calc(14px + env(safe-area-inset-bottom)); }
       .footer > * { max-width: 920px; margin-left: auto; margin-right: auto; }
     }
@@ -64,7 +77,6 @@
     .counter-controls { display: flex; align-items: center; gap: 15px; }
     .counter-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg); font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .counter-value { font-size: 32px; font-weight: 800; }
-    .kids-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 20px; }
     .toggle { width: 50px; height: 28px; background: #ddd; border-radius: 20px; position: relative; cursor: pointer; transition: 0.2s; }
     .toggle.active { background: var(--success); }
     .toggle::after { content: ''; position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 2px; left: 2px; transition: 0.2s; }
@@ -286,7 +298,7 @@
     .store-circle { width: 62px; height: 62px; flex-basis: 62px; border-radius: 19px; box-shadow: 0 5px 12px rgba(0,0,0,.09); }
     .store-name { font-size: 14px; font-weight: 750; letter-spacing: -.02em; }
     .counter-card, .person-card { border-radius: 22px; padding: 24px; }
-    .counter-row, .kids-row { min-height: 62px; }
+    .counter-row { min-height: 62px; }
     .counter-value { color: var(--primary); font-size: 30px; font-weight: 850; font-variant-numeric: tabular-nums; }
     .counter-btn { background: var(--surface-soft); border: 1px solid #EAD5C7; color: var(--primary-strong); font-weight: 700; }
     .counter-btn:hover { background: var(--primary-light); }
@@ -348,13 +360,13 @@
     .btn-next.active:hover { background: var(--primary-strong); transform: translateY(-1px); box-shadow: 0 10px 22px rgba(200,90,63,.24); }
     .btn-back { background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-card); }
     .btn-back.show { display: flex; }
-    .kids-age-notice {
+    .info-notice {
       margin-top: 16px; padding: 14px 16px; border-radius: 14px;
       display: flex; align-items: flex-start; gap: 10px;
       background: #FFF4DF; border: 1px solid #F0DDBA; color: #77551E;
       font-size: 13px; line-height: 1.5;
     }
-    .kids-age-notice strong { color: #654719; }
+    .info-notice strong { color: #654719; }
     @media (min-width: 760px) {
       body { padding: 34px 32px 140px; }
       .header, .step, .result-screen { max-width: 1000px; }
@@ -588,12 +600,6 @@
       body:has(.btn-back.show) .header { padding-left: 54px; }
     }
 
-    /* Child profile fields and calculator */
-    #childrenProfilesContainer .person-card { margin-top: 14px; }
-    #childrenProfilesContainer .result-box { margin-top: 14px; }
-    #childrenProfilesContainer .gender-btns { margin: 12px 0; }
-    #childrenProfilesContainer .hint { line-height: 1.55; }
-
     /* Mobile nutrition layout: keep every value inside the dish card. */
     @media (max-width: 480px) {
       .menu-dish-card {
@@ -682,17 +688,17 @@
         </div>
       </div>
       <div class="summary-box" id="summaryText">Готовим на 2 взрослых</div>
-      <div class="kids-age-notice" style="margin-top:14px;"><span aria-hidden="true">ℹ️</span><span>Справочная информация: в настоящее время Тарелка.by не работает с детским меню. Количество и порции рассчитываются только для взрослых.</span></div>
+      <div class="info-notice" style="margin-top:14px;"><span aria-hidden="true">ℹ️</span><span>Справочная информация: в настоящее время Тарелка.by не работает с детским меню. Количество и порции рассчитываются только для взрослых.</span></div>
     </div>
   </div>
 
   <div class="step" id="step3">
-    <h1>Сколько приёмов пищи в день?</h1>
+    <h1>Как питается каждый взрослый?</h1>
     <div id="mealGroupsContainer"></div>
     <div class="person-card" style="margin-top:18px;">
       <div class="section-title" style="margin-top:0;">⏱️ Как устроена ваша неделя?</div>
       <p class="hint" style="margin:0 0 14px;">Ориентир — рабочие будни: работа 9:00–18:00, обед 13:00–14:00. Настройки можно поменять под вашу семью.</p>
-      <div class="input-group"><label for="workLunchMode">Где обычно проходит обед в будни?</label><select id="workLunchMode" onchange="updatePlanning('workLunchMode', this.value)"><option value="container">Беру еду с собой, нужен контейнер</option><option value="home">Обедаю дома</option><option value="cafe">Обедаю вне дома</option><option value="varies">По-разному</option></select></div>
+      <p class="hint" style="margin:0 0 14px;">Для каждого взрослого отдельно укажи завтрак и обед. Если человек обедает вне дома, домашний обед и продукты для него не формируются.</p>
       <div class="input-group"><label for="weekdayCooking">Сколько активного времени готовы тратить на ужин?</label><select id="weekdayCooking" onchange="updatePlanning('weekdayCooking', this.value)"><option value="20">До 20 минут</option><option value="30" selected>Около 30 минут</option><option value="40">До 40 минут</option><option value="60">До часа, если нужно</option></select></div>
       <div class="input-group"><label for="soupFrequency">Как часто хотите есть суп?</label><select id="soupFrequency" onchange="updatePlanning('soupFrequency', this.value)"><option value="daily">Почти каждый день</option><option value="alternate">Через день</option><option value="2-3" selected>2–3 раза в неделю</option><option value="weekly">Примерно раз в неделю</option><option value="never">Супы не планировать</option></select></div>
       <div class="input-group"><label for="soupBatch">На сколько обедов варить одну кастрюлю?</label><select id="soupBatch" onchange="updatePlanning('soupBatch', this.value)"><option value="1">На один обед</option><option value="2" selected>На два обеда (например, на два дня)</option><option value="3">На три обеда</option><option value="4">На четыре обеда</option></select></div>
@@ -720,9 +726,8 @@
 
   <div class="step" id="step5">
     <h1>Настройка питания</h1>
-    <p class="subtitle">Настроим индивидуальные данные взрослых и детей.</p>
+    <p class="subtitle">Настроим индивидуальные данные взрослых.</p>
     <div id="personsContainer"></div>
-    <div id="childrenProfilesContainer"></div>
   </div>
 
   <div class="step" id="step6">
@@ -746,6 +751,11 @@
     </div>
     <p class="hint" id="tasteModeHint" style="margin:0 0 12px;">Отмечай продукты, которые тебе нравятся. Они будут приоритетом при составлении меню.</p>
     <div id="ingredientCatalog"></div>
+    <div class="product-picker-section">
+      <div class="section-title">🛒 Уточнить готовые продукты</div>
+      <p class="hint">Если в рецепте указан соус, бульон, приправа или другой готовый продукт, укажи марку и вариант, которые обычно покупаешь в Беларуси. Это поможет точнее определить продукт. Сам по себе выбор марки не подтверждает состав и не снимает предупреждения об аллергенах.</p>
+      <div id="ingredientProductPicker"></div>
+    </div>
   </div>
 
   <div class="step" id="step8">
@@ -867,6 +877,10 @@
   {
     "id": 2,
     "name": "Омлет с сыром",
+    "varietyGroup": "omelet",
+    "dishFamily": "egg-omelet",
+    "primaryIngredient": "egg",
+    "preparationStyle": "frying",
     "image": "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/cheese_omelet.jpg",
     "calories": null,
     "type": "breakfast",
@@ -1020,7 +1034,7 @@
       "fish"
     ],
     "recipeStatus": "needs_review",
-    "allergenStatus": "needs_review",
+    "allergenStatus": "verified",
     "ingredients": [
       [
         "Лосось/сёмга",
@@ -1077,7 +1091,7 @@
     "preparationOptions": [{"equipment":["oven"],"methods":["baking"]}],
     "preparationStatus": "candidate_needs_review",
     "source": "https://piknifood.ru/recipe/losos-zapechyonnyy-s-ovoschami-dinner/",
-    "reviewNotes": "Источник указывает одну порцию; проверить время и фактический вес после приготовления.",
+    "reviewNotes": "Состав и технология сверены с конкретной опубликованной карточкой Pikni: лосось, брокколи, морковь, оливковое масло, лимон, соль, перец, укроп. Молочных ингредиентов и курицы в рецептуре нет; аллерген рыба указан. Проверка относится к составу рецепта, а не к маркировке конкретной упаковки или перекрёстному контакту.",
     "ingredientDataStatus": "candidate_needs_review",
     "caloriesPerServing": 420,
     "servingWeightGrams": 280,
@@ -1094,7 +1108,7 @@
   },
   {
     "id": 5,
-    "name": "Тофу с рисом и брокколи",
+    "name": "Тофу с рисом и кукурузой",
     "image": "https://i5.walmartimages.com/asr/75b28093-3179-44f8-8e24-d265f149d74f.ffd279b272cba62c5d4473af8ecbc156.jpeg?odnBg=FFFFFF&odnHeight=768&odnWidth=768",
     "calories": null,
     "type": "lunch",
@@ -1138,7 +1152,8 @@
     "servings": null,
     "timeMinutes": null,
     "allergenCandidates": [
-      "soy"
+      "soy",
+      "gluten_cereals"
     ],
     "equipmentCandidates": [
       "stove"
@@ -1151,7 +1166,7 @@
     "preparationOptions": [{"equipment":["stove"],"methods":["frying","boiling","stewing"]}],
     "preparationStatus": "candidate_needs_review",
     "source": "https://www.sportmaster.ru/media/nutrition/tofu-s-risom/",
-    "reviewNotes": "Найден вариант с кукурузой, а не брокколи; не подменять ингредиент молча. Соевый соус может содержать пшеницу — сверять этикетку.",
+    "reviewNotes": "Sportmaster подтверждает тофу 100 г, консервированную кукурузу 50 г, соевый соус, рис, оливковое масло и специи. В источнике кукуруза, а не брокколи, поэтому название карточки исправлено. Тофу содержит сою; соевый соус может содержать пшеницу — сверять этикетку конкретного продукта.",
     "ingredientDataStatus": "candidate_needs_review",
     "caloriesPerServing": 405,
     "servingWeightGrams": 300,
@@ -1247,6 +1262,10 @@
   {
     "id": 7,
     "name": "Греческий салат",
+    "varietyGroup": "greek-salad",
+    "dishFamily": "vegetable-salad",
+    "primaryIngredient": "feta-cheese",
+    "preparationStyle": "no_cook",
     "image": "https://kaskanaus.lt/uploads/recipes/klasikines-graikiskos-salotos-000294.webp",
     "calories": null,
     "type": "lunch",
@@ -1384,7 +1403,7 @@
         "г"
       ],
       [
-        "Приправа",
+        "MAGGI® Универсальная приправа",
         3,
         "ч. л."
       ]
@@ -1392,7 +1411,9 @@
     "servings": 4,
     "timeMinutes": 35,
     "allergenCandidates": [
-      "milk"
+      "milk",
+      "celery",
+      "gluten_cereals"
     ],
     "equipmentCandidates": [
       "stove",
@@ -1404,7 +1425,7 @@
     "preparationOptions": [{"equipment":["stove","blender"],"methods":["boiling"]}],
     "preparationStatus": "candidate_needs_review",
     "source": "https://www.maggi.ru/recipes/sup-pyure-iz-tykvy",
-    "reviewNotes": "В составе есть готовая приправа неизвестного состава; нельзя считать список аллергенов исчерпывающим без состава приправы.",
+    "reviewNotes": "Первоисточник рецепта Maggi называет MAGGI® Универсальную приправу 200 г. Для точного варианта найдена официальная категория производителя, но не подтверждена отдельная подробная карточка с актуальным составом. Кандидаты celery и gluten_cereals сохранены как требующие проверки, а не как подтверждённые компоненты этой упаковки. В рецепте явно присутствуют сливки 20% и сливочное масло — молочные ингредиенты. Перед использованием проверять фактическую упаковку приправы.",
     "ingredientDataStatus": "candidate_needs_review",
     "caloriesPerServing": 225,
     "servingWeightGrams": 300,
@@ -1490,6 +1511,10 @@
   {
     "id": 10,
     "name": "Сырники со сметаной",
+    "varietyGroup": "cottage-cheese-pancakes",
+    "dishFamily": "cheese-pancakes",
+    "primaryIngredient": "cottage-cheese",
+    "preparationStyle": "frying",
     "image": "https://shuba.life/static/content/thumbs/1088x1088/8/5d/jxxphi---c1x1x50px50p-up--82002c8ddc276b02c2e8a80d4f3e15d8.jpg",
     "calories": null,
     "type": "breakfast",
@@ -1570,6 +1595,10 @@
   {
     "id": 11,
     "name": "Креветки с рисом",
+    "varietyGroup": "shrimp-rice",
+    "dishFamily": "seafood-rice",
+    "primaryIngredient": "shrimp",
+    "preparationStyle": "stewing",
     "image": "https://www.arise-app.com/images/dishes/de/garnelen-mit-reis-1ldro0.webp",
     "calories": null,
     "type": "dinner",
@@ -1633,7 +1662,7 @@
     "preparationOptions": [{"equipment":["stove"],"methods":["boiling","frying","stewing"]}],
     "preparationStatus": "candidate_needs_review",
     "source": "https://piknifood.ru/recipe/krevetki-s-risom-i-ovoschami-lunch/",
-    "reviewNotes": "В источнике заявлены глютен и моллюски; по составу креветки относятся к ракообразным. Проверить состав соевого соуса и смесь овощей.",
+    "reviewNotes": "Исходная страница Pikni сообщает, что рецепт убран из меню и больше недоступен. Сохранённый состав карточки проверяется только по записанным ингредиентам: креветки относятся к ракообразным, соевый соус — к сое; возможную пшеницу в соусе и состав овощной смеси необходимо сверять по упаковке. Не повышать статус без доступного первичного рецепта.",
     "ingredientDataStatus": "candidate_needs_review",
     "caloriesPerServing": 542.5,
     "servingWeightGrams": 350,
@@ -1744,6 +1773,10 @@
   {
     "id": 13,
     "name": "Запеченная курица с овощами",
+    "varietyGroup": "baked-chicken-vegetables",
+    "dishFamily": "baked-poultry",
+    "primaryIngredient": "chicken",
+    "preparationStyle": "baking",
     "image": "https://3.bp.blogspot.com/-RYlnMFfpO8E/XAWLn_tGaYI/AAAAAAAAPgY/b_ntJA59eF08QbFBGHxSc8lEV1MsaeiagCLcBGAs/s1600/istinye%2Btavukcusu%2Bsariyer%2Bistanbul.jpg",
     "calories": null,
     "type": "dinner",
@@ -1819,6 +1852,10 @@
   {
     "id": 14,
     "name": "Творог с фруктами",
+    "varietyGroup": "cottage-cheese-fruit-bowl",
+    "dishFamily": "cottage-cheese-snack",
+    "primaryIngredient": "cottage-cheese",
+    "preparationStyle": "no_cook",
     "image": "https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/fruit_salad_with_cottage_cheese.jpg",
     "calories": null,
     "type": "breakfast",
@@ -1944,6 +1981,10 @@
   {
     "id": 16,
     "name": "Сырники с ягодами",
+    "varietyGroup": "cottage-cheese-pancakes",
+    "dishFamily": "cheese-pancakes",
+    "primaryIngredient": "cottage-cheese",
+    "preparationStyle": "frying",
     "image": null,
     "calories": null,
     "type": "breakfast",
@@ -2159,6 +2200,10 @@
   {
     "id": 20,
     "name": "Овсяноблин с бананом",
+    "varietyGroup": "oat-banana-pancake",
+    "dishFamily": "oat-pancake",
+    "primaryIngredient": "oats",
+    "preparationStyle": "frying",
     "image": null,
     "calories": null,
     "type": "breakfast",
@@ -2213,6 +2258,10 @@
   {
     "id": 21,
     "name": "Блины с творогом",
+    "varietyGroup": "filled-pancakes",
+    "dishFamily": "pancakes",
+    "primaryIngredient": "wheat-flour",
+    "preparationStyle": "frying",
     "image": null,
     "calories": null,
     "type": "breakfast",
@@ -2267,6 +2316,10 @@
   {
     "id": 22,
     "name": "Блины с яблоками",
+    "varietyGroup": "filled-pancakes",
+    "dishFamily": "pancakes",
+    "primaryIngredient": "wheat-flour",
+    "preparationStyle": "frying",
     "image": null,
     "calories": null,
     "type": "breakfast",
@@ -2321,6 +2374,10 @@
   {
     "id": 23,
     "name": "Тосты с авокадо и яйцом",
+    "varietyGroup": "egg-toast",
+    "dishFamily": "toast",
+    "primaryIngredient": "egg",
+    "preparationStyle": "frying",
     "image": null,
     "calories": null,
     "type": "breakfast",
@@ -2622,6 +2679,10 @@
   {
     "id": 29,
     "name": "Яйца пашот с тостом",
+    "varietyGroup": "egg-toast",
+    "dishFamily": "toast",
+    "primaryIngredient": "egg",
+    "preparationStyle": "boiling",
     "image": null,
     "calories": null,
     "type": "breakfast",
@@ -2726,6 +2787,10 @@
   {
     "id": 31,
     "name": "Омлет со шпинатом",
+    "varietyGroup": "omelet",
+    "dishFamily": "egg-omelet",
+    "primaryIngredient": "egg",
+    "preparationStyle": "frying",
     "image": null,
     "calories": null,
     "type": "breakfast",
@@ -3132,6 +3197,10 @@
   {
   "id": 37,
   "name": "Куриный суп с вермишелью и картофелем",
+    "varietyGroup": "chicken-vermicelli-soup",
+    "dishFamily": "noodle-soup",
+    "primaryIngredient": "chicken",
+    "preparationStyle": "boiling",
   "image": null,
   "calories": null,
   "type": "soup",
@@ -3243,6 +3312,10 @@
   {
   "id": 38,
   "name": "Суп с куриными фрикадельками",
+    "varietyGroup": "chicken-meatball-soup",
+    "dishFamily": "meatball-soup",
+    "primaryIngredient": "chicken",
+    "preparationStyle": "boiling",
   "image": null,
   "calories": null,
   "type": "soup",
@@ -3473,6 +3546,10 @@
   {
   "id": 40,
   "name": "Турецкий чечевичный суп-пюре",
+    "varietyGroup": "lentil-soup",
+    "dishFamily": "lentil-soup",
+    "primaryIngredient": "lentils",
+    "preparationStyle": "boiling",
   "image": null,
   "calories": null,
   "type": "soup",
@@ -3660,7 +3737,7 @@
       "г"
     ],
     [
-      "Говяжий бульон",
+      "Мясной бульон",
       1500,
       "г"
     ]
@@ -3668,7 +3745,8 @@
   "servings": 9,
   "timeMinutes": 70,
   "allergenCandidates": [
-    "milk"
+    "milk",
+    "gluten_cereals"
   ],
   "equipmentCandidates": [
     "stove"
@@ -3678,7 +3756,7 @@
     "frying"
   ],
   "source": "https://calorizator.ru/recipes/19441",
-  "reviewNotes": "Источник Calorizator: масса ингредиентов 2359 г, 9 порций по ~262 г; КБЖУ на 100 г: 48,2 ккал, Б 1,6 г, Ж 0,5 г, У 9,9 г. Показатели источника рассчитаны без уварки/ужарки. Альтернативные версии рассольника имеют другой состав (почки/говядина, рассол, сметана), поэтому не смешивались. Рецептура перенесена из опубликованного пользовательского рецепта и сопоставлена с альтернативными версиями. КБЖУ рассчитаны источником по ингредиентам без учёта уварки/ужарки; фактический выход готового блюда необходимо взвесить. Рецепт и аллергены не подтверждены контрольной готовкой.",
+  "reviewNotes": "Calorizator подтверждает перловку, картофель, морковь, лук, солёные огурцы, сливочное масло и 1,5 л мясного бульона. Источник не уточняет, что бульон обязательно говяжий, поэтому ингредиент обобщён. Перловка содержит глютен, сливочное масло — молочный аллерген. Источник предупреждает, что КБЖУ рассчитаны без учёта уварки/ужарки; нужен контроль фактического выхода. Состав бульона зависит от продукта и требует проверки этикетки.",
   "caloriesPerServing": 126.3,
   "servingWeightGrams": 262,
   "caloriesPer100g": 48.2,
@@ -3725,6 +3803,10 @@
   {
   "id": 42,
   "name": "Солянка с сосисками, варёной колбасой и оливками",
+    "varietyGroup": "solyanka",
+    "dishFamily": "mixed-meat-soup",
+    "primaryIngredient": "mixed-meat",
+    "preparationStyle": "boiling",
   "image": null,
   "calories": null,
   "type": "soup",
@@ -4693,6 +4775,10 @@
   {
     "id": 54,
     "name": "Крем-суп из чечевицы",
+    "varietyGroup": "lentil-soup",
+    "dishFamily": "lentil-soup",
+    "primaryIngredient": "lentils",
+    "preparationStyle": "boiling",
     "image": null,
     "calories": null,
     "type": "soup",
@@ -5271,6 +5357,10 @@
   {
     "id": 65,
     "name": "Минтай, запечённый с овощами",
+    "varietyGroup": "baked-white-fish-vegetables",
+    "dishFamily": "baked-fish",
+    "primaryIngredient": "white-fish",
+    "preparationStyle": "baking",
     "image": null,
     "calories": null,
     "type": "dinner",
@@ -5325,6 +5415,10 @@
   {
     "id": 66,
     "name": "Курица с картофелем в духовке",
+    "varietyGroup": "baked-chicken-vegetables",
+    "dishFamily": "baked-poultry",
+    "primaryIngredient": "chicken",
+    "preparationStyle": "baking",
     "image": null,
     "calories": null,
     "type": "dinner",
@@ -5377,6 +5471,10 @@
   {
     "id": 67,
     "name": "Индейка с овощами на сковороде",
+    "varietyGroup": "turkey-vegetable-stew",
+    "dishFamily": "turkey-stew",
+    "primaryIngredient": "turkey",
+    "preparationStyle": "stewing",
     "image": null,
     "calories": null,
     "type": "dinner",
@@ -5533,6 +5631,10 @@
   {
     "id": 70,
     "name": "Плов с курицей",
+    "varietyGroup": "chicken-pilaf",
+    "dishFamily": "pilaf",
+    "primaryIngredient": "chicken",
+    "preparationStyle": "stewing",
     "image": null,
     "calories": null,
     "type": "dinner",
@@ -5639,6 +5741,10 @@
   {
     "id": 72,
     "name": "Фаршированные перцы с мясом",
+    "varietyGroup": "stuffed-meat-rice-vegetables",
+    "dishFamily": "stuffed-vegetables",
+    "primaryIngredient": "beef",
+    "preparationStyle": "stewing",
     "image": null,
     "calories": null,
     "type": "dinner",
@@ -5691,6 +5797,10 @@
   {
     "id": 73,
     "name": "Голубцы с мясом",
+    "varietyGroup": "stuffed-meat-rice-vegetables",
+    "dishFamily": "stuffed-vegetables",
+    "primaryIngredient": "beef",
+    "preparationStyle": "stewing",
     "image": null,
     "calories": null,
     "type": "dinner",
@@ -5847,6 +5957,10 @@
   {
     "id": 76,
     "name": "Овощное рагу с фасолью",
+    "varietyGroup": "bean-vegetable-stew",
+    "dishFamily": "vegetable-stew",
+    "primaryIngredient": "beans",
+    "preparationStyle": "stewing",
     "image": null,
     "calories": null,
     "type": "dinner",
@@ -6065,6 +6179,10 @@
   {
     "id": 80,
     "name": "Форель с картофелем в духовке",
+    "varietyGroup": "baked-white-fish-vegetables",
+    "dishFamily": "baked-fish",
+    "primaryIngredient": "white-fish",
+    "preparationStyle": "baking",
     "image": null,
     "calories": null,
     "type": "dinner",
@@ -6152,11 +6270,16 @@
     ],
     "servings": null,
     "timeMinutes": null,
-    "allergenCandidates": [],
+    "allergenCandidates": [
+      "crustaceans",
+      "eggs",
+      "soy",
+      "gluten_cereals"
+    ],
     "equipmentCandidates": [],
     "methodCandidates": [],
     "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
-    "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+    "reviewNotes": "Ссылка ведёт на общую категорию RussianFood, а не на конкретный рецепт. Сохранены только предварительные ингредиенты без количеств: креветки (ракообразные), яичная лапша (яйцо и обычно пшеница), соевый соус (соя; возможна пшеница). Не считать состав подтверждённым и не повышать allergenStatus до нахождения конкретной рецептуры и этикеток.",
     "caloriesPerServing": 435,
     "servingWeightGrams": 300,
     "caloriesPer100g": 145,
@@ -6256,11 +6379,14 @@
     ],
     "servings": null,
     "timeMinutes": null,
-    "allergenCandidates": [],
+    "allergenCandidates": [
+      "soy",
+      "gluten_cereals"
+    ],
     "equipmentCandidates": [],
     "methodCandidates": [],
     "source": "https://www.russianfood.com/recipes/bytype/?fid=165",
-    "reviewNotes": "Кандидат для расширения каталога. Состав и количества требуют сверки с конкретной версией рецепта; не использовать для медицинской фильтрации до проверки.",
+    "reviewNotes": "Ссылка ведёт на общую категорию RussianFood, а не на конкретный рецепт. Сохранены только предварительные ингредиенты без количеств; соевый соус указывает на сою и может содержать пшеницу. Нет подтверждённых граммовок, маринада и полной рецептуры. Не повышать allergenStatus до нахождения конкретного источника и проверки состава соуса.",
     "caloriesPerServing": 495,
     "servingWeightGrams": 300,
     "caloriesPer100g": 165,
@@ -6930,6 +7056,10 @@
   {
     "id": 96,
     "name": "Яблоко с творогом и корицей",
+    "varietyGroup": "cottage-cheese-fruit-bowl",
+    "dishFamily": "cottage-cheese-snack",
+    "primaryIngredient": "cottage-cheese",
+    "preparationStyle": "no_cook",
     "image": null,
     "calories": null,
     "type": "breakfast",
@@ -7193,6 +7323,10 @@
   {
   "id": 101,
   "name": "Греческий салат с фетаксой",
+    "varietyGroup": "greek-salad",
+    "dishFamily": "vegetable-salad",
+    "primaryIngredient": "feta-cheese",
+    "preparationStyle": "no_cook",
   "image": null,
   "calories": null,
   "type": "lunch",
@@ -7295,6 +7429,10 @@
   {
   "id": 102,
   "name": "Соте из креветок с рисом и овощами",
+    "varietyGroup": "shrimp-rice",
+    "dishFamily": "seafood-rice",
+    "primaryIngredient": "shrimp",
+    "preparationStyle": "stewing",
   "image": null,
   "calories": null,
   "type": "dinner",
@@ -7302,7 +7440,7 @@
     "seafood"
   ],
   "recipeStatus": "needs_review",
-  "allergenStatus": "needs_review",
+  "allergenStatus": "verified",
   "ingredients": [
     [
       "Креветки отварные",
@@ -7368,7 +7506,7 @@
   ],
   "preparationStatus": "candidate_needs_review",
   "source": "https://calorizator.ru/recipe/31378",
-  "reviewNotes": "Самостоятельная версия блюда: отварные креветки, варёный рис, томат, перец и зелёный горошек; отличается от варианта с сухим рисом, овощной смесью и соевым соусом. Источник пользовательский; проверить технологию и выход.",
+  "reviewNotes": "Состав и технология сверены с конкретной опубликованной карточкой Calorizator: варёные креветки, томат, перец, лук, чеснок, зелёный горошек, подсолнечное масло, варёный рис. Молочных ингредиентов и курицы в рецептуре нет; аллерген ракообразные указан. Источник пользовательский; проверка относится к опубликованному составу, а не к маркировке конкретных продуктов или перекрёстному контакту.",
   "ingredientDataStatus": "candidate_needs_review",
   "caloriesPerServing": 252.8,
   "servingWeightGrams": 265,
@@ -7393,6 +7531,10 @@
   {
   "id": 103,
   "name": "Сырники из нежирного творога",
+    "varietyGroup": "cottage-cheese-pancakes",
+    "dishFamily": "cheese-pancakes",
+    "primaryIngredient": "cottage-cheese",
+    "preparationStyle": "frying",
   "image": null,
   "calories": null,
   "type": "breakfast",
@@ -7587,6 +7729,10 @@
   {
   "id": 105,
   "name": "Овсяноблин с бананом без блендера",
+    "varietyGroup": "oat-banana-pancake",
+    "dishFamily": "oat-pancake",
+    "primaryIngredient": "oats",
+    "preparationStyle": "frying",
   "image": null,
   "calories": null,
   "type": "breakfast",
@@ -7685,6 +7831,10 @@
 {
   "id": 107,
   "name": "Сытный куриный суп с вермишелью",
+    "varietyGroup": "chicken-vermicelli-soup",
+    "dishFamily": "noodle-soup",
+    "primaryIngredient": "chicken",
+    "preparationStyle": "boiling",
   "image": null,
   "calories": null,
   "type": "soup",
@@ -7806,6 +7956,10 @@
 {
   "id": 106,
   "name": "Чечевичный суп с томатами",
+    "varietyGroup": "lentil-soup",
+    "dishFamily": "lentil-soup",
+    "primaryIngredient": "lentils",
+    "preparationStyle": "boiling",
   "image": null,
   "calories": null,
   "type": "soup",
@@ -7922,6 +8076,10 @@
 {
   "id": 108,
   "name": "Суп с куриными фрикадельками и овощами",
+    "varietyGroup": "chicken-meatball-soup",
+    "dishFamily": "meatball-soup",
+    "primaryIngredient": "chicken",
+    "preparationStyle": "boiling",
   "image": null,
   "calories": null,
   "type": "soup",
@@ -8144,6 +8302,10 @@
 {
   "id": 110,
   "name": "Плов с куриным бедром",
+    "varietyGroup": "chicken-pilaf",
+    "dishFamily": "pilaf",
+    "primaryIngredient": "chicken",
+    "preparationStyle": "stewing",
   "image": null,
   "calories": null,
   "type": "dinner",
@@ -8326,7 +8488,7 @@
       "г"
     ],
     [
-      "Смесь специй",
+      "MAGGI® Приправа универсальная Букет приправ",
       10,
       "г"
     ]
@@ -8336,7 +8498,10 @@
   "activeTimeMinutes": 20,
   "allergenCandidates": [
     "fish",
-    "eggs"
+    "eggs",
+    "celery",
+    "gluten_cereals",
+    "milk"
   ],
   "equipmentCandidates": [
     "stove",
@@ -8381,7 +8546,7 @@
       "role": "сравнение версии с судаком, сметаной, яйцом и сыром"
     }
   ],
-  "reviewNotes": "Maggi: 6 порций; картофель 1 кг, морской окунь 600 г, лимонный сок 4 ст. л. (принято около 60 г), майонез 1 ст. л. (около 15 г), петрушка 10 г, чили 5 г, цедра 2 г, оливковое масло 1 ст. л. (около 15 г), паприка 2 г, розмарин 2 г, приправа 2 ч. л. (около 10 г). Источник указывает 250,2 ккал, Б 22,9, Ж 7,8, У 22,4 на порцию, но не сообщает массу порции. Для карточки предварительно принято около 280 г из суммы исходных масс, поэтому показатели на 100 г — ориентировочные и должны быть пересчитаны после взвешивания готового выхода. Майонез может содержать яйцо; точный состав проверить по упаковке. Рецепт-кандидат. КБЖУ источника являются расчётными и требуют контрольной готовки, проверки готового выхода и сверки продуктовых брендов/жирности. recipeStatus и allergenStatus оставлены needs_review.",
+  "reviewNotes": "Первичный рецепт Maggi указывает MAGGI® Букет приправ. Официальная карточка этого продукта указывает сельдерей в составе, глютен из пшеницы в натуральном ароматизаторе и возможное присутствие молока. В рецепте явно есть морской окунь (рыба) и майонез (состав и яйцо зависят от продукта). Аллерген-кандидаты дополнены сельдереем, глютеном и молоком; конкретный майонез и актуальную упаковку приправы необходимо сверять.",
   "caloriesPerServing": 250.2,
   "servingWeightGrams": 280,
   "caloriesPer100g": 89.4,
@@ -8398,6 +8563,10 @@
 {
   "id": 112,
   "name": "Плов с куриным филе (лёгкий вариант)",
+    "varietyGroup": "chicken-pilaf",
+    "dishFamily": "pilaf",
+    "primaryIngredient": "chicken",
+    "preparationStyle": "stewing",
   "image": null,
   "calories": null,
   "type": "dinner",
@@ -8634,6 +8803,10 @@
 {
   "id": 114,
   "name": "Индейка тушёная с томатами и овощами",
+    "varietyGroup": "turkey-vegetable-stew",
+    "dishFamily": "turkey-stew",
+    "primaryIngredient": "turkey",
+    "preparationStyle": "stewing",
   "image": null,
   "calories": null,
   "type": "dinner",
@@ -8682,7 +8855,7 @@
       "г"
     ],
     [
-      "Приправа натуральная",
+      "Приправа натуральная для шашлыка",
       3.5,
       "г"
     ],
@@ -8735,7 +8908,7 @@
       "role": "сравнение рецептуры с большим количеством воды и без томата"
     }
   ],
-  "reviewNotes": "Основная версия: индейка 400 г, вода 150 г, томат 95 г, морковь 75 г, лук 75 г, масло 10 г, зелень 5 г, приправа 3,5 г, соль 5,5 г. Источник сообщает 2 порции по 410 г, 62,5 ккал, Б 9,8, Ж 1,6, У 2,2 на 100 г. Другие варианты индейки с овощами имеют иные составы и КБЖУ; они сохранены как отдельные рецептурные версии, а не усреднены. Рецепт-кандидат на основе опубликованной пользовательской рецептуры. КБЖУ источника требуют проверки контрольной готовкой и взвешиванием готового выхода; recipeStatus и allergenStatus оставлены needs_review.",
+  "reviewNotes": "Основная версия: индейка 400 г, вода 150 г, томат 95 г, морковь 75 г, лук 75 г, масло 10 г, зелень 5 г, приправа натуральная для шашлыка 3,5 г, соль 5,5 г. Источник сообщает 2 порции по 410 г, 62,5 ккал, Б 9,8, Ж 1,6, У 2,2 на 100 г. Другие варианты индейки с овощами имеют иные составы и КБЖУ; они сохранены как отдельные рецептурные версии, а не усреднены. Рецепт-кандидат на основе опубликованной пользовательской рецептуры. КБЖУ источника требуют проверки контрольной готовкой и взвешиванием готового выхода; recipeStatus и allergenStatus оставлены needs_review.",
   "caloriesPerServing": 256.1,
   "servingWeightGrams": 410,
   "caloriesPer100g": 62.5,
@@ -8752,6 +8925,10 @@
 {
   "id": 115,
   "name": "Индейка с баклажаном и сладким перцем",
+    "varietyGroup": "turkey-vegetable-stew",
+    "dishFamily": "turkey-stew",
+    "primaryIngredient": "turkey",
+    "preparationStyle": "stewing",
   "image": null,
   "calories": null,
   "type": "dinner",
@@ -8762,7 +8939,7 @@
   ],
   "recipeStatus": "needs_review",
   "ingredientDataStatus": "candidate_needs_review",
-  "allergenStatus": "needs_review",
+  "allergenStatus": "verified",
   "ingredients": [
     [
       "Филе индейки",
@@ -8865,7 +9042,7 @@
       "role": "сравнение рецептуры с капустой и картофелем"
     }
   ],
-  "reviewNotes": "Calorizator: филе индейки 700 г, баклажан 200 г, сладкий перец 145 г, лук 75 г, морковь 75 г, чеснок 8 г, вода 50 г, масло 5 г, специи и зелень. Источник указывает 5 порций по 254 г, 62,9 ккал, Б 11,1, Ж 0,8, У 2,6 на 100 г. Отличается от карточки №114 составом и более низким количеством масла; это самостоятельное блюдо, не усреднённый вариант. Рецепт-кандидат на основе опубликованной пользовательской рецептуры. КБЖУ источника требуют проверки контрольной готовкой и взвешиванием готового выхода; recipeStatus и allergenStatus оставлены needs_review.",
+  "reviewNotes": "Состав и технология сверены с конкретной опубликованной карточкой Calorizator: филе индейки, баклажан, сладкий перец, лук, морковь, чеснок, вода, соль, чёрный перец, растительное масло, укроп. Молочных ингредиентов и курицы в рецептуре нет. Источник пользовательский; проверка относится к опубликованному составу, а не к маркировке конкретных продуктов или перекрёстному контакту.",
   "caloriesPerServing": 159.9,
   "servingWeightGrams": 254,
   "caloriesPer100g": 62.9,
@@ -8883,6 +9060,10 @@
 {
   "id": 116,
   "name": "Мясная солянка с говядиной, ветчиной и копчёной колбасой",
+    "varietyGroup": "solyanka",
+    "dishFamily": "mixed-meat-soup",
+    "primaryIngredient": "mixed-meat",
+    "preparationStyle": "boiling",
   "image": null,
   "calories": null,
   "type": "soup",
@@ -9042,24 +9223,210 @@
   "nutritionStatus": "estimated",
   "nutritionBasis": "source_recipe_per_serving_scaled_to_estimated_weight",
   "nutritionNotes": "Порционные КБЖУ взяты из SVCS.bg; на 100 г пересчитаны делением на условные 450 г. Вес порции и значения на 100 г предварительные, готовый выход необходимо взвесить. Энергия по 4/9/4 немного отличается от указанной источником из-за округления/расчётной методики."
-}
+},
+,
+  {
+    "id": "family-lentil-soup-composition",
+    "name": "Томатный суп с чечевицей и персональной добавкой",
+    "varietyGroup": "lentil-soup",
+    "dishFamily": "lentil-soup",
+    "primaryIngredient": "lentils",
+    "preparationStyle": "boiling",
+    "image": null,
+    "type": "soup",
+    "tags": ["vegan"],
+    "recipeStatus": "editorial_draft",
+    "allergenStatus": "needs_review",
+    "ingredients": [
+      ["Чечевица красная сухая", 180, "г"],
+      ["Лук репчатый", 100, "г"],
+      ["Морковь", 120, "г"],
+      ["Томаты рубленые", 400, "г"],
+      ["Чеснок", 6, "г"],
+      ["Масло растительное", 15, "г"],
+      ["Вода", 1200, "мл"]
+    ],
+    "servings": 4,
+    "timeMinutes": 40,
+    "preparationOptions": [{"equipment":["stove"],"methods":["boiling","stewing"]}],
+    "preparationStatus": "candidate_needs_review",
+    "familyComposition": {
+      "base": {
+        "name": "Томатный суп с красной чечевицей",
+        "servings": 4,
+        "tags": ["vegan"],
+        "ingredients": [
+          ["Чечевица красная сухая", 180, "г"],
+          ["Лук репчатый", 100, "г"],
+          ["Морковь", 120, "г"],
+          ["Томаты рубленые", 400, "г"],
+          ["Чеснок", 6, "г"],
+          ["Масло растительное", 15, "г"],
+          ["Вода", 1200, "мл"]
+        ],
+        "caloriesPerServing": 235,
+        "servingWeightGrams": 505,
+        "proteinPerServing": 13,
+        "fatPerServing": 4.5,
+        "carbsPerServing": 37,
+        "nutritionStatus": "estimated",
+        "nutritionNotes": "Черновая оценка по ингредиентам; проверить выход после приготовления и пищевую ценность конкретных продуктов."
+      },
+      "addOns": [
+        {
+          "id": "lentil-soup-turkey",
+          "name": "Филе индейки с паприкой",
+          "eligibleDietTypes": ["meat"],
+          "servings": 1,
+          "tags": ["meat"],
+          "allergenStatus": "needs_review",
+          "ingredients": [["Филе индейки", 130, "г"], ["Масло растительное", 4, "г"], ["Паприка", 1, "г"]],
+          "caloriesPerServing": 179,
+          "servingWeightGrams": 135,
+          "proteinPerServing": 30,
+          "fatPerServing": 5.5,
+          "carbsPerServing": 1,
+          "nutritionStatus": "estimated",
+          "nutritionNotes": "Черновая оценка; уточнить по выбранному отрубу и фактическому выходу."
+        },
+        {
+          "id": "lentil-soup-salmon",
+          "name": "Лосось с лимоном",
+          "eligibleDietTypes": ["fish"],
+          "servings": 1,
+          "tags": ["fish"],
+          "allergenStatus": "needs_review",
+          "ingredients": [["Филе лосося", 130, "г"], ["Лимон", 10, "г"], ["Масло растительное", 3, "г"]],
+          "caloriesPerServing": 297,
+          "servingWeightGrams": 143,
+          "proteinPerServing": 26,
+          "fatPerServing": 20,
+          "carbsPerServing": 1,
+          "nutritionStatus": "estimated",
+          "nutritionNotes": "Черновая оценка; уточнить по виду рыбы и фактическому выходу."
+        }
+      ]
+    },
+    "caloriesPerServing": 235,
+    "servingWeightGrams": 505,
+    "proteinPerServing": 13,
+    "fatPerServing": 4.5,
+    "carbsPerServing": 37,
+    "nutritionStatus": "estimated",
+    "nutritionNotes": "Черновая оценка общей основы. Индивидуальные добавки рассчитываются отдельно."
+  },
+  {
+    "id": "family-vegetable-stew-composition",
+    "name": "Овощное рагу с персональной добавкой",
+    "varietyGroup": "bean-vegetable-stew",
+    "dishFamily": "vegetable-stew",
+    "primaryIngredient": "beans",
+    "preparationStyle": "stewing",
+    "image": null,
+    "type": "lunch",
+    "tags": ["vegan"],
+    "recipeStatus": "editorial_draft",
+    "allergenStatus": "needs_review",
+    "ingredients": [
+      ["Картофель", 400, "г"],
+      ["Кабачок", 300, "г"],
+      ["Стручковая фасоль", 250, "г"],
+      ["Морковь", 150, "г"],
+      ["Томаты", 300, "г"],
+      ["Лук репчатый", 120, "г"],
+      ["Чеснок", 6, "г"],
+      ["Масло растительное", 20, "г"],
+      ["Вода", 200, "мл"]
+    ],
+    "servings": 4,
+    "timeMinutes": 45,
+    "preparationOptions": [{"equipment":["stove"],"methods":["stewing"]}],
+    "preparationStatus": "candidate_needs_review",
+    "familyComposition": {
+      "base": {
+        "name": "Овощное рагу с фасолью",
+        "servings": 4,
+        "tags": ["vegan"],
+        "ingredients": [
+          ["Картофель", 400, "г"],
+          ["Кабачок", 300, "г"],
+          ["Стручковая фасоль", 250, "г"],
+          ["Морковь", 150, "г"],
+          ["Томаты", 300, "г"],
+          ["Лук репчатый", 120, "г"],
+          ["Чеснок", 6, "г"],
+          ["Масло растительное", 20, "г"],
+          ["Вода", 200, "мл"]
+        ],
+        "caloriesPerServing": 198,
+        "servingWeightGrams": 437,
+        "proteinPerServing": 5.5,
+        "fatPerServing": 5.7,
+        "carbsPerServing": 33.5,
+        "nutritionStatus": "estimated",
+        "nutritionNotes": "Черновая оценка по ингредиентам; проверить выход и состав овощной смеси."
+      },
+      "addOns": [
+        {
+          "id": "stew-turkey",
+          "name": "Индейка, тушённая с паприкой",
+          "eligibleDietTypes": ["meat"],
+          "servings": 1,
+          "tags": ["meat"],
+          "allergenStatus": "needs_review",
+          "ingredients": [["Филе индейки", 130, "г"], ["Масло растительное", 4, "г"], ["Паприка", 1, "г"]],
+          "caloriesPerServing": 179,
+          "servingWeightGrams": 135,
+          "proteinPerServing": 30,
+          "fatPerServing": 5.5,
+          "carbsPerServing": 1,
+          "nutritionStatus": "estimated",
+          "nutritionNotes": "Черновая оценка; уточнить по выбранному отрубу и фактическому выходу."
+        },
+        {
+          "id": "stew-salmon",
+          "name": "Лосось с лимоном",
+          "eligibleDietTypes": ["fish"],
+          "servings": 1,
+          "tags": ["fish"],
+          "allergenStatus": "needs_review",
+          "ingredients": [["Филе лосося", 130, "г"], ["Лимон", 10, "г"], ["Масло растительное", 3, "г"]],
+          "caloriesPerServing": 297,
+          "servingWeightGrams": 143,
+          "proteinPerServing": 26,
+          "fatPerServing": 20,
+          "carbsPerServing": 1,
+          "nutritionStatus": "estimated",
+          "nutritionNotes": "Черновая оценка; уточнить по виду рыбы и фактическому выходу."
+        }
+      ]
+    },
+    "caloriesPerServing": 198,
+    "servingWeightGrams": 437,
+    "proteinPerServing": 5.5,
+    "fatPerServing": 5.7,
+    "carbsPerServing": 33.5,
+    "nutritionStatus": "estimated",
+    "nutritionNotes": "Черновая оценка общей основы. Индивидуальные добавки рассчитываются отдельно."
+  }
+
 ];
 
     // Кандидатные ингредиенты сохраняем только для вкусового подбора.
     // Они НЕ являются подтверждённым составом и не используются для медицинской фильтрации.
-    allDishes.forEach(dish => Object.assign(dish, {
-      ingredientDataStatus: 'candidate_needs_review',
-      allergenStatus: 'needs_review',
-      allergens: null,
-      intolerances: null,
-      equipment: null,
-      cookingMethods: null,
-      recipeStatus: 'needs_review'
-    }));
+    // Preserve editorial metadata supplied by the recipe catalog. Only fill missing
+    // review statuses; never erase allergen candidates, intolerance data, or
+    // equipment/method metadata at runtime. Missing status remains conservative.
+    allDishes.forEach(dish => {
+      if (!dish.ingredientDataStatus) dish.ingredientDataStatus = 'candidate_needs_review';
+      if (!dish.allergenStatus) dish.allergenStatus = 'needs_review';
+      if (!dish.recipeStatus) dish.recipeStatus = 'needs_review';
+    });
 
     let state = {
-      step: 1, totalSteps: 10, store: '', adultsCount: 2, hasKids: false, meals: [], budget: 200,
-      persons: [], kids: [], planning: { workLunchMode: 'container', weekdayCooking: '30', soupFrequency: '2-3', soupBatch: '2', weekendPrep: true }, equipment: ['stove'], cookingMethods: [],
+      step: 1, totalSteps: 10, store: '', adultsCount: 2, meals: [], budget: 200,
+      persons: [], planning: { workLunchMode: 'container', weekdayCooking: '30', soupFrequency: '2-3', soupBatch: '2', weekendPrep: true }, equipment: ['stove'], cookingMethods: [],
+      productSelections: {},
       tasteMode: 'love', tastePersonIndex: 0, tastePersonType: 'adult',
       finalForm: { name: '', messenger: 'Telegram', contact: '', agreement: false }
     };
@@ -9070,7 +9437,7 @@
       for (let i = 1; i <= state.adultsCount; i++) {
         const existing = oldPersons[i-1];
         state.persons.push({
-          id: i, name: existing ? (existing.name || '') : '', gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'),
+          id: i, name: existing ? (existing.name || '') : '', gender: existing ? existing.gender : (i === 1 ? 'male' : 'female'), breakfastMode: existing?.breakfastMode || 'shared', lunchMode: existing?.lunchMode || 'home',
           mode: existing ? existing.mode : 'calc', calories: existing ? existing.calories : 2000, activity: existing ? existing.activity : 1.2,
           age: existing ? existing.age : '', height: existing ? existing.height : '', weight: existing ? existing.weight : '',
           goal: existing ? existing.goal : 'maintain', dietType: existing ? existing.dietType : '', allergies: existing ? existing.allergies : [], intolerances: existing ? (existing.intolerances || []) : [], likedIngredients: existing ? (existing.likedIngredients || []) : [], dislikedIngredients: existing ? (existing.dislikedIngredients || []) : []
@@ -9170,14 +9537,10 @@
       let isValid = false;
       if (state.step === 1) isValid = state.store !== '';
       if (state.step === 2) isValid = true;
-      if (state.step === 3) isValid = state.meals.length > 0;
+      if (state.step === 3) isValid = state.persons.some(p => p.breakfastMode !== 'skip' || p.lunchMode !== 'away') || state.meals.some(id => id.endsWith('-dinner'));
       if (state.step === 4) isValid = true;
       if (state.step === 5) {
-        const childrenHaveValidAges = !state.hasKids || state.kids.every(child => {
-          const age = Number(child.age);
-          return child.age !== '' && Number.isInteger(age) && age >= 3 && age <= 17;
-        });
-        isValid = childrenHaveValidAges;
+        isValid = true;
       } 
       if (state.step === 6) isValid = state.persons.every(p => p.dietType !== '');
       if (state.step === 7) isValid = true; 
@@ -9200,15 +9563,6 @@
       const total = getHouseholdCount();
       const summary = document.getElementById('summaryText');
       if (summary) summary.textContent = `Готовим на ${total} взрослых`;
-      const count = document.getElementById('kidsCount');
-      if (count) count.textContent = state.kids.length;
-      const control = document.getElementById('kidsCountControl');
-      if (control) control.style.display = state.hasKids ? 'flex' : 'none';
-      const toggle = document.getElementById('kidsToggle');
-      if (toggle) {
-        toggle.classList.toggle('active', state.hasKids);
-        toggle.setAttribute('aria-checked', String(state.hasKids));
-      }
     }
 
     function changeAdults(delta) {
@@ -9221,99 +9575,52 @@
       initPersons(); renderMealsStep();
     }
 
-    function toggleKids() {
-      state.hasKids = !state.hasKids;
-      if (state.hasKids && state.kids.length === 0) addChildProfile(false);
-      if (getHouseholdCount() <= 1) state.meals = state.meals.filter(m => !m.startsWith('family-'));
-      updateFamilySummary();
-      renderMealsStep();
-    }
-
-    function changeKids(delta) {
-      if (!state.hasKids) return;
-      const target = Math.max(1, Math.min(6, state.kids.length + delta));
-      while (state.kids.length < target) addChildProfile(false);
-      while (state.kids.length > target) state.kids.pop();
-      state.kids.forEach((child, i) => child.id = i + 1);
-      updateFamilySummary();
-      if (state.step === 5) renderPersons();
-      renderMealsStep();
-    }
-
-    function addChildProfile(shouldRender = true) {
-      if (state.kids.length >= 6) return;
-      state.kids.push({ id: state.kids.length + 1, name: '', age: '', gender: 'male', height: '', weight: '', activity: 'sedentary', allergies: [], intolerances: [], likedIngredients: [], dislikedIngredients: [] });
-      updateFamilySummary();
-      if (shouldRender && state.step === 5) {
-        renderPersons();
-        validateNextBtn();
-      }
-    }
-
-    function removeChildProfile(index) {
-      state.kids.splice(index, 1);
-      state.kids.forEach((child, i) => child.id = i + 1);
-      state.hasKids = state.kids.length > 0;
-      updateFamilySummary();
-      renderPersons();
-      renderMealsStep();
-      validateNextBtn();
-    }
-
-    function updateChild(index, field, value) {
-      const child = state.kids[index];
-      if (!child) return;
-      child[field] = value;
-      renderPersons();
-      validateNextBtn();
-    }
-
-    function calculateChildCalories(child) {
-      const age = Number(child.age), height = Number(child.height), weight = Number(child.weight);
-      if (!Number.isFinite(age) || age < 3 || age > 17 ||
-          !Number.isFinite(height) || height < 80 || height > 220 ||
-          !Number.isFinite(weight) || weight < 10 || weight > 150) return null;
-      const paByGender = child.gender === 'female'
-        ? { sedentary: 1.00, low: 1.16, active: 1.31, very: 1.56 }
-        : { sedentary: 1.00, low: 1.13, active: 1.26, very: 1.42 };
-      const pa = paByGender[child.activity] || 1.00;
-      const growth = age < 9 ? 20 : 25;
-      const heightM = height / 100;
-      const estimate = child.gender === 'female'
-        ? 135.3 - 30.8 * age + pa * (10 * weight + 934 * heightM) + growth
-        : 88.5 - 61.9 * age + pa * (26.7 * weight + 903 * heightM) + growth;
-      return Number.isFinite(estimate) && estimate > 0 ? Math.round(estimate) : null;
-    }
-
     function renderMealsStep() {
       const container = document.getElementById('mealGroupsContainer');
       container.innerHTML = '';
-      const selfGroup = document.createElement('div');
-      selfGroup.className = 'meal-group';
-      selfGroup.innerHTML = `<div class="meal-group-title">${state.adultsCount === 1 ? 'Твои приёмы пищи' : 'Личные приёмы пищи'}</div>`;
-      [ { id: 'self-breakfast', label: 'Завтрак ☕' }, { id: 'self-lunch', label: 'Обед 🍲' }, { id: 'self-dinner', label: 'Ужин 🍽️' } ].forEach(opt => {
-        const isSelected = state.meals.includes(opt.id);
-        selfGroup.innerHTML += `<div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)"><div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div></div>`;
+      state.persons.forEach((person, index) => {
+        const card = document.createElement('div');
+        card.className = 'person-card';
+        card.innerHTML = `
+          <div class="person-title">${escapeHtml(getPersonLabel(person))}</div>
+          <div class="input-group"><label for="breakfastMode-${index}">Завтрак</label>
+            <select id="breakfastMode-${index}" onchange="updatePersonMealMode(${index}, 'breakfastMode', this.value)">
+              <option value="shared" ${person.breakfastMode === 'shared' ? 'selected' : ''}>Завтракает вместе с семьёй</option>
+              <option value="individual" ${person.breakfastMode === 'individual' ? 'selected' : ''}>Нужен отдельный завтрак</option>
+              <option value="skip" ${person.breakfastMode === 'skip' ? 'selected' : ''}>Завтрак не нужен</option>
+            </select>
+          </div>
+          <div class="input-group"><label for="lunchMode-${index}">Обед</label>
+            <select id="lunchMode-${index}" onchange="updatePersonMealMode(${index}, 'lunchMode', this.value)">
+              <option value="home" ${person.lunchMode === 'home' ? 'selected' : ''}>Обедает дома — суп и второе</option>
+              <option value="container" ${person.lunchMode === 'container' ? 'selected' : ''}>Берёт с собой — ланч-бокс</option>
+              <option value="away" ${person.lunchMode === 'away' ? 'selected' : ''}>Обедает вне дома — обед не нужен</option>
+            </select>
+          </div>`;
+        container.appendChild(card);
       });
-      container.appendChild(selfGroup);
-
-      if (getHouseholdCount() > 1) {
-        const familyGroup = document.createElement('div');
-        familyGroup.className = 'meal-group';
-        familyGroup.innerHTML = `<div class="meal-group-title" style="margin-top: 20px;">Общие приёмы пищи</div><div class="hint" style="margin-bottom: 10px; margin-left: 0;">Готовим сразу на всех.</div>`;
-        [ { id: 'family-breakfast', label: 'Общие завтраки ☕' }, { id: 'family-lunch', label: 'Общие обеды 🍲' }, { id: 'family-dinner', label: 'Общие ужины 🍽️' } ].forEach(opt => {
-          const isSelected = state.meals.includes(opt.id);
-          familyGroup.innerHTML += `<div class="meal-option ${isSelected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)"><div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div></div>`;
-        });
-        container.appendChild(familyGroup);
-      }
+      const dinnerGroup = document.createElement('div');
+      dinnerGroup.className = 'meal-group';
+      dinnerGroup.innerHTML = '<div class="meal-group-title">Ужин</div>';
+      [{id:'self-dinner',label:'Индивидуальный ужин'},{id:'family-dinner',label:'Общий ужин для семьи'}].forEach(opt => {
+        const selected = state.meals.includes(opt.id);
+        dinnerGroup.innerHTML += `<div class="meal-option ${selected ? 'selected' : ''}" onclick="toggleMeal('${opt.id}', this)"><div class="meal-checkbox"></div><div class="meal-text">${opt.label}</div></div>`;
+      });
+      container.appendChild(dinnerGroup);
       const planning = state.planning || {};
-      ['workLunchMode','weekdayCooking','soupFrequency','soupBatch'].forEach(id => {
+      ['weekdayCooking','soupFrequency','soupBatch'].forEach(id => {
         const control = document.getElementById(id);
         if (control && planning[id] !== undefined) control.value = String(planning[id]);
       });
       const weekendPrep = document.getElementById('weekendPrep');
       if (weekendPrep) weekendPrep.checked = planning.weekendPrep !== false;
+    }
+
+    function updatePersonMealMode(index, field, value) {
+      const person = state.persons[index];
+      if (!person || !['breakfastMode', 'lunchMode'].includes(field)) return;
+      person[field] = value;
+      validateNextBtn();
     }
 
     function toggleMeal(mealId, el) {
@@ -9367,42 +9674,11 @@
             </div>
             <div class="result-box" id="calc-result-${index}">
               ${person.age && person.height && person.weight ? (calculateCalories(person) > 0 ? `Ориентир: ${calculateCalories(person)} ккал/день` : 'Проверьте возраст, рост и вес') : 'Заполните данные'}
-            </div><p class="hint" style="margin:10px 0 0;">Приблизительная оценка по формуле, не медицинская рекомендация. Для детей и особых состояний этот расчёт не подходит.</p>
+            </div><p class="hint" style="margin:10px 0 0;">Приблизительная оценка по формуле, не медицинская рекомендация. Этот расчёт не подходит для несовершеннолетних и людей с особыми состояниями.</p>
           `}</div>
         `;
         container.appendChild(card);
       });
-      renderChildrenProfiles();
-    }
-
-    function renderChildrenProfiles() {
-      const container = document.getElementById('childrenProfilesContainer');
-      if (!container) return;
-      if (!state.hasKids || state.kids.length === 0) { container.innerHTML = ''; return; }
-      let html = '<div class="section-title" style="margin-top:24px;">👧 Данные детей</div><p class="hint">Для каждого ребёнка отдельно укажи возраст, рост, вес и активность. Ориентир рассчитывается по детской формуле, без целей «похудеть» или «набрать».</p><div class="budget-notice" style="margin:10px 0 14px;"><div>🛡️</div><div><strong>Отдельные настройки питания для каждого ребёнка</strong><br><span>На шаге 7 отметь его любимые и нелюбимые продукты. На шаге 8 укажи аллергены и непереносимости отдельно для каждого ребёнка. Эти ограничения учитываются при подборе общего меню.</span></div></div>';
-      state.kids.forEach((child, index) => {
-        const estimate = calculateChildCalories(child);
-        const age = Number(child.age);
-        let result = '';
-        if (child.age !== '' && age < 3) result = '<div class="result-box">Детям младше 3 лет приложение не рассчитывает калорийность и порции. Обсудите питание с педиатром.</div>';
-        else if (estimate !== null) result = '<div class="result-box">Ориентировочная потребность: ' + estimate + ' ккал/день</div>';
-        else result = '<div class="result-box">Заполни возраст, рост и вес — рассчитаем ориентир автоматически</div>';
-        child.allergies = child.allergies || [];
-        child.intolerances = child.intolerances || [];
-        child.likedIngredients = child.likedIngredients || [];
-        child.dislikedIngredients = child.dislikedIngredients || [];
-        const foodSettingsSummary = 'Аллергены: ' + child.allergies.length + ' · Непереносимости: ' + child.intolerances.length + ' · Любимые продукты: ' + child.likedIngredients.length + ' · Исключить по вкусу: ' + child.dislikedIngredients.length;
-        html += '<div class="person-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div class="person-title">Ребёнок ' + (index + 1) + '</div><button type="button" style="width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:transparent;" onclick="removeChildProfile(' + index + ')" aria-label="Удалить профиль ребёнка">×</button></div><p class="hint" style="margin:0 0 12px;">' + foodSettingsSummary + '</p>' +
-          '<div class="input-group"><label>Имя ребёнка</label><input type="text" maxlength="32" placeholder="Например, Маша" value="' + escapeHtml(child.name) + '" onchange="updateChild(' + index + ', \'name\', this.value)"></div>' +
-          '<div class="input-group"><label>Возраст (полных лет, от 3 до 17)</label><input type="number" min="3" max="17" step="1" value="' + escapeHtml(child.age) + '" placeholder="Например, 8" onchange="updateChild(' + index + ', \'age\', this.value)"></div>' +
-          '<div class="gender-btns"><div class="gender-btn ' + (child.gender === 'male' ? 'active' : '') + '" onclick="updateChild(' + index + ', \'gender\', \'male\')">👦 Мальчик</div><div class="gender-btn ' + (child.gender === 'female' ? 'active' : '') + '" onclick="updateChild(' + index + ', \'gender\', \'female\')">👧 Девочка</div></div>' +
-          '<div class="input-group"><label>Рост (см)</label><input type="number" min="80" max="220" step="0.1" value="' + escapeHtml(child.height) + '" placeholder="Например, 128" onchange="updateChild(' + index + ', \'height\', this.value)"></div>' +
-          '<div class="input-group"><label>Вес (кг)</label><input type="number" min="10" max="150" step="0.1" value="' + escapeHtml(child.weight) + '" placeholder="Например, 27" onchange="updateChild(' + index + ', \'weight\', this.value)"></div>' +
-          '<div class="input-group"><label>Физическая активность</label><select onchange="updateChild(' + index + ', \'activity\', this.value)"><option value="sedentary" ' + (child.activity === 'sedentary' ? 'selected' : '') + '>Низкая — обычная повседневная активность</option><option value="low" ' + (child.activity === 'low' ? 'selected' : '') + '>Невысокая — 30–60 минут умеренной активности в день</option><option value="active" ' + (child.activity === 'active' ? 'selected' : '') + '>Активная — не менее 60 минут умеренной активности</option><option value="very" ' + (child.activity === 'very' ? 'selected' : '') + '>Очень высокая — активность плюс дополнительные тренировки</option></select></div>' +
-          result + '<p class="hint">Это справочная оценка, а не индивидуальное назначение питания. При особенностях роста, веса или здоровья ориентируйтесь на педиатра.</p></div>';
-      });
-      html += '<button type="button" class="btn-next active" style="margin-top:12px;" onclick="addChildProfile()">＋ Добавить ещё ребёнка</button>';
-      container.innerHTML = html;
     }
 
     function updatePerson(index, field, value) {
@@ -9453,11 +9729,9 @@
       if (person.dietType === 'vegan' && !tags.includes('vegan')) return false;
       if (person.dietType === 'vegetarian' && !tags.includes('vegetarian') && !tags.includes('vegan')) return false;
       if (person.dietType === 'fish' && !['fish', 'seafood', 'vegetarian', 'vegan'].some(tag => tags.includes(tag))) return false;
-      // Аллергенные теги старого демо-каталога не подтверждают состав.
-      // При выбранной аллергии показываем только рецепты с проверенной allergen-меткой.
-      const restrictions = [...(person.allergies || []), ...(person.intolerances || [])];
-      if (restrictions.length && dish.allergenStatus !== 'verified') return false;
-      return !restrictions.some(item => (dish.allergens || []).includes(item) || (dish.intolerances || []).includes(item));
+      // Для общего блюда допускаем только вариант без необходимости персональной адаптации.
+      // Адаптируемые рецепты выдаются отдельно конкретному человеку.
+      return getDishAllergenAssessment(dish, person).status === 'clear';
     }
 
     function isDishCompatibleWithKitchen(dish) {
@@ -9508,24 +9782,264 @@
         '</div>';
     }
 
+    // Идентификация готовых/составных продуктов отделена от обычных ингредиентов.
+    // Типовой продукт не равен конкретной марке; примеры этикеток не переносятся на всю категорию.
+    const ingredientProductCatalog = {
+      'sauce.soy.generic': {
+        id: 'sauce.soy.generic', category: 'sauce', canonicalName: 'Соевый соус',
+        identityLevel: 'generic_type', brand: null, variant: null,
+        labelStatus: 'brand_not_identified',
+        allergenEvidence: { contains: ['soy'], mayContain: ['gluten_cereals'], unknown: [] },
+        evidenceScope: 'Типовой ингредиент; пшеница зависит от рецептуры конкретного соуса.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'broth.meat.generic': {
+        id: 'broth.meat.generic', category: 'broth', canonicalName: 'Мясной бульон',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['celery', 'gluten_cereals', 'milk', 'soy'] },
+        evidenceScope: 'Неизвестно, домашний это бульон или промышленный продукт.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'broth.vegetable.generic': {
+        id: 'broth.vegetable.generic', category: 'broth', canonicalName: 'Овощной бульон',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['celery', 'gluten_cereals', 'milk', 'soy'] },
+        evidenceScope: 'Неизвестно, домашний это бульон или промышленный продукт.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'broth.chicken.generic': {
+        id: 'broth.chicken.generic', category: 'broth', canonicalName: 'Куриный бульон',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['celery', 'gluten_cereals', 'milk', 'soy'] },
+        evidenceScope: 'Неизвестно, домашний это бульон или промышленный продукт.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'seasoning.shashlik.generic': {
+        id: 'seasoning.shashlik.generic', category: 'seasoning', canonicalName: 'Приправа для шашлыка',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['mustard', 'celery', 'gluten_cereals'] },
+        evidenceScope: 'Состав смесей зависит от марки и конкретного варианта.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'seasoning.maggi.universal.200g': {
+        id: 'seasoning.maggi.universal.200g', category: 'seasoning', canonicalName: 'Универсальная приправа',
+        identityLevel: 'brand_variant', brand: 'MAGGI', variant: 'Универсальная приправа 200 г', market: 'RU',
+        labelStatus: 'manufacturer_category_listing', allergenEvidence: {
+          contains: [], mayContain: [], unknown: ['celery', 'gluten_cereals', 'milk']
+        },
+        evidenceScope: 'Найдена только категория производителя с названием продукта; детальная этикетка точного варианта отдельно не подтверждена.',
+        sourceUrl: 'https://www.maggi.ru/products/maggi-universalnyy-pripravi',
+        checkedAt: '2026-11-26', labelRequired: true, exampleBrandIsNotDefault: false
+      },
+      'seasoning.maggi.buket': {
+        id: 'seasoning.maggi.buket', category: 'seasoning', canonicalName: 'Букет приправ',
+        identityLevel: 'brand_variant', brand: 'MAGGI', variant: 'Букет приправ. Универсальная приправа', market: 'RU',
+        labelStatus: 'manufacturer_product_page', allergenEvidence: {
+          contains: ['celery', 'gluten_cereals'], mayContain: ['milk'], unknown: []
+        },
+        evidenceScope: 'Декларация производителя на странице продукта; сверять актуальную упаковку.',
+        sourceUrl: 'https://www.maggi.ru/products/maggi-buket-priprav-universalnaya-priprava',
+        checkedAt: '2026-11-26', labelRequired: true, exampleBrandIsNotDefault: false
+      },
+      'processed.meat.sausage.generic': {
+        id: 'processed.meat.sausage.generic', category: 'processed_meat', canonicalName: 'Сосиски',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'milk', 'gluten_cereals', 'mustard', 'soy', 'tree_nuts', 'celery'] },
+        evidenceScope: 'Аллергены зависят от рецептуры производителя и предупреждений на упаковке.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'processed.meat.boiled_sausage.generic': {
+        id: 'processed.meat.boiled_sausage.generic', category: 'processed_meat', canonicalName: 'Варёная колбаса',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'milk', 'gluten_cereals', 'mustard', 'soy', 'tree_nuts', 'celery'] },
+        evidenceScope: 'Аллергены зависят от рецептуры производителя и предупреждений на упаковке.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'processed.meat.smoked_sausage.generic': {
+        id: 'processed.meat.smoked_sausage.generic', category: 'processed_meat', canonicalName: 'Копчёная колбаса',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'milk', 'gluten_cereals', 'mustard', 'soy', 'tree_nuts', 'celery'] },
+        evidenceScope: 'Аллергены зависят от рецептуры производителя и предупреждений на упаковке.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+      'processed.meat.ham.generic': {
+        id: 'processed.meat.ham.generic', category: 'processed_meat', canonicalName: 'Ветчина',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'milk', 'gluten_cereals', 'mustard', 'soy', 'tree_nuts', 'celery'] },
+        evidenceScope: 'Аллергены зависят от рецептуры производителя и предупреждений на упаковке.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+            'frozen.vegetable_mix.generic': {
+        id: 'frozen.vegetable_mix.generic', category: 'frozen_mixture', canonicalName: 'Овощная смесь',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['celery', 'soy', 'gluten_cereals'] },
+        evidenceScope: 'Состав овощной смеси зависит от конкретного набора, соуса и предприятия.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      },
+'sauce.mayonnaise.generic': {
+        id: 'sauce.mayonnaise.generic', category: 'sauce', canonicalName: 'Майонез',
+        identityLevel: 'generic_type', brand: null, variant: null, labelStatus: 'source_not_identified',
+        allergenEvidence: { contains: [], mayContain: [], unknown: ['eggs', 'mustard', 'milk', 'soy'] },
+        evidenceScope: 'Состав и предупреждения зависят от производителя; яйцо нельзя считать гарантированным для любого варианта.',
+        labelRequired: true, exampleBrandIsNotDefault: true
+      }
+    };
+
+    // Привязка ингредиентов рецепта к типу/варианту готового продукта.
+    // Здесь намеренно нет подстановки случайных брендов вместо неизвестных марок.
+    const recipeProductComponentLinks = {
+      5: { 'Соевый соус': 'sauce.soy.generic' },
+      8: { 'MAGGI® Универсальная приправа': 'seasoning.maggi.universal.200g' },
+      11: { 'Соевый соус': 'sauce.soy.generic', 'Овощная смесь': 'frozen.vegetable_mix.generic' },
+      41: { 'Мясной бульон': 'broth.meat.generic' },
+      42: { 'Сосиски молочные': 'processed.meat.sausage.generic', 'Колбаса варёная': 'processed.meat.boiled_sausage.generic' },
+      44: { 'Овощной бульон': 'broth.vegetable.generic' },
+      48: { 'Куриный бульон': 'broth.chicken.generic' },
+      81: { 'Соевый соус': 'sauce.soy.generic' },
+      83: { 'Соевый соус': 'sauce.soy.generic' },
+      111: {
+        'Майонез': 'sauce.mayonnaise.generic',
+        'MAGGI® Приправа универсальная Букет приправ': 'seasoning.maggi.buket'
+      },
+      114: { 'Приправа натуральная для шашлыка': 'seasoning.shashlik.generic' },
+      116: {
+        'Говяжий бульон': 'broth.meat.generic',
+        'Колбаса копчёная': 'processed.meat.smoked_sausage.generic',
+        'Ветчина': 'processed.meat.ham.generic',
+        'Сосиски': 'processed.meat.sausage.generic'
+      }
+    };
+
+    function getIngredientProductIdentity(dishId, ingredientName) {
+      const productId = recipeProductComponentLinks[dishId]?.[ingredientName];
+      return productId ? ingredientProductCatalog[productId] || null : null;
+    }
+
+    function renderIngredientProductPicker() {
+      const container = document.getElementById('ingredientProductPicker');
+      if (!container) return;
+      container.innerHTML = '';
+      Object.values(ingredientProductCatalog).forEach(product => {
+        const saved = state.productSelections[product.id] || {};
+        const brandValue = saved.brand !== undefined ? saved.brand : (product.brand || '');
+        const variantValue = saved.variant !== undefined ? saved.variant : (product.variant || '');
+        const card = document.createElement('div');
+        card.className = 'product-picker-card';
+
+        const title = document.createElement('strong');
+        title.className = 'product-picker-name';
+        title.textContent = product.canonicalName;
+        card.appendChild(title);
+
+        const fields = document.createElement('div');
+        fields.className = 'product-picker-fields';
+        const brandLabel = document.createElement('label');
+        brandLabel.textContent = 'Марка / производитель';
+        const brandInput = document.createElement('input');
+        brandInput.type = 'text';
+        brandInput.autocomplete = 'off';
+        brandInput.maxLength = 80;
+        brandInput.placeholder = 'Например, MAGGI, Bonduelle';
+        brandInput.value = brandValue;
+        brandLabel.appendChild(brandInput);
+
+        const variantLabel = document.createElement('label');
+        variantLabel.textContent = 'Точный вариант / название';
+        const variantInput = document.createElement('input');
+        variantInput.type = 'text';
+        variantInput.autocomplete = 'off';
+        variantInput.maxLength = 120;
+        variantInput.placeholder = 'Например, классический, 200 г';
+        variantInput.value = variantValue;
+        variantLabel.appendChild(variantInput);
+
+        const saveField = (field, value) => {
+          const current = state.productSelections[product.id] || {
+            brand: product.brand || '', variant: product.variant || ''
+          };
+          current[field] = value;
+          state.productSelections[product.id] = current;
+        };
+        brandInput.addEventListener('input', () => saveField('brand', brandInput.value.trim()));
+        variantInput.addEventListener('input', () => saveField('variant', variantInput.value.trim()));
+        fields.appendChild(brandLabel);
+        fields.appendChild(variantLabel);
+        card.appendChild(fields);
+
+        const note = document.createElement('p');
+        note.className = 'product-picker-note';
+        note.textContent = 'Состав и возможные следы аллергенов нужно сверять по актуальной упаковке. Введённые данные пока не проверены.';
+        card.appendChild(note);
+        container.appendChild(card);
+      });
+    }
+
+    function getDishProductIdentityReview(dish) {
+      const ingredients = Array.isArray(dish?.ingredients) ? dish.ingredients : [];
+      return ingredients.map(item => Array.isArray(item) ? item[0] : item)
+        .filter(Boolean)
+        .map(name => ({ ingredientName: name, product: getIngredientProductIdentity(dish.id, name) }))
+        .filter(item => item.product);
+    }
+
+    function formatDishProductIdentityNote(dish) {
+      const linked = getDishProductIdentityReview(dish);
+      if (!linked.length) return '';
+      const generic = [];
+      const branded = [];
+      linked.forEach(item => {
+        const selection = state.productSelections?.[item.product.id] || {};
+        const brand = (selection.brand !== undefined ? selection.brand : item.product.brand || '').trim();
+        const variant = (selection.variant !== undefined ? selection.variant : item.product.variant || '').trim();
+        if (brand || variant) branded.push([brand, variant].filter(Boolean).join(' '));
+        else generic.push(item.ingredientName);
+      });
+      const parts = [];
+      if (generic.length) parts.push('Марка не указана: ' + generic.join(', ') + '.');
+      if (branded.length) parts.push('Выбран продукт: ' + branded.join(', ') + ' — состав по упаковке не подтверждён.');
+      return '<div class="product-identity-note">' + escapeHtml(parts.join(' ')) +
+        ' Состав и предупреждения на актуальной упаковке могут отличаться.</div>';
+    }
+
+    function getProductIdentityStatus(product) {
+      if (!product) return 'ordinary_ingredient';
+      if (product.identityLevel === 'brand_variant' && product.labelStatus === 'manufacturer_product_page') {
+        return 'brand_variant_needs_package_check';
+      }
+      if (product.identityLevel === 'brand_variant' && product.labelStatus === 'manufacturer_category_listing') {
+        return 'brand_variant_needs_exact_label';
+      }
+      return 'generic_product_needs_identification';
+    }
+
     // Сопоставление пользовательских предпочтений с кандидатными названиями ингредиентов.
     // Расширяем словарь по мере редакторского утверждения каталога.
     const ingredientPreferenceAliases = {
-      'Курица': ['куриц'], 'Индейка': ['индейк'], 'Говядина': ['говядин'], 'Свинина': ['свинин'],
-      'Лосось': ['лосос', 'сёмг'], 'Форель': ['форел'], 'Треска': ['треск'], 'Креветки': ['кревет'],
-      'Молоко': ['молок'], 'Сливки': ['сливк'], 'Сметана': ['сметан'], 'Творог': ['творог'],
-      'Сыр': ['сыр', 'фет', 'моцарел'], 'Фета': ['фет'], 'Моцарелла': ['моцарел'],
-      'Яйца': ['яйц'], 'Яйца': ['яйц'], 'Помидоры': ['помидор', 'томат'],
-      'Огурцы': ['огур'], 'Болгарский перец': ['перец'], 'Морковь': ['морков'],
-      'Лук': ['лук'], 'Чеснок': ['чеснок'], 'Брокколи': ['броккол'], 'Тыква': ['тыкв'],
-      'Грибы': ['гриб', 'лисичк'], 'Гречка': ['греч'], 'Рис': ['рис'],
-      'Овсянка': ['овсян'], 'Кукуруза': ['кукуруз'], 'Нут': ['нут'],
-      'Кешью': ['кешью'], 'Кунжут': ['кунжут', 'тахин'], 'Бананы': ['банан'],
+      'Курица': ['куриц', 'курин', 'цыплен', 'chicken'],
+      'Индейка': ['индейк', 'индюш', 'turkey'],
+      'Говядина': ['говядин', 'говяж', 'beef'],
+      'Свинина': ['свинин', 'свин', 'pork'],
+      'Баранина': ['баранин', 'ягнен', 'ягнят', 'lamb'], 'Кролик': ['кролик', 'rabbit'], 'Утка': ['утин', 'duck'],
+      'Лосось': ['лосос', 'сёмг', 'семг'], 'Форель': ['форел'], 'Треска': ['треск'], 'Судак': ['судак'], 'Скумбрия': ['скумбри'], 'Сельдь': ['сельд'], 'Тунец': ['тунц'], 'Креветки': ['кревет'],
+      'Молоко': ['молок', 'сыворот', 'казеин', 'лактальбумин', 'лактоглобулин'], 'Сливки': ['сливк'], 'Сметана': ['сметан'], 'Творог': ['творог'],
+      'Сыр': ['сыр', 'фет', 'моцарел', 'пармезан', 'чеддер', 'гауда', 'рикотт'], 'Фета': ['фет'], 'Моцарелла': ['моцарел'],
+      'Яйца': ['яйц', 'яичн', 'альбумин', 'овальбумин', 'лизоцим'],
+      'Помидоры': ['помидор', 'томат'], 'Огурцы': ['огур'],
+      'Болгарский перец': ['болгарский перец', 'сладкий перец', 'bell pepper', 'capsicum'],
+      'Острый перец': ['острый перец', 'перец чили', 'чили', 'cayenne', 'халапеньо'],
+      'Морковь': ['морков'], 'Лук': ['луков', 'репчатый лук'], 'Чеснок': ['чеснок'], 'Брокколи': ['броккол'], 'Тыква': ['тыкв'],
+      'Грибы': ['гриб', 'лисичк', 'шампиньон', 'вешенк', 'опят', 'белый гриб', 'портобелло'],
+      'Гречка': ['греч'], 'Рис': ['рис'], 'Овсянка': ['овсян'], 'Кукуруза': ['кукуруз'], 'Нут': ['нут'],
+      'Кешью': ['кешью'], 'Кунжут': ['кунжут', 'тахин', 'sesame'], 'Бананы': ['банан'],
       'Киви': ['киви'], 'Нектарины': ['нектарин'], 'Лимон': ['лимон'],
-      'Оливковое масло': ['оливковое масло'], 'Тофу': ['тофу'], 'Соевый соус': ['соевый соус'],
-      'Пшеничный хлеб': ['пшеничн'], 'Ржаной хлеб': ['ржан'], 'Мёд': ['мёд', 'мед'],
-      'Мясо': ['куриц', 'индейк', 'говядин', 'свинин', 'баранин', 'кролик', 'утк'],
-      'Рыба': ['лосос', 'сёмг', 'форел', 'треск', 'судак', 'скумбри', 'сельд', 'тунец']
+      'Оливковое масло': ['оливковое масло'], 'Тофу': ['тофу'], 'Соевый соус': ['соевый соус', 'тамари'],
+      'Пшеничный хлеб': ['пшеничн', 'багет', 'чиабатт'], 'Ржаной хлеб': ['ржан'], 'Мёд': ['мёд', 'мед'],
+      'Мясо': ['куриц', 'индейк', 'говядин', 'свинин', 'баранин', 'кролик', 'утк', 'теля', 'фарш'],
+      'Рыба': ['лосос', 'сёмг', 'семг', 'форел', 'треск', 'судак', 'скумбри', 'сельд', 'тунец', 'щук', 'окун', 'минта', 'хек', 'камбал', 'палтус', 'дорадо', 'сибас'],
+      'Морепродукты': ['кревет', 'кальмар', 'мид', 'осьминог', 'устриц', 'гребеш'],
+      'Орехи': ['миндал', 'фундук', 'грецк', 'кешью', 'фисташ', 'пекан', 'макадам', 'кедров'],
+      'Бобовые': ['нут', 'чечевиц', 'фасол', 'горох', 'соя', 'маш'],
+      'Цитрусовые': ['лимон', 'апельсин', 'мандарин', 'грейпфрут', 'лайм']
     };
 
     function normalizeIngredientText(value) {
@@ -9536,9 +10050,21 @@
       const ingredient = normalizeIngredientText(recipeIngredient);
       const selected = normalizeIngredientText(preference);
       if (!ingredient || !selected) return false;
-      if (ingredient.includes(selected) || selected.includes(ingredient)) return true;
-      const aliases = ingredientPreferenceAliases[preference] || [preference.toLocaleLowerCase('ru')];
-      return aliases.some(alias => ingredient.includes(normalizeIngredientText(alias)));
+      const ingredientTokens = ingredient.split(' ');
+      const matchesAlias = alias => {
+        const normalizedAlias = normalizeIngredientText(alias);
+        if (!normalizedAlias) return false;
+        const aliasTokens = normalizedAlias.split(' ');
+        if (aliasTokens.length > 1) return ingredient.includes(normalizedAlias);
+        const stem = aliasTokens[0];
+        // Короткие названия (рис, сыр, лук) сопоставляем точно,
+        // чтобы не ловить случайные части других слов.
+        if (stem.length <= 3) return ingredientTokens.includes(stem);
+        return ingredientTokens.some(token => token === stem || token.startsWith(stem));
+      };
+      if (matchesAlias(selected)) return true;
+      const aliases = ingredientPreferenceAliases[preference] || [preference];
+      return aliases.some(matchesAlias);
     }
 
     function getDishPreferenceMatches(dish, preferences) {
@@ -9568,16 +10094,16 @@
     }
 
     function getDishesForPerson(dishes, person) {
-      // Нелюбимый ингредиент исключает блюдо из личной рекомендации,
-      // а не просто немного понижает его рейтинг.
-      return dishes.filter(dish =>
-        isDishCompatibleWithPerson(dish, person) &&
-        !dishContainsDislikedIngredient(dish, person)
+      // Нелюбимый ингредиент исключает блюдо для конкретного человека.
+      // Если известный аллерген можно удалить по явному правилу, возвращаем
+      // отдельную адаптированную копию рецепта — исходный рецепт не меняется.
+      return dishes.map(dish => adaptDishForPerson(dish, person)).filter(dish =>
+        Boolean(dish) && !dishContainsDislikedIngredient(dish, person)
       );
     }
 
     function getFamilyCompatibleDishes(dishes) {
-      const eaters = [...state.persons, ...(state.hasKids ? state.kids : [])];
+      const eaters = [...state.persons];
       // Общее блюдо не предлагаем, если в нём есть продукт, который не любит
       // хотя бы один участник. Персональная адаптация будет отдельной функцией.
       return dishes.filter(dish =>
@@ -9589,9 +10115,140 @@
       );
     }
 
+    // Семейная композиция: общая основа + явно описанные добавки для отдельных взрослых.
+    // Не пытаемся угадывать состав по названию блюда: без familyComposition рецепт
+    // остаётся обычным блюдом и не получает автоматических персональных замен.
+    function buildFamilyComposition(dish, persons = state.persons) {
+      const composition = dish && dish.familyComposition;
+      if (!composition || !composition.base || !Array.isArray(composition.addOns)) return null;
+      if (!Array.isArray(composition.base.ingredients) || !composition.base.ingredients.length) return null;
+      if (!persons.length) return null;
+
+      const baseDish = {
+        ...dish,
+        ...composition.base,
+        name: composition.base.name || dish.name,
+        ingredients: composition.base.ingredients,
+        tags: composition.base.tags || dish.tags || [],
+        allergens: composition.base.allergens || dish.allergens || [],
+        intolerances: composition.base.intolerances || dish.intolerances || [],
+        allergenStatus: composition.base.allergenStatus || dish.allergenStatus
+      };
+      const baseAllowed = persons.every(person =>
+        isDishCompatibleWithPerson(baseDish, person) &&
+        !dishContainsDislikedIngredient(baseDish, person)
+      );
+      if (!baseAllowed) return null;
+
+      const personAddOns = [];
+      for (const person of persons) {
+        const allowedAddOns = composition.addOns.filter(addOn => {
+          const assigned = (Array.isArray(addOn.personIds) && addOn.personIds.includes(person.id)) ||
+            (Array.isArray(addOn.eligibleDietTypes) && addOn.eligibleDietTypes.includes(person.dietType));
+          if (!assigned || !Array.isArray(addOn.ingredients) || !addOn.ingredients.length) return false;
+          const addOnDish = {
+            ...dish,
+            ...addOn,
+            name: addOn.name || 'Индивидуальная добавка',
+            ingredients: addOn.ingredients,
+            tags: addOn.tags || [],
+            allergens: addOn.allergens || [],
+            intolerances: addOn.intolerances || [],
+            allergenStatus: addOn.allergenStatus || 'needs_review'
+          };
+          return isDishCompatibleWithPerson(addOnDish, person) &&
+            !dishContainsDislikedIngredient(addOnDish, person);
+        });
+        const requestedAddOns = composition.addOns.filter(addOn =>
+          (Array.isArray(addOn.personIds) && addOn.personIds.includes(person.id)) ||
+          (Array.isArray(addOn.eligibleDietTypes) && addOn.eligibleDietTypes.includes(person.dietType))
+        );
+        if (requestedAddOns.length !== allowedAddOns.length) return null;
+        personAddOns.push({ personId: person.id, addOns: allowedAddOns });
+      }
+
+      return { base: baseDish, personAddOns };
+    }
+
+    function getFamilyCompositionShoppingIngredients(composition) {
+      if (!composition || !composition.base) return [];
+      const result = [...composition.base.ingredients];
+      composition.personAddOns.forEach(personPlan => {
+        personPlan.addOns.forEach(addOn => {
+          addOn.ingredients.forEach(item => result.push(item));
+        });
+      });
+      return result;
+    }
+
+    // Разворачиваем семейную композицию в отдельные компоненты меню и закупки.
+    // Общая основа учитывается один раз на число едоков, добавка — только для тех,
+    // кому она назначена; существующий агрегатор покупок суммирует компоненты.
+    function getFamilyCompositionComponents(dish, persons = state.persons, servingMultiplier = 1, mealType = 'lunch', course = 'main', hasSoup = false) {
+      const composition = buildFamilyComposition(dish, persons);
+      if (!composition) return null;
+      const addOnsByPerson = new Map(composition.personAddOns.map(plan => [plan.personId, plan.addOns]));
+      const scaleByPerson = new Map();
+      persons.forEach(person => {
+        const addOnCalories = (addOnsByPerson.get(person.id) || []).reduce((sum, addOn) =>
+          sum + (Number(addOn.caloriesPerServing) || 0), 0);
+        const totalCalories = (Number(composition.base.caloriesPerServing) || 0) + addOnCalories;
+        const budget = getMealCalorieBudget(person, mealType, course, hasSoup);
+        const scale = budget && totalCalories > 0
+          ? Math.max(0.65, Math.min(1.5, budget / totalCalories))
+          : 1;
+        scaleByPerson.set(person.id, scale);
+      });
+      const averageScale = ids => {
+        const values = ids.map(id => scaleByPerson.get(id) || 1);
+        return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 1;
+      };
+      const multiplier = Math.max(1, Number(servingMultiplier) || 1);
+      const components = [{
+        ...composition.base,
+        portionScale: averageScale(persons.map(person => person.id)),
+        plannedServings: multiplier * persons.length,
+        componentType: 'base',
+        personLabels: []
+      }];
+      const groupedAddOns = new Map();
+      composition.personAddOns.forEach(personPlan => {
+        const person = persons.find(item => item.id === personPlan.personId);
+        personPlan.addOns.forEach(addOn => {
+          const key = String(addOn.id || addOn.name) + '|' + JSON.stringify(addOn.ingredients);
+          if (!groupedAddOns.has(key)) groupedAddOns.set(key, { dish: addOn, people: [], personIds: [] });
+          if (person) {
+            groupedAddOns.get(key).people.push(getPersonLabel(person));
+            groupedAddOns.get(key).personIds.push(person.id);
+          }
+        });
+      });
+      groupedAddOns.forEach(group => {
+        components.push({
+          ...group.dish,
+          portionScale: averageScale(group.personIds),
+          plannedServings: multiplier * group.people.length,
+          componentType: 'addOn',
+          personLabels: group.people
+        });
+      });
+      return components;
+    }
+
+    // Перемешиваем варианты с одинаковым уровнем предпочтений,
+    // чтобы одинаковые настройки не выдавали одну и ту же неделю по порядку каталога.
+    function shuffleDishes(dishes) {
+      const shuffled = [...dishes];
+      for (let index = shuffled.length - 1; index > 0; index--) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+      }
+      return shuffled;
+    }
+
     function rankDishesForPerson(dishes, person) {
       const liked = person.likedIngredients || [];
-      return [...dishes].sort((a, b) =>
+      return shuffleDishes(dishes).sort((a, b) =>
         getDishPreferenceMatches(b, liked).length -
         getDishPreferenceMatches(a, liked).length
       );
@@ -9599,7 +10256,7 @@
 
     function rankDishesForFamily(dishes) {
       const liked = getAllFamilyLikedIngredients();
-      return [...dishes].sort((a, b) =>
+      return shuffleDishes(dishes).sort((a, b) =>
         getDishPreferenceMatches(b, liked).length -
         getDishPreferenceMatches(a, liked).length
       );
@@ -9620,24 +10277,274 @@
     // Если продукт выбран как любимый, а затем добавлена соответствующая аллергия,
     // он удаляется из любимых и не восстанавливается автоматически при снятии аллергии.
     const allergyBlockedIngredients = {
-      milk: ['Молоко','Сливки','Сметана','Творог','Сыр','Фета','Моцарелла','Йогурт','Кефир','Сливочное масло'],
-      eggs: ['Яйца'],
-      fish: ['Лосось','Форель','Треска','Судак','Скумбрия','Сельдь','Тунец'],
-      crustaceans: ['Креветки'],
-      soy: ['Тофу','Соевый соус'],
-      peanuts: ['Арахис'],
-      tree_nuts: ['Грецкие орехи','Миндаль','Фундук','Кешью'],
-      sesame: ['Кунжут'],
-      buckwheat: ['Гречка'],
-      corn: ['Кукуруза'],
-      mushrooms: ['Грибы'],
-      gluten_cereals: ['Пшеничный хлеб','Ржаной хлеб','Лаваш','Макароны','Булгур','Кускус','Перловка'],
-      celery: ['Сельдерей'], mustard: ['Горчица'], sulphites: [], lupin: [], molluscs: ['Кальмары','Мидии']
+      milk: ['Молоко','Сухое молоко','Молочный порошок','Сыворотка','Сухая сыворотка','Казеин','Казеинат','Лактальбумин','Лактоглобулин','Молочный белок','Сливки','Сметана','Творог','Сыр','Фета','Фетакса','Моцарелла','Йогурт','Кефир','Ряженка','Сливочное масло','Масло сливочное','Молочный жир','Сливочное масло гхи'],
+      eggs: ['Яйца','Яичный порошок','Яичный белок','Яичный желток','Альбумин','Овальбумин','Лизоцим'],
+      fish: ['Лосось','Сёмга','Семга','Форель','Треска','Судак','Скумбрия','Сельдь','Тунец','Щука','Окунь','Минтай','Хек','Камбала','Палтус','Рыбный соус','Рыбный бульон'],
+      crustaceans: ['Креветки','Краб','Крабовое мясо','Лобстер','Лангуст','Рак'],
+      soy: ['Тофу','Соевый соус','Соевые бобы','Соевый белок','Соевый изолят','Соёвая мука','Соевый лецитин'],
+      peanuts: ['Арахис','Арахисовая паста','Арахисовая мука','Арахисовое масло','Арахисовый белок'],
+      tree_nuts: ['Орехи','Ореховая смесь','Ореховая паста','Ореховая мука','Грецкие орехи','Орехи грецкие','Миндаль','Миндальная мука','Миндальная паста','Фундук','Фундучная мука','Кешью','Фисташки','Пекан','Бразильский орех','Макадамия','Кедровые орехи','Кедровый орех','Марципан'],
+      sesame: ['Кунжут','Семена кунжута','Кунжутная паста','Тахини','Кунжутное масло'],
+      buckwheat: ['Гречка','Гречневая мука','Гречневые хлопья'],
+      corn: ['Кукуруза','Кукурузная мука','Кукурузный крахмал','Кукурузные хлопья','Кукурузный сироп'],
+      mushrooms: ['Грибы','Шампиньоны','Вешенки','Лисички','Белые грибы','Грибной порошок'],
+      gluten_cereals: ['Пшеница','Пшеничная мука','Пшеничный хлеб','Пшеничные сухари','Панировочные сухари','Рожь','Ржаная мука','Ржаной хлеб','Ячмень','Ячменная мука','Перловка','Солод','Пшеничный солод','Спельта','Полба','Тритикале','Манка','Манная крупа','Булгур','Кускус','Макароны','Лаваш','Пшеничный крахмал','Сейтан'],
+      celery: ['Сельдерей','Корень сельдерея','Стебель сельдерея','Семена сельдерея','Сельдерей сушёный','Сельдерей сушеный','Сельдерейная соль'],
+      mustard: ['Горчица','Горчичный порошок','Семена горчицы','Горчичное масло','Горчичный соус'],
+      sulphites: ['Диоксид серы','Сульфиты','Метабисульфит натрия','Метабисульфит калия'],
+      lupin: ['Люпин','Мука из люпина','Люпиновая мука','Белок люпина'],
+      molluscs: ['Кальмары','Мидии','Устрицы','Осьминог','Морской гребешок','Улитки','Вонголе']
     };
 
+    // Непереносимости проверяются отдельно от аллергий: наличие, например,
+    // непереносимости лактозы не должно автоматически трактоваться как аллергия на все продукты.
+    const intoleranceBlockedIngredients = {
+      lactose: ['Молоко','Сухое молоко','Сливки','Сметана','Творог','Сыр','Фета','Фетакса','Моцарелла','Йогурт','Кефир','Ряженка','Сыворотка','Сливочное масло','Молочный порошок','Лактоза'],
+      gluten_intolerance: ['Пшеница','Пшеничная мука','Пшеничный хлеб','Пшеничные сухари','Рожь','Ржаная мука','Ржаной хлеб','Ячмень','Перловка','Солод','Спельта','Полба','Тритикале','Манка','Манная крупа','Булгур','Кускус','Макароны','Лаваш','Сейтан']
+    };
+
+    // Только точечные редакторские адаптации: нельзя автоматически заменять
+    // любой аллерген или угадывать состав заправки по названию блюда.
+    // Правило привязано к конкретному рецепту и ингредиенту из его состава.
+    const allergenAdaptationRules = {
+      7: {
+        milk: {
+          removeIngredients: ['Фета'],
+          replacementIngredients: [],
+          note: 'Фета исключена. Салат можно подать без сыра; вкус и пищевая ценность изменятся.'
+        }
+      },
+      9: {
+        milk: {
+          removeIngredients: ['Сливочное масло'],
+          replacementIngredients: [['Оливковое масло', null, 'для приготовления']],
+          note: 'Сливочное масло заменено оливковым маслом для приготовления стейка.'
+        }
+      },
+      1: {
+        milk: {
+          removeIngredients: ['Молоко 2.5%', 'Сливочное масло'],
+          replacementIngredients: [['Вода', null, 'вместо молока для приготовления каши']],
+          note: 'Молоко заменено водой, сливочное масло исключено. Это меняет вкус и пищевую ценность; проверьте все продукты и условия приготовления.'
+        }
+      },
+      2: {
+        milk: {
+          removeIngredients: ['Молоко', 'Сыр'],
+          replacementIngredients: [],
+          note: 'Молоко и сыр исключены: получается омлет без молочных ингредиентов. Проверьте состав яиц и риск перекрёстного контакта.'
+        }
+      },
+      13: {
+        milk: {
+          removeIngredients: ['Сыр'],
+          replacementIngredients: [],
+          note: 'Сыр исключён из запечённой курицы с овощами; текстура и вкус блюда изменятся.'
+        }
+      },
+      15: {
+        milk: {
+          removeIngredients: ['Молоко 2.5%'],
+          replacementIngredients: [['Вода', null, 'вместо молока']],
+          note: 'Молоко заменено водой. Вкус и пищевая ценность изменятся; кешью и кокос проверяются отдельно.'
+        },
+        tree_nuts: {
+          removeIngredients: ['Кешью'],
+          replacementIngredients: [],
+          note: 'Кешью исключён. Кокос в составе не относится автоматически к древесным орехам, но его индивидуальную переносимость и маркировку нужно проверить отдельно.'
+        }
+      },
+      19: {
+        milk: {
+          removeIngredients: ['Молоко'],
+          replacementIngredients: [['Вода', null, 'вместо молока для приготовления каши']],
+          note: 'Молоко заменено водой. Это меняет вкус и пищевую ценность рисовой каши.'
+        }
+      },
+      105: {
+        milk: {
+          removeIngredients: ['Молоко'],
+          replacementIngredients: [['Вода', null, 'вместо молока в тесте']],
+          note: 'Молоко заменено водой в тесте. Текстура и пищевая ценность могут измениться.'
+        }
+      },
+      33: {
+        tree_nuts: {
+          removeIngredients: ['Орехи', 'Грецкие орехи', 'Орехи грецкие'],
+          replacementIngredients: [],
+          note: 'Орехи исключены. Дополнительную текстуру можно получить за счёт увеличения порции овсяных хлопьев; точное количество нужно уточнить.'
+        }
+      },
+      93: {
+        tree_nuts: {
+          removeIngredients: ['Грецкие орехи', 'Орехи грецкие'],
+          replacementIngredients: [
+            ['Оливковое масло', null, 'по вкусу'],
+            ['Лимонный сок', null, 'по вкусу']
+          ],
+          note: 'Грецкие орехи исключены. Вместо ореховой заправки можно использовать оливковое масло с лимонным соком.'
+        }
+      },
+      98: {
+        tree_nuts: {
+          removeIngredients: ['Грецкие орехи', 'Орехи грецкие'],
+          replacementIngredients: [],
+          note: 'Грецкие орехи исключены; вместо них можно увеличить количество ягод.'
+        }
+      },
+      101: {
+        milk: {
+          removeIngredients: ['Фетакса'],
+          replacementIngredients: [],
+          note: 'Фетакса исключена. Овощную часть салата можно подать без неё; вкус и пищевая ценность изменятся.'
+        }
+      }
+    };
+
+    function getLinkedProductRestrictionConflict(dish, restrictionKey, restrictionType = 'allergy') {
+      const links = recipeProductComponentLinks[dish?.id] || {};
+      for (const [ingredientName, productId] of Object.entries(links)) {
+        const product = ingredientProductCatalog[productId];
+        if (!product) {
+          return { reason: 'unresolved_linked_product', ingredient: ingredientName, productId };
+        }
+        const evidence = product.allergenEvidence || {};
+        const contains = Array.isArray(evidence.contains) ? evidence.contains : [];
+        const mayContain = Array.isArray(evidence.mayContain) ? evidence.mayContain : [];
+        const unknown = Array.isArray(evidence.unknown) ? evidence.unknown : [];
+        if (restrictionType === 'allergy') {
+          if (contains.includes(restrictionKey)) {
+            return { reason: 'linked_product_contains_allergen', ingredient: ingredientName, product: product.canonicalName, productId };
+          }
+          if (mayContain.includes(restrictionKey)) {
+            return { reason: 'linked_product_may_contain_allergen', ingredient: ingredientName, product: product.canonicalName, productId };
+          }
+          if (unknown.includes(restrictionKey)) {
+            return { reason: 'linked_product_allergen_unknown', ingredient: ingredientName, product: product.canonicalName, productId };
+          }
+        } else if (product.labelRequired && product.labelStatus !== 'label_verified') {
+          return { reason: 'linked_product_label_unverified_for_intolerance', ingredient: ingredientName, product: product.canonicalName, productId };
+        }
+        // Введённые пользователем марка и вариант — это идентификация, не доказательство состава.
+        // До проверки конкретной этикетки составной продукт не считается подтверждённо безопасным.
+        if (product.labelRequired && product.labelStatus !== 'label_verified') {
+          return { reason: 'linked_product_label_unverified', ingredient: ingredientName, product: product.canonicalName, productId };
+        }
+      }
+      return null;
+    }
+
+    function getDishAllergenAssessment(dish, person) {
+      const allergies = person?.allergies || [];
+      const intolerances = person?.intolerances || [];
+      if (!allergies.length && !intolerances.length) return { status: 'clear', adaptations: [] };
+      const ingredientNames = Array.isArray(dish.ingredients)
+        ? dish.ingredients.map(item => Array.isArray(item) ? item[0] : item).filter(Boolean)
+        : [];
+      const adaptations = [];
+      // Непереносимость не равна аллергии и оценивается по своему словарю.
+      // Даже если прямого совпадения нет, неполная/непроверенная карточка
+      // не допускается для человека с ограничением.
+      if (!ingredientNames.length) {
+        return { status: 'blocked', reason: 'missing_ingredient_list', adaptations: [] };
+      }
+      for (const intolerance of intolerances) {
+        const linkedProductConflict = getLinkedProductRestrictionConflict(dish, intolerance, 'intolerance');
+        if (linkedProductConflict) {
+          return { status: 'blocked', ...linkedProductConflict, adaptations: [] };
+        }
+        const blockedNames = intoleranceBlockedIngredients[intolerance];
+        if (!Array.isArray(blockedNames) || !blockedNames.length) {
+          return { status: 'blocked', reason: 'unsupported_intolerance_type', adaptations: [] };
+        }
+        const matches = ingredientNames.filter(name =>
+          blockedNames.some(blocked => ingredientMatchesPreference(name, blocked))
+        );
+        if (matches.length) return { status: 'blocked', reason: 'intolerance_ingredient_match', matchedIngredients: matches, adaptations: [] };
+        if (dish.ingredientDataStatus !== 'verified' || dish.recipeStatus !== 'verified') {
+          return { status: 'blocked', reason: 'unverified_intolerance_composition', adaptations: [] };
+        }
+      }
+      for (const allergen of allergies) {
+        const linkedProductConflict = getLinkedProductRestrictionConflict(dish, allergen, 'allergy');
+        if (linkedProductConflict) {
+          return { status: 'blocked', ...linkedProductConflict, adaptations: [] };
+        }
+        const blockedNames = allergyBlockedIngredients[allergen];
+        if (!Array.isArray(blockedNames) || !blockedNames.length) {
+          return { status: 'blocked', reason: 'unsupported_allergen_type', adaptations: [] };
+        }
+        const matches = ingredientNames.filter(name =>
+          blockedNames.some(blocked => ingredientMatchesPreference(name, blocked))
+        );
+        const tagged = (dish.allergens || []).includes(allergen) ||
+          (dish.allergenCandidates || []).includes(allergen);
+        if (matches.length) {
+          const rule = allergenAdaptationRules[dish.id]?.[allergen];
+          if (!rule || !matches.every(name =>
+            rule.removeIngredients.some(remove => ingredientMatchesPreference(name, remove))
+          )) return { status: 'blocked', reason: 'allergen_without_validated_substitution', adaptations: [] };
+          // Проверяем каждую добавляемую замену против всех выбранных аллергий,
+          // а не только против того аллергена, для которого создано правило.
+          const replacementNames = (rule.replacementIngredients || []).map(item => item[0]).filter(Boolean);
+          const replacementConflicts = replacementNames.some(name =>
+            allergies.some(selectedAllergen =>
+              (allergyBlockedIngredients[selectedAllergen] || []).some(blocked =>
+                ingredientMatchesPreference(name, blocked)
+              )
+            )
+          );
+          if (replacementConflicts) return { status: 'blocked', reason: 'replacement_conflicts_with_another_allergy', adaptations: [] };
+          adaptations.push({ allergen, matchedIngredients: matches, ...rule });
+        } else if (tagged || dish.allergenStatus !== 'verified') {
+          // Неизвестный состав нельзя объявлять подходящим только потому,
+          // что в коротком списке ингредиентов аллерген не встретился.
+          return { status: 'blocked', reason: 'unverified_composition', adaptations: [] };
+        }
+      }
+      return adaptations.length
+        ? { status: 'adaptable', adaptations }
+        : { status: 'clear', adaptations: [] };
+    }
+
+    function adaptDishForPerson(dish, person) {
+      const assessment = getDishAllergenAssessment(dish, person);
+      if (assessment.status === 'blocked') return null;
+      if (assessment.status === 'clear') return dish;
+      const ingredients = [...(dish.ingredients || [])];
+      assessment.adaptations.forEach(adaptation => {
+        for (let index = ingredients.length - 1; index >= 0; index--) {
+          const item = ingredients[index];
+          const name = Array.isArray(item) ? item[0] : item;
+          if (adaptation.removeIngredients.some(remove => ingredientMatchesPreference(name, remove))) {
+            ingredients.splice(index, 1);
+          }
+        }
+        adaptation.replacementIngredients.forEach(replacement => {
+          if (!ingredients.some(item => ingredientMatchesPreference(Array.isArray(item) ? item[0] : item, replacement[0]))) {
+            ingredients.push(replacement);
+          }
+        });
+      });
+      return {
+        ...dish,
+        ingredients,
+        allergenAdaptations: assessment.adaptations,
+        allergenAdaptationWarning: 'Это предварительная адаптация, а не подтверждение безопасности. Проверьте полный состав всех продуктов, маркировку «может содержать» и риск перекрёстного контакта.'
+      };
+    }
+
+    function formatDishAllergenAdaptationNote(dish) {
+      if (!Array.isArray(dish?.allergenAdaptations) || !dish.allergenAdaptations.length) return '';
+      const notes = dish.allergenAdaptations.map(item => item.note).join(' ');
+      return '<div class="hint allergen-adaptation-note" role="note"><strong>Предложена замена аллергена.</strong> ' +
+        escapeHtml(notes) + ' <strong>Важно:</strong> ' +
+        escapeHtml(dish.allergenAdaptationWarning || 'Проверьте состав и возможные следы аллергенов.') +
+        '</div>';
+    }
+
     function getActiveTastePerson() {
-      const group = state.tastePersonType === 'child' ? state.kids : state.persons;
-      return group[state.tastePersonIndex] || state.persons[0] || { likedIngredients: [], dislikedIngredients: [], allergies: [] };
+      return state.persons[state.tastePersonIndex] || state.persons[0] || { likedIngredients: [], dislikedIngredients: [], allergies: [] };
     }
 
     function getPersonAllergyBlockedIngredients(person) {
@@ -9649,9 +10556,10 @@
     }
 
     function isIngredientBlockedByAllergy(name, person = getActiveTastePerson()) {
-      const normalized = normalizeIngredientText(name);
+      // Используем тот же словарь синонимов, что и фильтр рецептов:
+      // нельзя добавить в любимые «миндальную муку», если выбрана аллергия на орехи.
       return [...getPersonAllergyBlockedIngredients(person)].some(item =>
-        normalizeIngredientText(item) === normalized
+        ingredientMatchesPreference(name, item) || ingredientMatchesPreference(item, name)
       );
     }
 
@@ -9660,7 +10568,7 @@
     }
 
     function getAllFamilyDislikedIngredients() {
-      return [...new Set([...state.persons, ...(state.hasKids ? state.kids : [])].flatMap(person => person.dislikedIngredients || []))];
+      return [...new Set(state.persons.flatMap(person => person.dislikedIngredients || []))];
     }
 
     function setTastePerson(type, index) {
@@ -9673,10 +10581,7 @@
       const container = document.getElementById('tastePersonTabs');
       if (!container) return;
       container.innerHTML = '';
-      const profiles = [
-        ...state.persons.map((person, index) => ({ person, index, type: 'adult', label: getPersonLabel(person) })),
-        ...(state.hasKids ? state.kids.map((person, index) => ({ person, index, type: 'child', label: person.name?.trim() || 'Ребёнок ' + (index + 1) })) : [])
-      ];
+      const profiles = state.persons.map((person, index) => ({ person, index, type: 'adult', label: getPersonLabel(person) }));
       profiles.forEach(({ person, index, type, label }) => {
         const button = document.createElement('button');
         button.type = 'button';
@@ -9725,6 +10630,7 @@
         ? 'Отмечай продукты, которые тебе нравятся. Они будут приоритетом при составлении меню.'
         : 'Отмечай продукты, которые не хочешь видеть в меню. Они будут исключены из подбора.';
       renderIngredientCatalog();
+      renderIngredientProductPicker();
     }
 
     function renderIngredientCatalog() {
@@ -9842,23 +10748,6 @@
         intoleranceCard.innerHTML = `<div class="person-title">${escapeHtml(getPersonLabel(person))}</div>${intoleranceHtml}`;
         intoleranceContainer.appendChild(intoleranceCard);
       });
-
-      if (state.hasKids) state.kids.forEach((child, index) => {
-        child.allergies = child.allergies || [];
-        child.intolerances = child.intolerances || [];
-        const card = document.createElement('div'); card.className = 'person-card';
-        let html = '<div class="tag-grid">';
-        allergens.forEach(a => { html += `<div class="tag-item ${child.allergies.includes(a.id) ? 'selected' : ''}" onclick="toggleChildAllergy(${index}, '${a.id}')">${a.label}</div>`; });
-        html += '</div>'; card.innerHTML = `<div class="person-title">${escapeHtml(child.name?.trim() || 'Ребёнок ' + (index + 1))}</div><p class="hint">Отметь все подтверждённые аллергены ребёнка.</p>${html}`;
-        allergyContainer.appendChild(card);
-
-        const intoleranceCard = document.createElement('div'); intoleranceCard.className = 'person-card';
-        let intoleranceHtml = '<div class="tag-grid">';
-        intolerances.forEach(item => { intoleranceHtml += `<div class="tag-item ${child.intolerances.includes(item.id) ? 'selected' : ''}" onclick="toggleChildIntolerance(${index}, '${item.id}')">${item.label}</div>`; });
-        intoleranceHtml += '</div>';
-        intoleranceCard.innerHTML = `<div class="person-title">${escapeHtml(child.name?.trim() || 'Ребёнок ' + (index + 1))}</div>${intoleranceHtml}`;
-        intoleranceContainer.appendChild(intoleranceCard);
-      });
     }
 
     function toggleAllergy(index, id) {
@@ -9877,25 +10766,6 @@
     function toggleIntolerance(index, id) {
       const p = state.persons[index];
       p.intolerances.includes(id) ? p.intolerances = p.intolerances.filter(a => a !== id) : p.intolerances.push(id);
-      renderAllergiesAndEquipment();
-    }
-    function toggleChildAllergy(index, id) {
-      const child = state.kids[index]; if (!child) return;
-      child.allergies = child.allergies || [];
-      const removing = child.allergies.includes(id);
-      child.allergies = removing ? child.allergies.filter(a => a !== id) : [...child.allergies, id];
-      if (!removing) {
-        const blocked = getPersonAllergyBlockedIngredients(child);
-        child.likedIngredients = (child.likedIngredients || []).filter(item =>
-          ![...blocked].some(name => normalizeIngredientText(name) === normalizeIngredientText(item))
-        );
-      }
-      renderAllergiesAndEquipment(); renderTastePreferences();
-    }
-    function toggleChildIntolerance(index, id) {
-      const child = state.kids[index]; if (!child) return;
-      child.intolerances = child.intolerances || [];
-      child.intolerances.includes(id) ? child.intolerances = child.intolerances.filter(a => a !== id) : child.intolerances.push(id);
       renderAllergiesAndEquipment();
     }
     function toggleEquipment(id) {
@@ -9930,6 +10800,35 @@
       return Number.isFinite(value) && value > 0 ? Math.round(value) : null;
     }
 
+    // Доля суточной цели, выделяемая на основные приёмы пищи.
+    // Оставшиеся 10% не распределяем автоматически: это запас на перекусы и индивидуальный режим.
+    function getMealCalorieBudget(person, mealType, course = 'main', hasSoup = false) {
+      const dailyTarget = getPersonDailyCalorieTarget(person);
+      if (!dailyTarget) return null;
+      const shares = { breakfast: 0.25, lunch: 0.35, dinner: 0.30 };
+      if (mealType === 'lunch' && hasSoup) {
+        return Math.round(dailyTarget * shares.lunch * (course === 'soup' ? 0.30 : 0.70));
+      }
+      return Math.round(dailyTarget * (shares[mealType] || 0));
+    }
+
+    // Не меняем состав рецепта: адаптируем только размер порции.
+    // Ограничение 0.65–1.50 защищает от чрезмерно маленьких/больших порций.
+    function getAdaptivePortionScale(dish, person, mealType, course = 'main', hasSoup = false) {
+      const budget = getMealCalorieBudget(person, mealType, course, hasSoup);
+      const standardCalories = Number(dish?.caloriesPerServing);
+      if (!budget || !Number.isFinite(standardCalories) || standardCalories <= 0) return 1;
+      return Math.max(0.65, Math.min(1.5, budget / standardCalories));
+    }
+
+    function getHouseholdPortionScale(dish, mealType, course = 'main', hasSoup = false, persons = state.persons) {
+      if (!Array.isArray(persons) || !persons.length) return 1;
+      const scales = persons.map(person =>
+        getAdaptivePortionScale(dish, person, mealType, course, hasSoup)
+      );
+      return scales.reduce((sum, value) => sum + value, 0) / scales.length;
+    }
+
     function getDishNutritionEstimate(dish) {
       const fields = {
         calories: Number(dish.caloriesPerServing),
@@ -9949,11 +10848,11 @@
       );
       return hasCalories && hasWeight
         ? {
-            calories: Math.round(fields.calories),
-            weight: Math.round(fields.weight),
-            protein: hasMacros ? Math.round(fields.protein * 10) / 10 : null,
-            fat: hasMacros ? Math.round(fields.fat * 10) / 10 : null,
-            carbs: hasMacros ? Math.round(fields.carbs * 10) / 10 : null,
+            calories: Math.round(fields.calories * (Number(dish.portionScale) || 1)),
+            weight: Math.round(fields.weight * (Number(dish.portionScale) || 1)),
+            protein: hasMacros ? Math.round(fields.protein * (Number(dish.portionScale) || 1) * 10) / 10 : null,
+            fat: hasMacros ? Math.round(fields.fat * (Number(dish.portionScale) || 1) * 10) / 10 : null,
+            carbs: hasMacros ? Math.round(fields.carbs * (Number(dish.portionScale) || 1) * 10) / 10 : null,
             per100g: ['caloriesPer100g', 'proteinPer100g', 'fatPer100g', 'carbsPer100g'].every(key =>
               Number.isFinite(fields[key]) && fields[key] >= 0
             ) ? {
@@ -10014,7 +10913,11 @@
           !isSaladDish(dish)
         );
       }
-      return dishes.filter(dish => dish.type === mealType && !isSoupDish(dish));
+      return dishes.filter(dish =>
+        dish.type === mealType &&
+        !isSoupDish(dish) &&
+        (!isSaladDish(dish) || (mealType === 'dinner' && Array.isArray(dish.allergenAdaptations) && dish.allergenAdaptations.length > 0))
+      );
     }
 
     function buildSoupSchedule(soups) {
@@ -10023,10 +10926,19 @@
       const batchDays = Math.max(1, Math.min(4, Number(state.planning?.soupBatch) || 2));
       const schedule = Array(7).fill(null);
       if (!targetDays || !soups.length) return schedule;
+
+      // Варианты одного и того же супа считаем одним семейством:
+      // сначала планируем разные супы, а не разные редакции одного рецепта.
+      const soupFamilies = new Map();
+      soups.forEach(soup => {
+        const familyKey = String(soup.varietyGroup || soup.id || soup.name || '');
+        if (!soupFamilies.has(familyKey)) soupFamilies.set(familyKey, soup);
+      });
+      const uniqueSoups = [...soupFamilies.values()];
       const batches = Math.ceil(targetDays / batchDays);
       for (let batch = 0; batch < batches; batch++) {
         const startDay = Math.round(batch * 7 / batches);
-        const soup = soups[batch % soups.length];
+        const soup = uniqueSoups[batch % uniqueSoups.length];
         const daysInThisBatch = Math.min(batchDays, targetDays - batch * batchDays);
         for (let offset = 0; offset < daysInThisBatch && startDay + offset < 7; offset++) {
           const dayIndex = startDay + offset;
@@ -10036,24 +10948,83 @@
       return schedule;
     }
 
-    // Не повторяем одно и то же блюдо, пока не перебрали остальные доступные
-    // варианты для этого приёма пищи и участника/семьи.
+    // Разнообразие считаем по людям, а не отдельно по слотам:
+    // обед и ужин используют одну группу "main", поэтому блюдо не дублируется
+    // в один день между этими приёмами пищи.
     function createDishVarietyPicker() {
-      const usedByScope = new Map();
-      return (candidates, scope) => {
+      const usageByPerson = new Map();
+      const usedTodayByPerson = new Map();
+      const maxWeeklyUses = 2;
+      const minRepeatGapDays = 3;
+      const getDishKey = dish => String(dish.varietyGroup || dish.id || dish.name || '');
+
+      return (candidates, varietyGroup, dayIndex, eaterIds = [], targetCalories = null) => {
         if (!candidates.length) return null;
-        let used = usedByScope.get(scope);
-        if (!used) {
-          used = new Set();
-          usedByScope.set(scope, used);
+        const day = Number(dayIndex);
+        if (!Number.isInteger(day) || day < 0) return null;
+        const people = (eaterIds.length ? eaterIds : [varietyGroup]).map(String);
+        const personKeys = people.map(personId => varietyGroup + '|' + personId);
+        const todayKeys = personKeys.map(key => key + '|' + day);
+        const getStats = (personKey, dishKey) =>
+          usageByPerson.get(personKey)?.get(dishKey) || { count: 0, lastDay: -Infinity };
+        const isUsedToday = dishKey => todayKeys.some(key => usedTodayByPerson.get(key)?.has(dishKey));
+
+        // Сначала исключаем блюда, уже назначенные этим людям сегодня.
+        const notUsedToday = candidates.filter(dish => !isUsedToday(getDishKey(dish)));
+        if (!notUsedToday.length) return null;
+
+        // В первую очередь выбираем блюда, которые ещё не использовались
+        // на этой неделе или достаточно давно (минимум три дня назад).
+        let pool = notUsedToday.filter(dish => personKeys.every(key => {
+          const stats = getStats(key, getDishKey(dish));
+          return stats.count < maxWeeklyUses && day - stats.lastDay >= minRepeatGapDays;
+        }));
+
+        // Если строгий интервал оставил пустой выбор, ослабляем только интервал,
+        // но не разрешаем повтор в тот же день и не превышаем лимит за неделю.
+        if (!pool.length) {
+          pool = notUsedToday.filter(dish =>
+            personKeys.every(key => getStats(key, getDishKey(dish)).count < maxWeeklyUses)
+          );
         }
-        let dish = candidates.find(item => !used.has(String(item.id)));
-        if (!dish) {
-          used.clear();
-          dish = candidates[0];
-        }
-        used.add(String(dish.id));
-        return dish;
+        if (!pool.length) return null;
+
+        // При равных условиях сохраняется порядок предпочтений из ранжирования.
+        pool.sort((a, b) => {
+          const score = dish => personKeys.reduce((result, key) => {
+            const stats = getStats(key, getDishKey(dish));
+            return {
+              count: Math.max(result.count, stats.count),
+              lastDay: Math.max(result.lastDay, stats.lastDay)
+            };
+          }, { count: 0, lastDay: -Infinity });
+          const aScore = score(a);
+          const bScore = score(b);
+          return aScore.count - bScore.count || aScore.lastDay - bScore.lastDay ||
+            (Number.isFinite(targetCalories)
+              ? Math.abs(Number(a.caloriesPerServing) - targetCalories) - Math.abs(Number(b.caloriesPerServing) - targetCalories)
+              : 0);
+        });
+
+        const selected = pool[0];
+        const selectedKey = getDishKey(selected);
+        personKeys.forEach(personKey => {
+          let statsByDish = usageByPerson.get(personKey);
+          if (!statsByDish) {
+            statsByDish = new Map();
+            usageByPerson.set(personKey, statsByDish);
+          }
+          const previous = getStats(personKey, selectedKey);
+          statsByDish.set(selectedKey, { count: previous.count + 1, lastDay: day });
+          const todayKey = personKey + '|' + day;
+          let todaySet = usedTodayByPerson.get(todayKey);
+          if (!todaySet) {
+            todaySet = new Set();
+            usedTodayByPerson.set(todayKey, todaySet);
+          }
+          todaySet.add(selectedKey);
+        });
+        return selected;
       };
     }
 
@@ -10061,14 +11032,22 @@
       const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
       const mealLabels = { breakfast: 'Завтрак', lunch: 'Обед', dinner: 'Ужин' };
       const mealOrder = { breakfast: 0, lunch: 1, dinner: 2 };
-      const selectedMeals = state.meals.map(id => {
-        const parts = id.split('-');
-        return { group: parts[0] === 'family' ? 'Общий' : 'Личный', type: parts[1] };
-      }).filter(meal => mealLabels[meal.type])
-        .sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
+      const selectedMeals = [];
+      const sharedBreakfastIds = state.persons.filter(person => person.breakfastMode === 'shared').map(person => person.id);
+      if (sharedBreakfastIds.length) selectedMeals.push({ group: 'Общий', type: 'breakfast', personIds: sharedBreakfastIds });
+      state.persons.filter(person => person.breakfastMode === 'individual').forEach(person => selectedMeals.push({ group: 'Личный', type: 'breakfast', personIds: [person.id] }));
+      const homeLunchIds = state.persons.filter(person => person.lunchMode === 'home').map(person => person.id);
+      if (homeLunchIds.length) selectedMeals.push({ group: 'Общий', type: 'lunch', personIds: homeLunchIds, lunchMode: 'home' });
+      state.persons.filter(person => person.lunchMode === 'container').forEach(person => selectedMeals.push({ group: 'Личный', type: 'lunch', personIds: [person.id], lunchMode: 'container' }));
+      state.meals.filter(id => id.endsWith('-dinner')).forEach(id => selectedMeals.push({ group: id.startsWith('family-') ? 'Общий' : 'Личный', type: 'dinner' }));
+      selectedMeals.sort((a, b) => mealOrder[a.type] - mealOrder[b.type]);
       const compatible = getPreferenceFilteredDishes(getCompatibleDishes());
       const familyCompatible = getFamilyCompatibleDishes(compatible);
       const lovedIngredients = getAllFamilyLikedIngredients();
+      const hasMixedDiet = new Set(state.persons.map(person => person.dietType).filter(Boolean)).size > 1;
+      const prioritizeFamilyCompositions = dishes => hasMixedDiet
+        ? [...dishes].sort((a, b) => Number(Boolean(b.familyComposition)) - Number(Boolean(a.familyComposition)))
+        : dishes;
       const pickVariedDish = createDishVarietyPicker();
       const menuContainer = document.getElementById('resultMenu');
       const shoppingContainer = document.getElementById('resultShopping');
@@ -10079,18 +11058,40 @@
       }));
       const hasAnyDailyTarget = dailyTargets.some(person => person.target !== null);
       const allDailyTargetsValid = dailyTargets.length > 0 && dailyTargets.every(person => person.target !== null);
-      const soupCandidates = familyCompatible.filter(isSoupDish)
-        .sort((a, b) => getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length);
+      const homeLunchPersons = state.persons.filter(person => person.lunchMode === 'home');
+      const homeFamilyCompatible = compatible.filter(dish => homeLunchPersons.length > 0 && (
+        dish.familyComposition
+          ? Boolean(buildFamilyComposition(dish, homeLunchPersons))
+          : homeLunchPersons.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))
+      ));
+      const soupCandidates = shuffleDishes(homeFamilyCompatible.filter(dish =>
+        isSoupDish(dish) && (!dish.familyComposition || Boolean(buildFamilyComposition(dish, homeLunchPersons)))      )).sort((a, b) =>
+        (hasMixedDiet ? Number(Boolean(b.familyComposition)) - Number(Boolean(a.familyComposition)) : 0) ||
+        getDishPreferenceMatches(b, lovedIngredients).length - getDishPreferenceMatches(a, lovedIngredients).length
+      );
       const soupSchedule = buildSoupSchedule(soupCandidates);
       const addedSoupBatches = new Set();
       const displayedSoupDays = new Set();
+      const familyCompositionHtml = (dish, label, multiplier = 1, renderComponent, trackShopping = true, mealType = 'lunch', course = 'main', hasSoup = false) => {
+        const components = getFamilyCompositionComponents(dish, state.persons, multiplier, mealType, course, hasSoup);
+        if (!components) return null;
+        let html = '';
+        components.forEach(component => {
+          if (trackShopping) selectedDishes.push(component);
+          const componentLabel = component.componentType === 'base'
+            ? label + ' · общая основа'
+            : 'Добавка';
+          const peopleLabel = component.componentType === 'addOn'
+            ? component.personLabels.join(', ')
+            : '';
+          html += renderComponent(component, componentLabel, peopleLabel);
+        });
+        return html;
+      };
 
-      const childMenuNote = state.hasKids && state.kids.length
-        ? '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;">В настоящее время Тарелка.by не работает с детским меню.</div>'
-        : '';
       const calorieIntro = '<div class="hint" style="margin:0 0 14px;padding:12px;border-radius:12px;background:#F7F3EC;">' +
         '<strong>Справочный ориентир по калориям</strong><br>' +
-        'Для блюда будут показаны калорийность, белки, жиры и углеводы стандартной порции, если эти данные известны. Для общих блюд дополнительно показывается справочная сумма на запланированное число порций. Суточный ориентир приведён только для сравнения — приложение не решает за вас, сколько нужно съесть и не подбирает блюда под заданную норму. ' +
+        'Размер порции ориентировочно адаптируется под суточную цель: завтрак — 25%, обед — 35% (при супе 30% обеденного бюджета отводится на первое), ужин — 30%. Это стартовое распределение, а не медицинская рекомендация; масштаб порции ограничен диапазоном 65–150% от стандартной. ' +
         (allDailyTargetsValid
           ? dailyTargets.map(person => getPersonLabel(person) + ': ориентир ' + person.target + ' ккал/день').join(' · ')
           : 'Для части участников суточный ориентир не задан или не рассчитан.') +
@@ -10100,102 +11101,175 @@
         menuContainer.innerHTML = '<p class="subtitle">Не выбраны приёмы пищи. Вернись на предыдущий шаг и выбери хотя бы один.</p>';
       } else {
         let menuHtml = '';
-        days.forEach(day => {
+        days.forEach((day, dayIndex) => {
           let dayHtml = '';
           let dayCaloriesComplete = true;
           let dayCaloriesTotal = 0;
           selectedMeals.forEach(meal => {
             if (meal.type === 'lunch') {
-              const lunchPool = meal.group === 'Общий' ? familyCompatible : compatible;
-              const soupPlan = soupSchedule[days.indexOf(day)];
-              const plannedServings = meal.group === 'Общий' ? getHouseholdCount() : 1;
+              const lunchPeople = (meal.personIds || state.persons.map(person => person.id)).map(id => state.persons.find(person => person.id === id)).filter(Boolean);
+              const isHomeLunch = meal.lunchMode === 'home';
+              const lunchPool = isHomeLunch ? compatible.filter(dish => dish.familyComposition
+                ? Boolean(buildFamilyComposition(dish, lunchPeople))
+                : lunchPeople.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))
+              ) : compatible;
+              const soupPlan = isHomeLunch ? soupSchedule[dayIndex] : null;
+              const plannedServings = lunchPeople.length;
               const renderLunchDish = (dish, label, personLabel = '') => {
                 if (!dish) return '<div class="menu-item"><span class="menu-item-name">' + label + ': подходящих рецептов пока нет</span></div>';
                 const estimate = getDishNutritionEstimate(dish);
-                if (estimate === null) dayCaloriesComplete = false;
-                else dayCaloriesTotal += estimate.calories;
+                if (estimate === null) dayCaloriesComplete = false; else dayCaloriesTotal += estimate.calories;
                 const image = typeof dish.image === 'string' ? dish.image : '';
-                return '<article class="menu-dish-card">' +
-                  (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
-                  '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + meal.group + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
-                  '<div class="menu-item-name">' + dish.name + '</div>' + formatDishPreparation(dish) + '<div class="menu-item-cal">' +
-                  formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) +
-                  '</div></div></article>';
+                return '<article class="menu-dish-card">' + (image ? '<img class="menu-dish-image" src="' + image + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
+                  '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + label + '</span><span class="meal-group-label">' + (isHomeLunch ? 'Обед дома' : 'Ланч-бокс') + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
+                  '<div class="menu-item-name">' + dish.name + '</div>' + formatDishAllergenAdaptationNote(dish) + formatDishProductIdentityNote(dish) + formatDishPreparation(dish) + '<div class="menu-item-cal">' + formatDishNutrition(estimate, label === 'Второе' ? (personLabel ? 1 : plannedServings) : 1) + '</div></div></article>';
               };
-              const appendSharedSoup = () => {
-                const dayIndex = days.indexOf(day);
-                if (!soupPlan || displayedSoupDays.has(dayIndex)) return;
-                dayHtml += renderLunchDish(soupPlan.soup, 'Первое');
-                displayedSoupDays.add(dayIndex);
-                const batchKey = String(soupPlan.batch) + '-' + String(soupPlan.soup.id);
-                if (!addedSoupBatches.has(batchKey)) {
-                  const batchServings = soupSchedule.filter(item => item && item.batch === soupPlan.batch).length;
-                  selectedDishes.push({ ...soupPlan.soup, plannedServings: plannedServings * batchServings });
-                  addedSoupBatches.add(batchKey);
-                }
-              };
-              if (meal.group === 'Общий') {
-                const mains = rankDishesForFamily(getMealCandidates(lunchPool, 'lunch'));
-                const main = pickVariedDish(mains, 'shared:lunch');
+              if (!lunchPeople.length) return;
+              if (isHomeLunch) {
+                const soup = soupPlan && !displayedSoupDays.has(dayIndex) ? soupPlan : null;
+                const mains = prioritizeFamilyCompositions(rankDishesForFamily(getMealCandidates(lunchPool, 'lunch')).filter(dish => !dish.familyComposition || Boolean(buildFamilyComposition(dish, lunchPeople))));
+                const target = lunchPeople.reduce((sum, person) => sum + (getMealCalorieBudget(person, 'lunch', 'main', Boolean(soup)) || 0), 0) / lunchPeople.length;
+                const main = pickVariedDish(mains, 'main', dayIndex, lunchPeople.map(person => person.id), target);
                 if (main) {
-                  selectedDishes.push({ ...main, plannedServings });
-                  dayHtml += renderLunchDish(main, 'Второе');
-                } else {
-                  dayCaloriesComplete = false;
-                  dayHtml += renderLunchDish(null, 'Второе');
-                }
-                if (soupPlan) {
-                  appendSharedSoup();
-                } else {
-                  dayHtml += '<p class="hint" style="margin:4px 0 10px;">Сегодня без супа — полноценный обед включает второе блюдо.</p>';
-                }
-              } else {
-                state.persons.forEach(person => {
-                  const personalMains = rankDishesForPerson(
-                    getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person
-                  );
-                  const personalMain = pickVariedDish(personalMains, 'person:' + person.id + ':lunch');
-                  if (personalMain) {
-                    selectedDishes.push({ ...personalMain, plannedServings: 1 });
-                    dayHtml += renderLunchDish(personalMain, 'Второе', getPersonLabel(person));
-                  } else {
-                    dayCaloriesComplete = false;
-                    dayHtml += '<div class="menu-item"><span class="menu-item-name">' +
-                      escapeHtml(getPersonLabel(person)) + ' — подходящего обеда пока нет</span></div>';
+                  const components = getFamilyCompositionComponents(main, lunchPeople, 1, 'lunch', 'main', Boolean(soup));
+                  if (components) components.forEach(component => {
+                    selectedDishes.push(component);
+                    dayHtml += renderLunchDish(component, component.componentType === 'base' ? 'Второе · общая основа' : 'Добавка', component.componentType === 'addOn' ? component.personLabels.join(', ') : '');
+                  });
+                  else {
+                    const shared = { ...main, portionScale: getHouseholdPortionScale(main, 'lunch', 'main', Boolean(soup), lunchPeople) };
+                    selectedDishes.push({ ...shared, plannedServings });
+                    dayHtml += renderLunchDish(shared, 'Второе');
                   }
+                } else {
+                  // Если общее второе не подходит всем (например, из-за аллергии),
+                  // подбираем персональные блюда и применяем только явные адаптации.
+                  lunchPeople.forEach(person => {
+                    const personalPool = getDishesForPerson(compatible, person).filter(dish => !dish.familyComposition);
+                    const personalCandidates = rankDishesForPerson(getMealCandidates(personalPool, 'lunch'), person);
+                    const personalMain = pickVariedDish(
+                      personalCandidates, 'main', dayIndex, [person.id], getMealCalorieBudget(person, 'lunch', 'main', Boolean(soup))
+                    );
+                    if (personalMain) {
+                      const adapted = { ...personalMain, portionScale: getAdaptivePortionScale(personalMain, person, 'lunch', 'main', Boolean(soup)) };
+                      selectedDishes.push({ ...adapted, plannedServings: 1 });
+                      dayHtml += renderLunchDish(adapted, 'Второе', getPersonLabel(person));
+                    } else {
+                      dayCaloriesComplete = false;
+                      dayHtml += renderLunchDish(null, 'Второе · ' + getPersonLabel(person));
+                    }
+                  });
+                }
+                if (soup) {
+                  const batchKey = String(soup.batch) + '-' + String(soup.soup.id);
+                  const batchServings = soupSchedule.filter(item => item && item.batch === soup.batch).length;
+                  const addBatchToShopping = !addedSoupBatches.has(batchKey);
+                  const soupComponents = getFamilyCompositionComponents(soup.soup, lunchPeople, batchServings, 'lunch', 'soup', true);
+                  if (soupComponents) {
+                    soupComponents.forEach(component => {
+                      if (addBatchToShopping) selectedDishes.push(component);
+                      dayHtml += renderLunchDish(
+                        component,
+                        component.componentType === 'base' ? 'Первое · общая основа' : 'Добавка',
+                        component.componentType === 'addOn' ? component.personLabels.join(', ') : ''
+                      );
+                    });
+                  } else {
+                    const scale = getHouseholdPortionScale(soup.soup, 'lunch', 'soup', true, lunchPeople);
+                    dayHtml += renderLunchDish({ ...soup.soup, portionScale: scale }, 'Первое');
+                    if (addBatchToShopping) selectedDishes.push({ ...soup.soup, portionScale: scale, plannedServings: lunchPeople.length * batchServings });
+                  }
+                  if (addBatchToShopping) addedSoupBatches.add(batchKey);
+                  displayedSoupDays.add(dayIndex);
+                } else dayHtml += '<p class="hint" style="margin:4px 0 10px;">Сегодня без супа — предусмотрено второе блюдо.</p>';
+              } else {
+                lunchPeople.forEach(person => {
+                  const candidates = rankDishesForPerson(getMealCandidates(getDishesForPerson(lunchPool, person), 'lunch'), person);
+                  const dish = pickVariedDish(candidates, 'main', dayIndex, [person.id], getMealCalorieBudget(person, 'lunch', 'main', false));
+                  if (dish) {
+                    const adapted = { ...dish, portionScale: getAdaptivePortionScale(dish, person, 'lunch', 'main', false) };
+                    selectedDishes.push({ ...adapted, plannedServings: 1 });
+                    dayHtml += renderLunchDish(adapted, 'Ланч-бокс', getPersonLabel(person));
+                  } else { dayCaloriesComplete = false; dayHtml += '<div class="menu-item"><span class="menu-item-name">' + escapeHtml(getPersonLabel(person)) + ' — подходящего блюда для ланч-бокса пока нет</span></div>'; }
                 });
-                if (soupPlan) appendSharedSoup();
               }
               return;
             }
+            const mealPeople = (meal.personIds || state.persons.map(person => person.id)).map(id => state.persons.find(person => person.id === id)).filter(Boolean);
             const renderMealCard = (dish, personLabel = '') => {
-              if (!dish) return '<div class="menu-item"><span class="menu-item-name">' +
-                (personLabel ? escapeHtml(personLabel) + ' — ' : '') + meal.group + ' ' + mealLabels[meal.type] +
-                ': подходящего рецепта пока нет</span><span class="menu-item-cal">Нужно добавить подходящий рецепт</span></div>';
+              if (!dish) {
+                const person = personLabel ? mealPeople.find(item => getPersonLabel(item) === personLabel) : null;
+                const hasRestrictions = Boolean(person && ((person.allergies || []).length || (person.intolerances || []).length));
+                const reason = hasRestrictions
+                  ? 'Нет рецепта с подтверждённым составом для указанных ограничений'
+                  : 'Подходящего рецепта пока нет';
+                return '<div class="menu-item"><span class="menu-item-name">' +
+                  (personLabel ? escapeHtml(personLabel) + ' — ' : '') + mealLabels[meal.type] +
+                  ': ' + reason + '</span><span class="menu-item-cal">Нужна проверка состава рецептов</span></div>';
+              }
               const nutritionEstimate = getDishNutritionEstimate(dish);
               if (nutritionEstimate === null) dayCaloriesComplete = false;
               else dayCaloriesTotal += nutritionEstimate.calories;
               const dishImage = typeof dish.image === 'string' ? dish.image : '';
-              const count = personLabel ? 1 : (meal.group === 'Общий' ? getHouseholdCount() : 1);
+              const count = personLabel ? 1 : mealPeople.length;
               return '<article class="menu-dish-card">' +
                 (dishImage ? '<img class="menu-dish-image" src="' + dishImage + '" alt="" loading="lazy">' : '<div class="menu-dish-image menu-dish-placeholder" aria-hidden="true">🍽️</div>') +
                 '<div class="menu-dish-content"><div class="menu-dish-meta"><span class="meal-type-pill">' + mealLabels[meal.type] + '</span><span class="meal-group-label">' + meal.group + (personLabel ? ' · ' + escapeHtml(personLabel) : '') + '</span></div>' +
-                '<div class="menu-item-name">' + dish.name + '</div>' + formatDishPreparation(dish) +
+                '<div class="menu-item-name">' + dish.name + '</div>' + formatDishAllergenAdaptationNote(dish) + formatDishPreparation(dish) +
                 '<div class="menu-item-cal">' + formatDishNutrition(nutritionEstimate, count) +
                 '</div></div></article>';
             };
             if (meal.group === 'Общий') {
-              const candidates = rankDishesForFamily(getMealCandidates(familyCompatible, meal.type));
-              if (!candidates.length) {
-                dayCaloriesComplete = false;
-                dayHtml += renderMealCard(null);
+              const mealCandidatePool = getMealCandidates(compatible, meal.type);
+              const candidates = rankDishesForFamily(mealCandidatePool.filter(dish => mealPeople.every(person => isDishCompatibleWithPerson(dish, person) && !dishContainsDislikedIngredient(dish, person))));
+              const hasCrossPersonPreferenceConflict = mealCandidatePool.some(dish =>
+                mealPeople.some(person => dishContainsDislikedIngredient(dish, person)) &&
+                mealPeople.some(person => getDishPreferenceMatches(dish, person.likedIngredients || []).length > 0)
+              );
+              const renderPersonalFallback = () => {
+                // Если общего блюда нет из-за разных вкусов или индивидуальных ограничений,
+                // не обнуляем весь семейный приём пищи: подбираем каждому только его совместимые блюда.
+                mealPeople.forEach(person => {
+                  const personalCandidates = rankDishesForPerson(
+                    getMealCandidates(getDishesForPerson(compatible, person), meal.type), person
+                  );
+                  if (!personalCandidates.length) {
+                    dayCaloriesComplete = false;
+                    dayHtml += renderMealCard(null, getPersonLabel(person));
+                    return;
+                  }
+                  const group = meal.type === 'breakfast' ? 'breakfast' : 'main';
+                  const personalDish = pickVariedDish(
+                    personalCandidates, group, dayIndex, [person.id], getMealCalorieBudget(person, meal.type)
+                  );
+                  if (!personalDish) {
+                    dayCaloriesComplete = false;
+                    dayHtml += renderMealCard(null, getPersonLabel(person));
+                    return;
+                  }
+                  const adaptedDish = { ...personalDish, portionScale: getAdaptivePortionScale(personalDish, person, meal.type) };
+                  selectedDishes.push({ ...adaptedDish, plannedServings: 1 });
+                  dayHtml += renderMealCard(adaptedDish, getPersonLabel(person));
+                });
+              };
+              if (!candidates.length || hasCrossPersonPreferenceConflict) {
+                renderPersonalFallback();
               } else {
-                const dish = pickVariedDish(candidates, 'shared:' + meal.type);
-                selectedDishes.push({ ...dish, plannedServings: getHouseholdCount() });
-                dayHtml += renderMealCard(dish);
+                const varietyGroup = meal.type === 'breakfast' ? 'breakfast' : 'main';
+                const targetCalories = mealPeople.length
+                  ? mealPeople.reduce((sum, person) => sum + (getMealCalorieBudget(person, meal.type) || 0), 0) / mealPeople.length
+                  : null;
+                const dish = pickVariedDish(candidates, varietyGroup, dayIndex, mealPeople.map(person => person.id), targetCalories);
+                if (dish) {
+                  const sharedDish = { ...dish, portionScale: getHouseholdPortionScale(dish, meal.type, 'main', false, mealPeople) };
+                  selectedDishes.push({ ...sharedDish, plannedServings: mealPeople.length });
+                  dayHtml += renderMealCard(sharedDish);
+                } else {
+                  renderPersonalFallback();
+                }
               }
             } else {
-              state.persons.forEach(person => {
+              mealPeople.forEach(person => {
                 const candidates = rankDishesForPerson(
                   getMealCandidates(getDishesForPerson(compatible, person), meal.type), person
                 );
@@ -10204,9 +11278,17 @@
                   dayHtml += renderMealCard(null, getPersonLabel(person));
                   return;
                 }
-                const dish = pickVariedDish(candidates, 'person:' + person.id + ':' + meal.type);
-                selectedDishes.push({ ...dish, plannedServings: 1 });
-                dayHtml += renderMealCard(dish, getPersonLabel(person));
+                const varietyGroup = meal.type === 'breakfast' ? 'breakfast' : 'main';
+                const targetCalories = getMealCalorieBudget(person, meal.type);
+                const dish = pickVariedDish(candidates, varietyGroup, dayIndex, [person.id], targetCalories);
+                if (dish) {
+                  const adaptedDish = { ...dish, portionScale: getAdaptivePortionScale(dish, person, meal.type) };
+                  selectedDishes.push({ ...adaptedDish, plannedServings: 1 });
+                  dayHtml += renderMealCard(adaptedDish, getPersonLabel(person));
+                } else {
+                  dayCaloriesComplete = false;
+                  dayHtml += renderMealCard(null, getPersonLabel(person));
+                }
               });
             }
           });
@@ -10224,7 +11306,7 @@
         const calorieStatusNote = hasAnyDailyTarget
           ? '<p class="hint" style="margin:0 0 14px;">Суточный ориентир показан исключительно как справочная информация. Вы сами определяете размер своей порции и решаете, подходит ли вам предложенное блюдо.</p>'
           : '<p class="hint" style="margin:0 0 14px;">При желании укажите суточный ориентир калорий — он будет показан справочно и не повлияет на выбор блюд.</p>';
-        menuContainer.innerHTML = childMenuNote + calorieIntro + soupAvailabilityNote + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед состоит из второго блюда с белковым компонентом и гарниром; в выбранные дни к нему добавляется суп. Одна кастрюля распределяется на несколько обедов, а ингредиенты этой варки попадают в список покупок один раз. Составы супов пока черновые: количества ингредиентов и порции требуют проверки.</p>' + menuHtml;
+        menuContainer.innerHTML = calorieIntro + soupAvailabilityNote + preferenceNote + calorieStatusNote + '<p class="hint" style="margin:0 0 14px;">Обед состоит из второго блюда с белковым компонентом и гарниром; в выбранные дни к нему добавляется суп. Одна кастрюля распределяется на несколько обедов, а ингредиенты этой варки попадают в список покупок один раз. Основные блюда не повторяются между обедом и ужином в один день; повторы ограничены двумя появлениями за неделю и по возможности разделяются минимум тремя днями. Если подходящей альтернативы нет, приложение покажет это вместо автоматического дублирования. Составы супов пока черновые: количества ингредиентов и порции требуют проверки.</p>' + menuHtml;
       }
 
       // Черновой расчёт количеств: масштабируем только рецепты с указанными
@@ -10271,7 +11353,7 @@
         const baseServings = Number(dish.servings);
         const plannedServings = Number(dish.plannedServings) || 1;
         const canScale = Number.isFinite(baseServings) && baseServings > 0;
-        const factor = canScale ? plannedServings / baseServings : null;
+        const factor = canScale ? (plannedServings / baseServings) * (Number(dish.portionScale) || 1) : null;
         dish.ingredients.forEach(item => {
           const name = Array.isArray(item) ? item[0] : item;
           if (!name || typeof name !== 'string') return;
